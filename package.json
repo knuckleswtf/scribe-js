@@ -1,0 +1,25 @@
+{
+  "name": "@knuckleswtf/scribe",
+  "version": "1.0.0",
+  "description": "Generate API documentation for humans from your Node.js codebase.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/knuckleswtf/scribe-js.git"
+  },
+  "keywords": [
+    "documentation",
+    "API",
+    "REST API",
+    "generate"
+  ],
+  "author": "Shalvah <shalvah.adebayo@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/knuckleswtf/scribe-js/issues"
+  },
+  "homepage": "https://github.com/knuckleswtf/scribe-js#readme"
+}
