@@ -1,4 +1,5 @@
 function isPortTaken(host) {
+    // Based on https://gist.github.com/timoxley/1689041
     const net = require('net');
 
     return new Promise((resolve, reject) => {

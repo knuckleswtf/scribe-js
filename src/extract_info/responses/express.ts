@@ -1,18 +1,9 @@
 import {express} from "../../../typedefs/express";
 
-const spawn = require('cross-spawn');
-import utils = require('../../utils');
-
 
 async function getRouteResponse(route: {route: express.Route, fullPath: string}, mainFilePath: string, config) {
     console.log("Hitting " + route.fullPath);
 
-    let appProcess;
-
-    const url = new URL(config.baseUrl);
-    if (!(await utils.isPortTaken(url.port))) {
-        appProcess = spawn('node', [mainFilePath], { stdio: 'inherit' });
-    }
 
     const http = require('http');
     let fullResponse;
@@ -42,10 +33,8 @@ async function getRouteResponse(route: {route: express.Route, fullPath: string},
     });
 
     return promise.then(response => {
-        appProcess && appProcess.kill();
         return {fullPath: route.fullPath, response};
     }).catch((err) => {
-        appProcess && appProcess.kill();
         console.log(err);
     });
 }

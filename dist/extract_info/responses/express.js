@@ -1,13 +1,6 @@
 "use strict";
-const spawn = require('cross-spawn');
-const utils = require("../../utils");
 async function getRouteResponse(route, mainFilePath, config) {
     console.log("Hitting " + route.fullPath);
-    let appProcess;
-    const url = new URL(config.baseUrl);
-    if (!(await utils.isPortTaken(url.port))) {
-        appProcess = spawn('node', [mainFilePath], { stdio: 'inherit' });
-    }
     const http = require('http');
     let fullResponse;
     const promise = new Promise((resolve, reject) => {
@@ -29,10 +22,8 @@ async function getRouteResponse(route, mainFilePath, config) {
         req.end();
     });
     return promise.then(response => {
-        appProcess && appProcess.kill();
         return { fullPath: route.fullPath, response };
     }).catch((err) => {
-        appProcess && appProcess.kill();
         console.log(err);
     });
 }

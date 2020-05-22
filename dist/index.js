@@ -1,4 +1,8 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const child_process_1 = require("child_process");
 const matcher = require('matcher');
+const utils = require("./utils");
 const fileName = process.argv[2] || 'D:\\Projects\\Temp\\whot-server\\index.js';
 const config = require('../config.js');
 const app = require(fileName);
@@ -10,9 +14,18 @@ config.routes.forEach((routeGroup) => {
         return matcher.isMatch(r.fullPath, routeGroup.paths);
     });
     (async () => {
-        endpointsToDocument.forEach(async (endpoint) => {
+        let appProcess;
+        const url = new URL(config.baseUrl);
+        if (!(await utils.isPortTaken(url.port))) {
+            appProcess = child_process_1.spawn('node', [fileName], { stdio: 'inherit' });
+        }
+        await Promise.all(endpointsToDocument.map(async (endpoint) => {
             console.log(await extractResponses(endpoint, fileName, config));
+        })).catch(err => {
+            console.log(err);
+            appProcess && appProcess.kill();
         });
+        appProcess && appProcess.kill();
     })();
 });
 // Possible (Express, exported app):

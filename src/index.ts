@@ -1,4 +1,7 @@
+import {spawn} from "child_process";
+
 const matcher = require('matcher');
+import utils = require('./utils');
 
 const fileName = process.argv[2] || 'D:\\Projects\\Temp\\whot-server\\index.js';
 const config = require('../config.js');
@@ -16,9 +19,21 @@ config.routes.forEach((routeGroup) => {
     });
 
     (async () => {
-        endpointsToDocument.forEach(async endpoint => {
+        let appProcess;
+
+        const url = new URL(config.baseUrl);
+        if (!(await utils.isPortTaken(url.port))) {
+            appProcess = spawn('node', [fileName], { stdio: 'inherit' });
+        }
+
+        await Promise.all(endpointsToDocument.map(async endpoint => {
             console.log(await extractResponses(endpoint, fileName, config));
+        })).catch(err => {
+            console.log(err);
+            appProcess && appProcess.kill();
         });
+
+        appProcess && appProcess.kill();
     })();
 });
 
