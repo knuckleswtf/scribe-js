@@ -24,6 +24,7 @@
   "homepage": "https://github.com/knuckleswtf/scribe-js#readme",
   "dependencies": {
     "@types/node": "^14.0.5",
+    "cross-spawn": "^7.0.2",
     "lodash.findlastindex": "^4.6.0",
     "typescript": "^3.9.3"
   }

@@ -1,56 +1,8 @@
-
-import {Server} from 'http';
+import {Server} from "http";
 import {ListenOptions} from "net";
-const findLastIndex = require('lodash.findlastindex');
+import events from "events";
 
-function getRoutesFromRouter(router: express.Router, basePath = '') {
-    const routes = router.stack.map(function (layer) {
-        if (layer.route && typeof layer.route.path === 'string') {
-            let methods = Object.keys(layer.route.methods);
-
-            return {
-                methods: methods.toString(),
-                path: basePath + layer.route.path,
-                handle: layer.route.stack[0].handle
-            };
-        }
-
-        if (layer.name === 'router') {// Nested routers
-            const basePath = expressRegexpToPath(layer.regexp);
-            return getRoutesFromRouter(layer.handle, basePath);
-        }
-
-    })
-        .filter(route => route)
-        .reduce((allRoutes, route) => allRoutes.concat(route), [])
-        .filter(function (routeHandler, i, allRoutes) {
-            return findLastIndex(
-                allRoutes,
-                (r) => (r.methods == routeHandler.methods) && r.path === routeHandler.path) === i;
-        });
-
-    return routes;
-}
-
-function expressRegexpToPath(regex) {
-    if (regex.fast_slash) {
-        return '';
-    } else {
-        var match = regex.toString()
-            .replace('\\/?', '')
-            .replace('(?=\\/|$)', '$')
-            .match(/^\/\^((?:\\[.*+?^${}()|[\]\\\/]|[^.*+?^${}()|[\]\\\/])*)\$\//);
-        return match[1].replace(/\\(.)/g, '$1');
-    }
-}
-
-
-export = (app) => {
-    return getRoutesFromRouter(app._router);
-};
-
-
-declare namespace express {
+export declare namespace express {
     interface Router extends Function {
         stack?: Layer[]
     }
@@ -96,7 +48,7 @@ declare namespace express {
     /** Can be passed to all methods like `use`, `get`, `all` etc */
     type HandlerArgument = Handler | Handler[];
 
-    interface Application extends Router {
+    interface Application extends events.EventEmitter {
         // See https://github.com/types/express/blob/master/lib/application.d.ts
         mountpath: string | string[];
         locals: any;

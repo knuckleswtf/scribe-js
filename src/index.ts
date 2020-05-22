@@ -1,9 +1,15 @@
 const fileName = process.argv[2] || 'D:\\Projects\\Temp\\whot-server\\index.js';
 
 const app = require(fileName);
-import getRoutes = require('./route_extractors/express');
+import getRoutes = require('./get_routes/express');
+import extractResponses = require('./extract_info/responses/express');
 const g = getRoutes(app);
-console.log(g);
+
+(async () => {
+    console.log(await extractResponses(g[g.length - 2], fileName));
+    g.forEach(endpoint => {
+    });
+})();
 
 // Possible (Express, exported app):
 // 1. get endpoint

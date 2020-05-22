@@ -6,6 +6,7 @@
     "sourceMap": true,
     "declaration": true,
     "outDir": "dist",
+    "rootDir": "src",
     "declarationDir": "types",
     "allowSyntheticDefaultImports": true
   },
