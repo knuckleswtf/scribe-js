@@ -17,7 +17,7 @@
     "test"
   ],
   "include": [
-    "src/*"
+    "src"
   ],
   "types": [
     "node"
