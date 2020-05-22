@@ -25,8 +25,11 @@
   "dependencies": {
     "@types/node": "^14.0.5",
     "cross-spawn": "^7.0.2",
+    "faker": "^4.1.0",
     "lodash.findlastindex": "^4.6.0",
+    "lodash.trim": "^4.5.1",
     "matcher": "^3.0.0",
+    "randexp": "^0.5.3",
     "typescript": "^3.9.3"
   }
 }

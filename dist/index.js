@@ -1,31 +1,40 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const child_process_1 = require("child_process");
 const matcher = require('matcher');
-const utils = require("./utils");
 const fileName = process.argv[2] || 'D:\\Projects\\Temp\\whot-server\\index.js';
 const config = require('../config.js');
 const app = require(fileName);
 config.routes.forEach((routeGroup) => {
     const getRoutes = require(`./get_routes/${config.router}`);
-    const extractResponses = require('./extract_info/responses/express');
     const routes = getRoutes(app);
-    const endpointsToDocument = routes.filter(r => {
+    let endpointsToDocument = routes.filter(r => {
         return matcher.isMatch(r.fullPath, routeGroup.paths);
     });
+    const extractUrlParameters = require('./extract_info/url_parameters/express');
+    endpointsToDocument = endpointsToDocument.map(endpoint => {
+        const params = extractUrlParameters(endpoint);
+        console.log(params);
+        endpoint.urlParameters = params;
+        return endpoint;
+    });
+    const extractResponses = require('./extract_info/responses/express');
     (async () => {
-        let appProcess;
-        const url = new URL(config.baseUrl);
-        if (!(await utils.isPortTaken(url.port))) {
-            appProcess = child_process_1.spawn('node', [fileName], { stdio: 'inherit' });
-        }
-        await Promise.all(endpointsToDocument.map(async (endpoint) => {
-            console.log(await extractResponses(endpoint, fileName, config));
-        })).catch(err => {
-            console.log(err);
-            appProcess && appProcess.kill();
-        });
-        appProcess && appProcess.kill();
+        // Using a single global app process here to avoid premature kills
+        /*        let appProcess;
+        
+                const url = new URL(config.baseUrl);
+                if (!(await utils.isPortTaken(url.port))) {
+                    appProcess = spawn('node', [fileName], { stdio: 'inherit' });
+                }
+        
+                await Promise.all(endpointsToDocument.map(async endpoint => {
+                    console.log(await extractResponses(endpoint, fileName, config));
+                })).catch(err => {
+                    console.log(err);
+                    appProcess && appProcess.kill();
+                });
+        
+                appProcess && appProcess.kill();*/
     })();
 });
 // Possible (Express, exported app):

@@ -3,7 +3,7 @@ module.exports = {
     router: 'express',
     routes: [
         {
-            paths: ['/games/'],
+            paths: ['*'],
             include: [],
             exclude: [],
         }
