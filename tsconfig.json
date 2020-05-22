@@ -16,7 +16,7 @@
     "test"
   ],
   "include": [
-    "src/index.ts"
+    "src/*"
   ],
   "types": [
     "node"
