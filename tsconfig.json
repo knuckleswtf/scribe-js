@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "Node",
+    "target": "ES2018",
+    "sourceMap": true,
+    "declaration": true,
+    "outDir": "dist",
+    "declarationDir": "types",
+    "allowSyntheticDefaultImports": true
+  },
+  "exclude": [
+    "node_modules",
+    "spec",
+    "demos",
+    "test"
+  ],
+  "include": [
+    "src/index.ts"
+  ],
+  "types": [
+    "node"
+  ]
+}
