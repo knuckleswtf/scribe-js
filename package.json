@@ -26,6 +26,7 @@
     "@types/node": "^14.0.5",
     "cross-spawn": "^7.0.2",
     "lodash.findlastindex": "^4.6.0",
+    "matcher": "^3.0.0",
     "typescript": "^3.9.3"
   }
 }

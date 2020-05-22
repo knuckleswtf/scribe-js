@@ -1,15 +1,26 @@
+const matcher = require('matcher');
+
 const fileName = process.argv[2] || 'D:\\Projects\\Temp\\whot-server\\index.js';
+const config = require('../config.js');
 
 const app = require(fileName);
-import getRoutes = require('./get_routes/express');
-import extractResponses = require('./extract_info/responses/express');
-const g = getRoutes(app);
 
-(async () => {
-    console.log(await extractResponses(g[g.length - 2], fileName));
-    g.forEach(endpoint => {
+config.routes.forEach((routeGroup) => {
+    const getRoutes = require(`./get_routes/${config.router}`);
+    const extractResponses = require('./extract_info/responses/express');
+
+    const routes = getRoutes(app);
+
+    const endpointsToDocument = routes.filter(r => {
+        return matcher.isMatch(r.fullPath, routeGroup.paths);
     });
-})();
+
+    (async () => {
+        endpointsToDocument.forEach(async endpoint => {
+            console.log(await extractResponses(endpoint, fileName, config));
+        });
+    })();
+});
 
 // Possible (Express, exported app):
 // 1. get endpoint
