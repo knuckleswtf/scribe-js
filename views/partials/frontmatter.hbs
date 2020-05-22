@@ -1,0 +1,21 @@
+title: {{ settings.title }}
+
+language_tabs:
+{{#each settings.languages }}
+- {{ this }}
+{{/each}}
+
+includes:
+- "./prepend.md"
+- "./authentication.md"
+- "./groups/*"
+- "./errors.md"
+- "./append.md"
+
+logo: {{ settings.logo }}
+
+toc_footers:
+{{#if showPostmanCollectionButton }}
+- <a href="{{ $postmanCollectionLink }}">View Postman Collection</a>
+{{/if}}
+- <a href='http://github.com/knuckleswtf/scribe'>Documentation powered by Scribe ✍</a>

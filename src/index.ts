@@ -17,6 +17,14 @@ config.routes.forEach((routeGroup) => {
         return matcher.isMatch(r.fullPath, routeGroup.paths);
     });
 
+    endpointsToDocument = endpointsToDocument.map(endpoint => {
+        endpoint.metadata = {};
+        endpoint.uri = endpoint.fullPath;
+        endpoint.methods = Object.keys(endpoint.route.methods);
+        endpoint.showResponse = true
+        return endpoint;
+    });
+
     const extractUrlParameters = require('./extract_info/url_parameters/express');
     endpointsToDocument = endpointsToDocument.map(endpoint => {
         const params = extractUrlParameters(endpoint);
@@ -52,6 +60,40 @@ config.routes.forEach((routeGroup) => {
         appProcess && appProcess.kill();
 
         console.log(endpointsToDocument);
+
+        const Handlebars = require("handlebars");
+        helpers = require('handlebars-helpers')();
+        const fs = require('fs');
+        Handlebars.registerPartial('components.badges.auth', fs.readFileSync(require('path').resolve(__dirname, '../views/components/badges/auth.hbs'), 'utf8'));
+        Handlebars.registerHelper('defaultValue', function (value, defaultValue) {
+            const out = value || defaultValue;
+            return new Handlebars.SafeString(out);
+        });
+        Handlebars.registerHelper('httpMethodToCssColour', function (method: string) {
+            const colours = {
+                GET: 'green',
+                HEAD: 'darkgreen',
+                POST: 'black',
+                PUT: 'darkblue',
+                PATCH: 'purple',
+                DELETE: 'red',
+            };
+            return new Handlebars.SafeString(colours[method.toUpperCase()]);
+        });
+
+        endpointsToDocument = endpointsToDocument.map((e) => {
+            const template = Handlebars.compile(fs.readFileSync(require('path').resolve(__dirname, '../views/partials/endpoint.hbs'), 'utf8'));
+            const markdown = template({route: e});
+            e.output = markdown;
+            console.log(markdown);
+            return e;
+        });
+        /*
+        const template = Handlebars.compile();
+        const markdown = template({settings: config, endpoints: endpointsToDocument});
+
+        fs.writeFileSync('index.md', markdown);*/
+
     })();
 });
 

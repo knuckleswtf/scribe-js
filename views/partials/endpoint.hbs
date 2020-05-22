@@ -1,0 +1,76 @@
+## {{ defaultValue route.metadata.title route.uri}}
+
+{{> components.badges.auth authenticated=route.metadata.authenticated }}
+
+{{{ defaultValue route.metadata.description '' }}}
+
+> Example request:
+
+{{#each $settings.languages }}
+    {{> (lookup . partials.example-requests.this) }}
+
+{{/each}}
+
+{{#if route.showResponse }}
+{{#each route.responses }}
+> Example response ({{defaultValue this.description 200}}):
+```json
+{{{ this.content }}}
+```
+{{/each}}
+{{/if}}
+
+### Request
+{{#each route.methods }}
+        {{> components.badges.httpMethod, method=this }} **`{{this.uri}}`**
+
+    {{/each}}
+    {{#if count(route.urlParameters) }}
+    <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+    {{#each route.urlParameters as $attribute => $parameter }}
+    @component('scribe::components.field-details', [
+    'name' => $attribute,
+    'type' => null,
+    'required' => $parameter.required ?? true,
+    'description' => $parameter.description,
+    ])
+    @endcomponent
+{{/each}}
+{{/if}}
+{{#if count(route.queryParameters) }}
+        <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
+    {{#each route.queryParameters as $attribute => $parameter }}
+            @component('scribe::components.field-details', [
+            'name' => $attribute,
+            'type' => null,
+            'required' => $parameter.required ?? true,
+            'description' => $parameter.description,
+            ])
+            @endcomponent
+    {{/each}}
+{{/if}}
+{{#if count(route.bodyParameters) }}
+        <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+    {{#each route.bodyParameters as $attribute => $parameter }}
+            @component('scribe::components.field-details', [
+            'name' => $attribute,
+            'type' => $parameter.type ?? null,
+            'required' => $parameter.required ?? true,
+            'description' => $parameter.description,
+            ])
+            @endcomponent
+    {{/each}}
+{{/if}}
+
+{{#if count(route.responseFields ?? []) }}
+        <h4 class="fancy-heading-panel"><b>Response Fields</b></h4>
+    {{#each route.responseFields as $name => $field }}
+            @component('scribe::components.field-details', [
+            'name' => $name,
+            'type' => $field.type,
+            'required' => true,
+            'description' => $field.description,
+            ])
+            @endcomponent
+    {{/each}}
+{{/if}}
