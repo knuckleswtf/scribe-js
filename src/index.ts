@@ -1,4 +1,5 @@
 import {spawn} from "child_process";
+import {endpoint} from "../typedefs/core";
 
 const matcher = require('matcher');
 import utils = require('./utils');
@@ -9,37 +10,33 @@ const config = require('../config.js');
 const app = require(fileName);
 
 config.routes.forEach((routeGroup) => {
-    const getRoutes = require(`./get_routes/${config.router}`);
+    const getEndpoints = require(`./get_endpoints/${config.router}`);
 
-    const routes = getRoutes(app);
+    const endpoints: endpoint.Endpoint[] = getEndpoints(app);
 
-    let endpointsToDocument = routes.filter(r => {
-        return matcher.isMatch(r.fullPath, routeGroup.paths);
+    let endpointsToDocument = endpoints.filter(e => {
+        return matcher.isMatch(e.uri, routeGroup.paths);
     });
 
+    const extractMetadata = require(`./extract_info/metadata/${config.router}`);
     endpointsToDocument = endpointsToDocument.map(endpoint => {
-        endpoint.metadata = {};
-        endpoint.uri = endpoint.fullPath;
-        endpoint.methods = Object.keys(endpoint.route.methods);
-        endpoint.showResponse = true
+        endpoint.metadata = extractMetadata(endpoint, config) as endpoint.Metadata;
         return endpoint;
     });
 
-    const extractUrlParameters = require('./extract_info/url_parameters/express');
+    const extractUrlParameters = require(`./extract_info/url_parameters/${config.router}`);
     endpointsToDocument = endpointsToDocument.map(endpoint => {
-        const params = extractUrlParameters(endpoint);
-        endpoint.urlParameters = params;
+        endpoint.urlParameters = extractUrlParameters(endpoint, config) as endpoint.UrlParameter[];
         return endpoint;
     });
 
-    const extractBodyParameters = require('./extract_info/body_parameters/express');
+    const extractBodyParameters = require(`./extract_info/body_parameters/${config.router}`);
     endpointsToDocument = endpointsToDocument.map(endpoint => {
-        const params = extractBodyParameters(endpoint);
-        endpoint.bodyParameters = params;
+        endpoint.bodyParameters = extractBodyParameters(endpoint, config) as endpoint.BodyParameter[];
         return endpoint;
     });
 
-    const extractResponses = require('./extract_info/responses/express');
+    const extractResponses = require(`./extract_info/responses/${config.router}`);
     (async () => {
         // Using a single global app process here to avoid premature kills
         let appProcess;
@@ -50,19 +47,19 @@ config.routes.forEach((routeGroup) => {
         }
 
         await Promise.all(endpointsToDocument.map(async endpoint => {
-            endpoint.response = await extractResponses(endpoint, fileName, config);
-            delete endpoint.route
+            endpoint.responses = await extractResponses(endpoint, config, fileName);
+            delete endpoint.route;
         })).catch(err => {
-            console.log(err);
             appProcess && appProcess.kill();
+            console.log(err);
         });
 
         appProcess && appProcess.kill();
 
         console.log(endpointsToDocument);
-
+/*
         const Handlebars = require("handlebars");
-        helpers = require('handlebars-helpers')();
+        const helpers = require('handlebars-helpers')();
         const fs = require('fs');
         Handlebars.registerPartial('components.badges.auth', fs.readFileSync(require('path').resolve(__dirname, '../views/components/badges/auth.hbs'), 'utf8'));
         Handlebars.registerHelper('defaultValue', function (value, defaultValue) {
@@ -87,7 +84,7 @@ config.routes.forEach((routeGroup) => {
             e.output = markdown;
             console.log(markdown);
             return e;
-        });
+        });*/
         /*
         const template = Handlebars.compile();
         const markdown = template({settings: config, endpoints: endpointsToDocument});

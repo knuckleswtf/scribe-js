@@ -15,4 +15,5 @@ module.exports = {
         'javascript',
         'bash'
     ],
+    defaultGroup: 'Endpoints',
 };

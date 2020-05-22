@@ -1,7 +1,3 @@
-declare const _default: (route: any, mainFilePath: any, config: any) => {
-    name: string;
-    example: any;
-    isOptional: boolean;
-    pattern: string;
-}[];
+import { endpoint } from "../../../typedefs/core";
+declare const _default: (endpoint: endpoint.Endpoint, config: any) => endpoint.Parameter[];
 export = _default;

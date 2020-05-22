@@ -1,16 +1,16 @@
 import {express} from "../../../typedefs/express";
+import {endpoint} from "../../../typedefs/core";
 
 
-async function getRouteResponse(route: {route: express.Route, fullPath: string}, mainFilePath: string, config) {
-    console.log("Hitting " + route.fullPath);
-
+async function getRouteResponse(endpoint: endpoint.Endpoint, config): Promise<endpoint.Response[]> {
+    console.log("Hitting " + endpoint.uri);
 
     const http = require('http');
-    let fullResponse;
-    const promise = new Promise((resolve, reject) => {
-        const req = http.request(config.baseUrl + route.fullPath,
+    let responseContent: string;
+    const promise = new Promise<endpoint.Response>((resolve, reject) => {
+        const req = http.request(config.baseUrl + endpoint.uri,
             {
-                method: Object.keys(route.route.methods)[0],
+                method: Object.keys(endpoint.route.methods)[0],
             },
             (resp) => {
             let data = '';
@@ -20,8 +20,11 @@ async function getRouteResponse(route: {route: express.Route, fullPath: string},
             });
 
             resp.on('end', () => {
-                fullResponse = data;
-                resolve(fullResponse);
+                responseContent = data;
+                resolve({
+                    status: resp.status,
+                    content: responseContent
+                });
             });
 
         }).on("error", (err) => {
@@ -33,12 +36,13 @@ async function getRouteResponse(route: {route: express.Route, fullPath: string},
     });
 
     return promise.then(response => {
-        return response;
+        return [response];
     }).catch((err) => {
         console.log(err);
+        return [];
     });
 }
 
-export = (route, mainFilePath, config) => {
-    return getRouteResponse(route, mainFilePath, config);
+export = (endpoint: endpoint.Endpoint, config) => {
+    return getRouteResponse(endpoint, config);
 };

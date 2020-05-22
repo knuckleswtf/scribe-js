@@ -1,9 +1,8 @@
 import {express} from "../../../typedefs/express";
-const RandExp = require('randexp');
+import {endpoint} from "../../../typedefs/core";
 const faker = require('faker');
-const trim = require('lodash.trim');
 
-function getBodyParams(handler: Function) {
+function getBodyParams(handler: Function): endpoint.BodyParameter[] {
     const functionSourceCode = handler.toString();
 
     const bodyParamAccesses = functionSourceCode.match(/req\.body\.\w+/g);
@@ -12,15 +11,18 @@ function getBodyParams(handler: Function) {
         return [];
     }
 
-    console.log(bodyParamAccesses);
     return bodyParamAccesses.map((access) => {
         return {
             name: access.replace('req.body.', ''),
+            type: 'string',
+            value: faker.lorem.word(),
+            required: true,
+            description: '',
         };
     });
 
 }
 
-export = (route, mainFilePath, config) => {
-    return getBodyParams(route.route.stack[0].handle);
+export = (endpoint: endpoint.Endpoint, config) => {
+    return getBodyParams(endpoint.route.stack[0].handle);
 };

@@ -1,19 +1,22 @@
 "use strict";
-async function getRouteResponse(route, mainFilePath, config) {
-    console.log("Hitting " + route.fullPath);
+async function getRouteResponse(endpoint, config) {
+    console.log("Hitting " + endpoint.uri);
     const http = require('http');
-    let fullResponse;
+    let responseContent;
     const promise = new Promise((resolve, reject) => {
-        const req = http.request(config.baseUrl + route.fullPath, {
-            method: Object.keys(route.route.methods)[0],
+        const req = http.request(config.baseUrl + endpoint.uri, {
+            method: Object.keys(endpoint.route.methods)[0],
         }, (resp) => {
             let data = '';
             resp.on('data', (chunk) => {
                 data += chunk;
             });
             resp.on('end', () => {
-                fullResponse = data;
-                resolve(fullResponse);
+                responseContent = data;
+                resolve({
+                    status: resp.status,
+                    content: responseContent
+                });
             });
         }).on("error", (err) => {
             console.log("Error: " + err.message);
@@ -22,12 +25,13 @@ async function getRouteResponse(route, mainFilePath, config) {
         req.end();
     });
     return promise.then(response => {
-        return response;
+        return [response];
     }).catch((err) => {
         console.log(err);
+        return [];
     });
 }
-module.exports = (route, mainFilePath, config) => {
-    return getRouteResponse(route, mainFilePath, config);
+module.exports = (endpoint, config) => {
+    return getRouteResponse(endpoint, config);
 };
 //# sourceMappingURL=express.js.map

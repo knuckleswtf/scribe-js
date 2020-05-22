@@ -4,7 +4,7 @@ function getRoutesFromRouter(router, basePath = '') {
     const routes = router.stack.map(function (layer) {
         if (layer.route && typeof layer.route.path === 'string') {
             return {
-                fullPath: basePath + layer.route.path,
+                uri: basePath + layer.route.path,
                 handle: layer.route.stack[0].handle,
                 route: layer.route,
             };
@@ -17,7 +17,7 @@ function getRoutesFromRouter(router, basePath = '') {
         .filter(route => route)
         .reduce((allRoutes, route) => allRoutes.concat(route), [])
         .filter(function (routeHandler, i, allRoutes) {
-        return findLastIndex(allRoutes, (r) => (r.route.stack[0].method == routeHandler.route.stack[0].method) && r.fullPath === routeHandler.fullPath) === i;
+        return findLastIndex(allRoutes, (r) => (r.route.stack[0].method == routeHandler.route.stack[0].method) && r.uri === routeHandler.uri) === i;
     });
     return routes;
 }

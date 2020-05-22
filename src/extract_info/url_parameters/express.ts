@@ -1,15 +1,16 @@
 import {express} from "../../../typedefs/express";
+import {endpoint} from "../../../typedefs/core";
 const RandExp = require('randexp');
 const faker = require('faker');
 const trim = require('lodash.trim');
 
-function getUrlParams(fullPath: string) {
-    let matches = fullPath.match(/:\w+\??(\(.+?\))?/g);
-    if (matches ===  null) {
+function getUrlParams(uri: string, config): endpoint.UrlParameter[] {
+    let matches = uri.match(/:\w+\??(\(.+?\))?/g);
+    if (matches === null) {
         matches = [];
     }
 
-    const urlParameters = matches.map((match) => {
+    const urlParameters = matches.map((match): endpoint.UrlParameter => {
         match = trim(match, ':');
 
         const parameterRegexPattern = match.match(/\((.+)\)/);
@@ -25,9 +26,9 @@ function getUrlParams(fullPath: string) {
             const example = faker.lorem.word();
             return {
                 name: match,
-                example,
-                isOptional,
-                pattern: null,
+                value: example,
+                required: !isOptional,
+                description: '',
             };
         }
 
@@ -38,14 +39,15 @@ function getUrlParams(fullPath: string) {
         const example = randexp.gen();
         return {
             name: match,
-            example,
-            isOptional,
-            pattern,
+            value: example,
+            required: !isOptional,
+            description: '',
         }
     });
+
     return urlParameters;
 }
 
-export = (route, mainFilePath, config) => {
-    return getUrlParams(route.fullPath);
+export = (endpoint: endpoint.Endpoint, config) => {
+    return getUrlParams(endpoint.uri, config);
 };

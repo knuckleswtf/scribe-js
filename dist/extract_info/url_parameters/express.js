@@ -2,8 +2,8 @@
 const RandExp = require('randexp');
 const faker = require('faker');
 const trim = require('lodash.trim');
-function getUrlParams(fullPath) {
-    let matches = fullPath.match(/:\w+\??(\(.+?\))?/g);
+function getUrlParams(uri, config) {
+    let matches = uri.match(/:\w+\??(\(.+?\))?/g);
     if (matches === null) {
         matches = [];
     }
@@ -20,9 +20,9 @@ function getUrlParams(fullPath) {
             const example = faker.lorem.word();
             return {
                 name: match,
-                example,
-                isOptional,
-                pattern: null,
+                value: example,
+                required: !isOptional,
+                description: '',
             };
         }
         const pattern = parameterRegexPattern[1];
@@ -32,14 +32,14 @@ function getUrlParams(fullPath) {
         const example = randexp.gen();
         return {
             name: match,
-            example,
-            isOptional,
-            pattern,
+            value: example,
+            required: !isOptional,
+            description: '',
         };
     });
     return urlParameters;
 }
-module.exports = (route, mainFilePath, config) => {
-    return getUrlParams(route.fullPath);
+module.exports = (endpoint, config) => {
+    return getUrlParams(endpoint.uri, config);
 };
 //# sourceMappingURL=express.js.map
