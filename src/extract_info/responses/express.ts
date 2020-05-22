@@ -33,7 +33,7 @@ async function getRouteResponse(route: {route: express.Route, fullPath: string},
     });
 
     return promise.then(response => {
-        return {fullPath: route.fullPath, response};
+        return response;
     }).catch((err) => {
         console.log(err);
     });

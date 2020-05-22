@@ -22,7 +22,7 @@ async function getRouteResponse(route, mainFilePath, config) {
         req.end();
     });
     return promise.then(response => {
-        return { fullPath: route.fullPath, response };
+        return response;
     }).catch((err) => {
         console.log(err);
     });
