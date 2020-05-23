@@ -10,7 +10,12 @@ config.routes.forEach((routeGroup) => {
     const getEndpoints = require(`./get_endpoints/${config.router}`);
     const endpoints = getEndpoints(app);
     let endpointsToDocument = endpoints.filter(e => {
-        return matcher.isMatch(e.uri, routeGroup.paths);
+        if (routeGroup.exclude.length) {
+            const shouldExclude = matcher.isMatch(e.uri, routeGroup.exclude);
+            if (shouldExclude)
+                return false;
+        }
+        return matcher.isMatch(e.uri, routeGroup.include);
     });
     const extractMetadata = require(`./extract_info/metadata/${config.router}`);
     endpointsToDocument = endpointsToDocument.map(endpoint => {

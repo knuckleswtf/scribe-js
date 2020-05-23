@@ -6,9 +6,8 @@ module.exports = {
     auth: {},
     routes: [
         {
-            paths: ['*'],
-            include: [],
-            exclude: [],
+            include: ['*'],
+            exclude: ['*.websocket'],
         }
     ],
     exampleLanguages: [
