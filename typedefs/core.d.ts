@@ -37,6 +37,7 @@ export declare namespace endpoint {
 
     export interface Endpoint {
         uri: string,
+        boundUri?: string,
         methods: string[],
         metadata?: Metadata
         headers?: {

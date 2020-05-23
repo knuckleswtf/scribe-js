@@ -4,14 +4,7 @@
 
 {{{ defaultValue route.metadata.description '' }}}
 
-> Example request:
-
-{{#each $settings.languages }}
-    {{> (lookup . partials.example-requests.this) }}
-
-{{/each}}
-
-{{#if route.showResponse }}
+{{#if route.responses.length }}
 {{#each route.responses }}
 > Example response ({{defaultValue this.description 200}}):
 ```json
@@ -22,55 +15,31 @@
 
 ### Request
 {{#each route.methods }}
-        {{> components.badges.httpMethod, method=this }} **`{{this.uri}}`**
+    {{> components.badges.http-method method=this }} **`{{ ../this.uri }}`**
 
     {{/each}}
-    {{#if count(route.urlParameters) }}
+    {{#if route.urlParameters.length }}
     <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
-    {{#each route.urlParameters as $attribute => $parameter }}
-    @component('scribe::components.field-details', [
-    'name' => $attribute,
-    'type' => null,
-    'required' => $parameter.required ?? true,
-    'description' => $parameter.description,
-    ])
-    @endcomponent
+    {{#each route.urlParameters }}
+    {{> components.field-details name=this.name type=null required=this.required description=this.description }}
 {{/each}}
 {{/if}}
-{{#if count(route.queryParameters) }}
+{{#if route.queryParameters.length }}
         <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
-    {{#each route.queryParameters as $attribute => $parameter }}
-            @component('scribe::components.field-details', [
-            'name' => $attribute,
-            'type' => null,
-            'required' => $parameter.required ?? true,
-            'description' => $parameter.description,
-            ])
-            @endcomponent
+    {{#each route.queryParameters }}
+        {{> components.field-details name=this.name type=null required=this.required description=this.description }}
     {{/each}}
 {{/if}}
-{{#if count(route.bodyParameters) }}
+{{#if route.bodyParameters.length }}
         <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
-    {{#each route.bodyParameters as $attribute => $parameter }}
-            @component('scribe::components.field-details', [
-            'name' => $attribute,
-            'type' => $parameter.type ?? null,
-            'required' => $parameter.required ?? true,
-            'description' => $parameter.description,
-            ])
-            @endcomponent
+    {{#each route.bodyParameters }}
+        {{> components.field-details name=this.name type=this.type required=this.required description=this.description }}
     {{/each}}
 {{/if}}
 
-{{#if count(route.responseFields ?? []) }}
+{{#if route.responseFields.length }}
         <h4 class="fancy-heading-panel"><b>Response Fields</b></h4>
-    {{#each route.responseFields as $name => $field }}
-            @component('scribe::components.field-details', [
-            'name' => $name,
-            'type' => $field.type,
-            'required' => true,
-            'description' => $field.description,
-            ])
-            @endcomponent
+    {{#each route.responseFields }}
+        {{> components.field-details name=this.name type=this.type required=true description=this.description }}
     {{/each}}
 {{/if}}

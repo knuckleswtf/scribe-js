@@ -26,8 +26,9 @@ function getUrlParams(uri, config) {
             };
         }
         const pattern = parameterRegexPattern[1];
+        console.log(pattern);
         const randexp = new RandExp(pattern);
-        randexp.max = 2; // Limit numbers generated to around 2 digits
+        randexp.max = 2;
         const example = randexp.gen();
         return {
             name: match,

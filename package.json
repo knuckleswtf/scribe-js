@@ -29,9 +29,11 @@
     "handlebars": "^4.7.6",
     "handlebars-helpers": "^0.10.0",
     "lodash.findlastindex": "^4.6.0",
+    "lodash.groupby": "^4.6.0",
     "lodash.trim": "^4.5.1",
     "matcher": "^3.0.0",
     "randexp": "^0.5.3",
+    "slugify": "^1.4.0",
     "typescript": "^3.9.3"
   }
 }

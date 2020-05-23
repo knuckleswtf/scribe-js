@@ -1,7 +1,7 @@
 # {{{ groupName }}}
 {{{ groupDescription }}}
 
-{{#each endpoint}}
-{{{ endpoint.output }}}
+{{#each endpoints}}
+{{> partials.endpoint route=this exampleLanguages=../settings.exampleLanguages baseUrl=../settings.baseUrl }}
 {{/each}}
 

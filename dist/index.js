@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const child_process_1 = require("child_process");
 const matcher = require('matcher');
 const utils = require("./utils");
+const html = require("./output/html");
 const fileName = process.argv[2] || 'D:\\Projects\\Temp\\whot-server\\index.js';
 const config = require('../config.js');
 const app = require(fileName);
@@ -25,6 +26,10 @@ config.routes.forEach((routeGroup) => {
     const extractUrlParameters = require(`./extract_info/url_parameters/${config.router}`);
     endpointsToDocument = endpointsToDocument.map(endpoint => {
         endpoint.urlParameters = extractUrlParameters(endpoint, config);
+        endpoint.boundUri = endpoint.urlParameters.reduce((uri, p) => {
+            return uri.replace(new RegExp(`:?${p.name}[^\W]+`), p.value);
+        }, endpoint.uri);
+        endpoint.uri = endpoint.uri.replace(/\(.+\)/, '');
         return endpoint;
     });
     const extractBodyParameters = require(`./extract_info/body_parameters/${config.router}`);
@@ -48,40 +53,9 @@ config.routes.forEach((routeGroup) => {
             console.log(err);
         });
         appProcess && appProcess.kill();
-        console.log(endpointsToDocument);
-        /*
-                const Handlebars = require("handlebars");
-                const helpers = require('handlebars-helpers')();
-                const fs = require('fs');
-                Handlebars.registerPartial('components.badges.auth', fs.readFileSync(require('path').resolve(__dirname, '../views/components/badges/auth.hbs'), 'utf8'));
-                Handlebars.registerHelper('defaultValue', function (value, defaultValue) {
-                    const out = value || defaultValue;
-                    return new Handlebars.SafeString(out);
-                });
-                Handlebars.registerHelper('httpMethodToCssColour', function (method: string) {
-                    const colours = {
-                        GET: 'green',
-                        HEAD: 'darkgreen',
-                        POST: 'black',
-                        PUT: 'darkblue',
-                        PATCH: 'purple',
-                        DELETE: 'red',
-                    };
-                    return new Handlebars.SafeString(colours[method.toUpperCase()]);
-                });
-        
-                endpointsToDocument = endpointsToDocument.map((e) => {
-                    const template = Handlebars.compile(fs.readFileSync(require('path').resolve(__dirname, '../views/partials/endpoint.hbs'), 'utf8'));
-                    const markdown = template({route: e});
-                    e.output = markdown;
-                    console.log(markdown);
-                    return e;
-                });*/
-        /*
-        const template = Handlebars.compile();
-        const markdown = template({settings: config, endpoints: endpointsToDocument});
-
-        fs.writeFileSync('index.md', markdown);*/
+        html.writeIndexMarkdownFile(config);
+        html.writeAuthMarkdownFile(config);
+        html.writeGroupMarkdownFiles(endpointsToDocument, config);
     })();
 });
 // Possible (Express, exported app):
