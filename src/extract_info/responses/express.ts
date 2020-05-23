@@ -22,7 +22,7 @@ async function getRouteResponse(endpoint: endpoint.Endpoint, config): Promise<en
             resp.on('end', () => {
                 responseContent = data;
                 resolve({
-                    status: resp.status,
+                    status: resp.statusCode,
                     content: responseContent
                 });
             });

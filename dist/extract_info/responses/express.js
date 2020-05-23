@@ -14,7 +14,7 @@ async function getRouteResponse(endpoint, config) {
             resp.on('end', () => {
                 responseContent = data;
                 resolve({
-                    status: resp.status,
+                    status: resp.statusCode,
                     content: responseContent
                 });
             });

@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const child_process_1 = require("child_process");
 const matcher = require('matcher');
 const utils = require("./utils");
 const html = require("./output/html");
@@ -41,9 +40,10 @@ config.routes.forEach((routeGroup) => {
     (async () => {
         // Using a single global app process here to avoid premature kills
         let appProcess;
+        const spawn = require('cross-spawn');
         const url = new URL(config.baseUrl);
         if (!(await utils.isPortTaken(url.port))) {
-            appProcess = child_process_1.spawn('node', [fileName], { stdio: 'inherit' });
+            appProcess = spawn('node', [fileName], { stdio: 'inherit' });
         }
         await Promise.all(endpointsToDocument.map(async (endpoint) => {
             endpoint.responses = await extractResponses(endpoint, config, fileName);
@@ -56,6 +56,8 @@ config.routes.forEach((routeGroup) => {
         html.writeIndexMarkdownFile(config);
         html.writeAuthMarkdownFile(config);
         html.writeGroupMarkdownFiles(endpointsToDocument, config);
+        const pathToPastel = 'D:\\Projects\\pastel\\pastel';
+        spawn.sync('php', [pathToPastel, 'generate', require('path').resolve(__dirname, '../docs/index.md')], { stdio: 'inherit' });
     })();
 });
 // Possible (Express, exported app):

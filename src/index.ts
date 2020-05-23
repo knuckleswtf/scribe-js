@@ -52,6 +52,7 @@ config.routes.forEach((routeGroup) => {
         // Using a single global app process here to avoid premature kills
         let appProcess;
 
+        const spawn = require('cross-spawn');
         const url = new URL(config.baseUrl);
         if (!(await utils.isPortTaken(url.port))) {
             appProcess = spawn('node', [fileName], { stdio: 'inherit' });
@@ -70,6 +71,9 @@ config.routes.forEach((routeGroup) => {
         html.writeIndexMarkdownFile(config);
         html.writeAuthMarkdownFile(config);
         html.writeGroupMarkdownFiles(endpointsToDocument, config);
+
+        const pathToPastel = 'D:\\Projects\\pastel\\pastel';
+        spawn.sync('php', [pathToPastel, 'generate', require('path').resolve(__dirname, '../docs/index.md')], { stdio: 'inherit' })
 
     })();
 });

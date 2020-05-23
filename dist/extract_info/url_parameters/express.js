@@ -26,7 +26,6 @@ function getUrlParams(uri, config) {
             };
         }
         const pattern = parameterRegexPattern[1];
-        console.log(pattern);
         const randexp = new RandExp(pattern);
         randexp.max = 2;
         const example = randexp.gen();

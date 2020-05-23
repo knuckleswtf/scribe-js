@@ -33,7 +33,6 @@ function getUrlParams(uri: string, config): endpoint.UrlParameter[] {
         }
 
         const pattern = parameterRegexPattern[1];
-        console.log(pattern);
         const randexp = new RandExp(pattern);
         randexp.max = 2;
         const example = randexp.gen();

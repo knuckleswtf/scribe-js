@@ -4,9 +4,18 @@
 
 {{{ defaultValue route.metadata.description '' }}}
 
+> Example request:
+
+{{!--
+{{#each exampleLanguages }}
+    {{> (append "partials.example-requests." this) route=../route baseUrl=../settings.baseUrl}}
+{{/each}}
+--}}
+
 {{#if route.responses.length }}
 {{#each route.responses }}
-> Example response ({{defaultValue this.description 200}}):
+> Example response ({{defaultValue this.description this.status}}):
+
 ```json
 {{{ this.content }}}
 ```
@@ -15,31 +24,31 @@
 
 ### Request
 {{#each route.methods }}
-    {{> components.badges.http-method method=this }} **`{{ ../this.uri }}`**
+{{> components.badges.http-method method=this }} **`{{ ../this.uri }}`**
 
-    {{/each}}
-    {{#if route.urlParameters.length }}
-    <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
-    {{#each route.urlParameters }}
-    {{> components.field-details name=this.name type=null required=this.required description=this.description }}
+{{/each}}
+{{#if route.urlParameters.length }}
+<h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+{{#each route.urlParameters }}
+{{> components.field-details name=this.name type=null required=this.required description=this.description }}
 {{/each}}
 {{/if}}
 {{#if route.queryParameters.length }}
-        <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
-    {{#each route.queryParameters }}
-        {{> components.field-details name=this.name type=null required=this.required description=this.description }}
-    {{/each}}
+<h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
+{{#each route.queryParameters }}
+{{> components.field-details name=this.name type=null required=this.required description=this.description }}
+{{/each}}
 {{/if}}
 {{#if route.bodyParameters.length }}
-        <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
-    {{#each route.bodyParameters }}
-        {{> components.field-details name=this.name type=this.type required=this.required description=this.description }}
-    {{/each}}
+<h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+{{#each route.bodyParameters }}
+{{> components.field-details name=this.name type=this.type required=this.required description=this.description }}
+{{/each}}
 {{/if}}
 
 {{#if route.responseFields.length }}
-        <h4 class="fancy-heading-panel"><b>Response Fields</b></h4>
-    {{#each route.responseFields }}
-        {{> components.field-details name=this.name type=this.type required=true description=this.description }}
-    {{/each}}
+<h4 class="fancy-heading-panel"><b>Response Fields</b></h4>
+{{#each route.responseFields }}
+{{> components.field-details name=this.name type=this.type required=true description=this.description }}
+{{/each}}
 {{/if}}

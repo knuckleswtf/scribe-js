@@ -32,6 +32,7 @@ export declare namespace endpoint {
 
     export  interface Response {
         status: number,
+        description?: string,
         content: string
     }
 
