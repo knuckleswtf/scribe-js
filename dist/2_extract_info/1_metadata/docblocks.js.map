@@ -1,0 +1,1 @@
+{"version":3,"file":"docblocks.js","sourceRoot":"","sources":["../../../src/2_extract_info/1_metadata/docblocks.ts"],"names":[],"mappings":";AAEA,SAAS,GAAG,CAAC,QAAyB,EAAE,MAAM;IAC1C,OAAO;QACH,SAAS,EAAE,MAAM,CAAC,YAAY;QAC9B,gBAAgB,EAAE,EAAE;QACpB,KAAK,EAAE,IAAI;QACX,WAAW,EAAE,EAAE;QACf,aAAa,EAAE,KAAK;KACvB,CAAC;AACN,CAAC;AAED,iBAAS;IACL,OAAO,EAAE,EAAE;IACX,GAAG;CACN,CAAC"}

@@ -1,20 +1,17 @@
-import {endpoint} from "../../typedefs/core";
-
+"use strict";
 const Handlebars = require("handlebars");
-require('handlebars-helpers')(['string', 'comparison'], {handlebars: Handlebars});
+require('handlebars-helpers')(['string', 'comparison'], { handlebars: Handlebars });
 const fs = require('fs');
-const {resolve, join} = require('path');
-
+const { resolve, join } = require('path');
 registerPartialsInDirectory(join(__dirname, '../../views/partials'));
 registerPartialsInDirectory(join(__dirname, '../../views/partials/example-requests'));
 registerPartialsInDirectory(join(__dirname, '../../views/components'));
 registerPartialsInDirectory(join(__dirname, '../../views/components/badges'));
-
 Handlebars.registerHelper('defaultValue', function (value, defaultValue) {
     const out = value || defaultValue;
     return new Handlebars.SafeString(out);
 });
-Handlebars.registerHelper('httpMethodToCssColour', function (method: string) {
+Handlebars.registerHelper('httpMethodToCssColour', function (method) {
     const colours = {
         GET: 'green',
         HEAD: 'darkgreen',
@@ -25,8 +22,8 @@ Handlebars.registerHelper('httpMethodToCssColour', function (method: string) {
     };
     return new Handlebars.SafeString(colours[method.toUpperCase()]);
 });
-
 function writeIndexMarkdownFile(config) {
+    fs.mkdirSync(join(__dirname, '../../docs/'), { recursive: true });
     const template = Handlebars.compile(fs.readFileSync(resolve(__dirname, '../../views/index.hbs'), 'utf8'));
     const markdown = template({
         settings: config,
@@ -34,12 +31,10 @@ function writeIndexMarkdownFile(config) {
     });
     fs.writeFileSync(join(__dirname, '../../docs/index.md'), markdown);
 }
-
 function writeAuthMarkdownFile(config) {
     const template = Handlebars.compile(fs.readFileSync(resolve(__dirname, '../../views/authentication.hbs'), 'utf8'));
     const isAuthed = config.auth.enabled || false;
     let extraInfo = '', authDescription = '';
-
     if (isAuthed) {
         const strategy = config.auth.in;
         const parameterName = config.auth.name;
@@ -49,7 +44,6 @@ function writeAuthMarkdownFile(config) {
             "Authenticate requests to this API's endpoints by sending ",
         ];
         authDescription = texts[Math.floor(Math.random() * texts.length)];
-
         switch (strategy) {
             case 'query':
                 authDescription += `a query parameter **\`${parameterName}\`** in the request.`;
@@ -72,7 +66,6 @@ function writeAuthMarkdownFile(config) {
         }
         extraInfo = config.auth.extraInfo || '';
     }
-
     const markdown = template({
         isAuthed,
         authDescription,
@@ -80,11 +73,11 @@ function writeAuthMarkdownFile(config) {
     });
     fs.writeFileSync(join(__dirname, '../../docs/authentication.md'), markdown);
 }
-
 function writeGroupMarkdownFiles(endpointsToDocument, config) {
+    var _a, _b;
+    fs.mkdirSync(join(__dirname, '../../docs/groups/'), { recursive: true });
     const groupBy = require('lodash.groupby');
-    const groupedEndpoints: { [groupName: string]: endpoint.Endpoint[] } = groupBy(endpointsToDocument, 'metadata.groupName');
-
+    const groupedEndpoints = groupBy(endpointsToDocument, 'metadata.groupName');
     for (let group of Object.values(groupedEndpoints)) {
         const template = Handlebars.compile(fs.readFileSync(resolve(__dirname, '../../views/partials/group.hbs'), 'utf8'));
         const groupName = group[0].metadata.groupName;
@@ -92,31 +85,28 @@ function writeGroupMarkdownFiles(endpointsToDocument, config) {
             settings: config,
             endpoints: group,
             groupName,
-            groupDescription: group.find(e => Boolean(e.metadata.groupDescription))?.metadata.groupDescription ?? '',
+            groupDescription: (_b = (_a = group.find(e => Boolean(e.metadata.groupDescription))) === null || _a === void 0 ? void 0 : _a.metadata.groupDescription) !== null && _b !== void 0 ? _b : '',
         });
-
         const slugify = require('slugify');
-        const fileName = slugify(groupName, {lower: true});
+        const fileName = slugify(groupName, { lower: true });
         fs.writeFileSync(join(__dirname, `../../docs/groups/${fileName}.md`), markdown);
     }
 }
-
-export = {
-    writeIndexMarkdownFile,
-    writeAuthMarkdownFile,
-    writeGroupMarkdownFiles,
-};
-
 function registerPartialsInDirectory(path) {
     fs.readdirSync(path).forEach((filename) => {
         const matches = /^([^.]+).hbs$/.exec(filename);
         if (!matches) {
             return;
         }
-
         // Convert name so we can reference with dot syntax in views
         const name = path.replace(/.*views(\/|\\)/g, '').replace(/\/|\\/g, '.') + `.${matches[1]}`;
         const template = fs.readFileSync(path + '/' + filename, 'utf8');
         Handlebars.registerPartial(name, template);
     });
 }
+module.exports = {
+    writeIndexMarkdownFile,
+    writeAuthMarkdownFile,
+    writeGroupMarkdownFiles,
+};
+//# sourceMappingURL=html.js.map

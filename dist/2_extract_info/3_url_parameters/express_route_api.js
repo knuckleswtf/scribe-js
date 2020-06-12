@@ -1,52 +1,50 @@
-import {express} from "../../../typedefs/express";
-import {endpoint} from "../../../typedefs/core";
+"use strict";
 const RandExp = require('randexp');
 const faker = require('faker');
 const trim = require('lodash.trim');
-
-function getUrlParams(uri: string, config): endpoint.UrlParameter[] {
+const keyBy = require('lodash.keyby');
+function run(endpoint, config) {
+    let uri = endpoint.uri;
     let matches = uri.match(/:\w+\??(\(.+?\))?/g);
     if (matches === null) {
-        matches = [];
+        return {};
     }
-
-    const urlParameters = matches.map((match): endpoint.UrlParameter => {
-        match = trim(match, ':');
-
-        const parameterRegexPattern = match.match(/\((.+)\)/);
+    const urlParameters = matches.map((match) => {
+        let parameter = trim(match, ':');
+        const parameterRegexPattern = parameter.match(/\((.+)\)/);
         if (parameterRegexPattern) {
-            match = match.replace(parameterRegexPattern[0], '');
+            parameter = parameter.replace(parameterRegexPattern[0], '');
         }
-
-        const isOptional = match.endsWith('?');
-        isOptional && (match = trim(match, '?'));
-
+        const isOptional = parameter.endsWith('?');
+        isOptional && (parameter = trim(parameter, '?'));
         if (!parameterRegexPattern) {
             // Simple parameter, no regex
             const example = faker.lorem.word();
             return {
-                name: match,
+                name: parameter,
                 value: example,
                 required: !isOptional,
                 description: '',
+                match,
             };
         }
-
         const pattern = parameterRegexPattern[1];
         const randexp = new RandExp(pattern);
         randexp.max = 2;
         const example = randexp.gen();
         return {
-            name: match,
+            name: parameter,
             value: example,
             required: !isOptional,
             description: '',
-        }
+            match,
+            placeholder: `:${parameter}${isOptional ? '?' : ''}`
+        };
     });
-
-    return urlParameters;
+    return keyBy(urlParameters, 'name');
 }
-
-export = (endpoint: endpoint.Endpoint, config) => {
-    return getUrlParams(endpoint.uri, config);
+module.exports = {
+    routers: [],
+    run
 };
+//# sourceMappingURL=express_route_api.js.map

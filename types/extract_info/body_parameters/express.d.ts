@@ -1,3 +1,3 @@
-import { endpoint } from "../../../typedefs/core";
-declare const _default: (endpoint: endpoint.Endpoint, config: any) => endpoint.BodyParameter[];
+import { scribe } from "../../../typedefs/core";
+declare const _default: (endpoint: scribe.Endpoint, config: any) => scribe.BodyParameter[];
 export = _default;

@@ -1,6 +1,6 @@
 module.exports = {
     baseUrl: 'http://localhost:8800',
-    title: 'My API',
+    title: "Mykeels' API",
     logo: false,
     router: 'express',
     auth: {

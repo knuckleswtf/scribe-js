@@ -1,8 +1,9 @@
-import {express} from "../../../typedefs/express";
-import {endpoint} from "../../../typedefs/core";
+import {scribe} from "../../../typedefs/core";
+import Endpoint = scribe.Endpoint;
 const faker = require('faker');
 
-function getBodyParams(handler: Function): endpoint.BodyParameter[] {
+function run(endpoint: Endpoint): scribe.BodyParameter[] {
+    const handler = endpoint.route.stack[0].handle;
     const functionSourceCode = handler.toString();
 
     const bodyParamAccesses = functionSourceCode.match(/req\.body\.\w+/g);
@@ -20,9 +21,10 @@ function getBodyParams(handler: Function): endpoint.BodyParameter[] {
             description: '',
         };
     });
-
 }
 
-export = (endpoint: endpoint.Endpoint, config) => {
-    return getBodyParams(endpoint.route.stack[0].handle);
+
+export = {
+    routers: [],
+    run
 };

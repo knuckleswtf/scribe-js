@@ -1,3 +1,3 @@
-import { endpoint } from "../../../typedefs/core";
-declare const _default: (endpoint: endpoint.Endpoint, config: any) => Promise<endpoint.Response[]>;
+import { scribe } from "../../../typedefs/core";
+declare const _default: (endpoint: scribe.Endpoint, config: any) => Promise<scribe.Response[]>;
 export = _default;

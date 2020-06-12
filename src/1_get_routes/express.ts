@@ -1,10 +1,10 @@
 import {express} from "../../typedefs/express";
-import {endpoint} from "../../typedefs/core";
+import {scribe} from "../../typedefs/core";
 
 const findLastIndex = require('lodash.findlastindex');
 
-function getRoutesFromRouter(router: express.Router, basePath = ''): endpoint.Endpoint[] {
-    const endpoints = router.stack.map(function mapRouteToEndpointObject(layer): endpoint.Endpoint|endpoint.Endpoint[] {
+function getRoutesFromRouter(router: express.Router, basePath = ''): scribe.Endpoint[] {
+    const endpoints = router.stack.map(function mapRouteToEndpointObject(layer): scribe.Endpoint|scribe.Endpoint[] {
         if (layer.route && typeof layer.route.path === 'string') {
             return {
                 uri: basePath + layer.route.path,
@@ -21,11 +21,11 @@ function getRoutesFromRouter(router: express.Router, basePath = ''): endpoint.En
 
     })
         .filter(route => route)
-        .reduce<endpoint.Endpoint[]>((allRoutes, endpoint) => (allRoutes).concat(endpoint), [])
+        .reduce<scribe.Endpoint[]>((allRoutes, endpoint) => (allRoutes).concat(endpoint), [])
         .filter(function removeMiddleware(routeHandler, thisIndex, allRoutes) {
             const lastHandlerFunction = findLastIndex(
                 allRoutes,
-                (e: endpoint.Endpoint) => {
+                (e: scribe.Endpoint) => {
                     return (e.route.stack[0].method == routeHandler.route.stack[0].method) && (e.uri === routeHandler.uri);
                 });
             return lastHandlerFunction === thisIndex;
