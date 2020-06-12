@@ -16,4 +16,16 @@ function isPortTaken(host) {
     });
 }
 
-export = { isPortTaken };
+function getParameterExample(type = 'string', regex: string = null) {
+    const RandExp = require('randexp');
+    const faker = require('faker');
+    if (!regex) {
+        return faker.lorem.word();
+    }
+
+    const randexp = new RandExp(regex);
+    randexp.max = 2;
+    return randexp.gen();
+}
+
+export = { isPortTaken, getParameterExample };

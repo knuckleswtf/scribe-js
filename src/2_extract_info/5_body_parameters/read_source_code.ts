@@ -1,8 +1,10 @@
 import {scribe} from "../../../typedefs/core";
-import Endpoint = scribe.Endpoint;
+import utils = require("../../utils");
+const { getParameterExample } = utils;
+
 const faker = require('faker');
 
-function run(endpoint: Endpoint): scribe.BodyParameter[] {
+function run(endpoint: scribe.Endpoint): scribe.BodyParameter[] {
     const handler = endpoint.route.stack[0].handle;
     const functionSourceCode = handler.toString();
 
@@ -16,7 +18,7 @@ function run(endpoint: Endpoint): scribe.BodyParameter[] {
         return {
             name: access.replace('req.body.', ''),
             type: 'string',
-            value: faker.lorem.word(),
+            value: getParameterExample('string'),
             required: true,
             description: '',
         };

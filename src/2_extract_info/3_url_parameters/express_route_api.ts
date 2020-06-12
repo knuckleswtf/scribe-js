@@ -1,6 +1,6 @@
 import {scribe} from "../../../typedefs/core";
-const RandExp = require('randexp');
-const faker = require('faker');
+import utils = require("../../utils");
+const { getParameterExample } = utils;
 const trim = require('lodash.trim');
 const keyBy = require('lodash.keyby');
 
@@ -24,23 +24,18 @@ function run(endpoint: scribe.Endpoint, config): scribe.UrlParameters {
 
         if (!parameterRegexPattern) {
             // Simple parameter, no regex
-            const example = faker.lorem.word();
             return {
                 name: parameter,
-                value: example,
+                value: isOptional ? null : getParameterExample(),
                 required: !isOptional,
                 description: '',
                 match,
             };
         }
 
-        const pattern = parameterRegexPattern[1];
-        const randexp = new RandExp(pattern);
-        randexp.max = 2;
-        const example = randexp.gen();
         return {
             name: parameter,
-            value: example,
+            value: isOptional ? null : getParameterExample('string', parameterRegexPattern[1]),
             required: !isOptional,
             description: '',
             match,
