@@ -1,22 +1,20 @@
-```bash
-curl -X {{route.methods.[0] }} \
-    {{#eq route.methods.[0] 'GET'}}-G {{/eq}}"{{ rtrim(baseUrl, '/')}}/{{ ltrim($route['boundUri'], '/') }}@if(count($route['cleanQueryParameters']))?{!! \Knuckles\Scribe\Tools\WritingUtils::printQueryParamsAsString($route['cleanQueryParameters']) !!}@endif" @if(count($route['headers']))\
-{{#each route.headers }}
-    -H "{{@key}}: {{ addslashes($value) }}"@if(! ($loop->last) || ($loop->last && count($route['bodyParameters']))) \
-@endif
-@endforeach
-@endif
-@if(count($route['fileParameters']))
-@foreach($route['cleanBodyParameters'] as $parameter => $value)
-@foreach( \Knuckles\Scribe\Tools\WritingUtils::getParameterNamesAndValuesForFormData($parameter,$value) as $key => $actualValue)
-    -F "{!! "$key=".$actualValue !!}" \
-@endforeach
-@endforeach
-@foreach($route['fileParameters'] as $parameter => $file)
-    -F "{!! "$parameter=@".$file->path() !!}" @if(! ($loop->last))\@endif
-@endforeach
-@elseif(count($route['cleanBodyParameters']))
-    -d '{!! json_encode($route['cleanBodyParameters']) !!}'
-@endif
+curl -X {{endpoint.methods.[0] }} \
+    {{#eq endpoint.methods.[0] 'GET'}}-G {{/eq}}"{{ baseUrl }}{{ endpoint.boundUri }}{{#if endpoint.cleanQueryParameters.length}} {{{printQueryParamsAsString endpoint.cleanQueryParameters }}}{{/if}}" {{#if endpoint.headerslength }}\
+{{#each endpoint.headers }}
+    -H "{{@key}}: {{ escapeString this }}"
+{{/each}}
+{{/if}}
+{{#if endpoint.fileParameters.length }}
+{{#each endpoint.cleanBodyParameters }}
+{{#each getParameterNamesAndValuesForFormData @key this}} \
+    -F "{{{@key}}}={{{this}}}"
+{{/each}}
+{{/each}}
+{{#each endpoint.fileParameters}} \
+    -F "{{@key}}=@{{this.path}}"
+{{/each}}
+{{else}}{{#if (isNonEmptyObject endpoint.cleanBodyParameters) }} \
+    -d '{{{JSONstringify endpoint.cleanBodyParameters}}}'
+{{/if}}
+{{/if}}
 
-```

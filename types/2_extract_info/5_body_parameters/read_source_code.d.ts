@@ -1,6 +1,5 @@
 import { scribe } from "../../../typedefs/core";
-import Endpoint = scribe.Endpoint;
-declare function run(endpoint: Endpoint): scribe.BodyParameter[];
+declare function run(endpoint: scribe.Endpoint): scribe.BodyParameters;
 declare const _default: {
     routers: any[];
     run: typeof run;

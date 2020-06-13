@@ -1,10 +1,11 @@
 import {scribe} from "../../typedefs/core";
 
-const Handlebars = require("handlebars");
-require('handlebars-helpers')(['string', 'comparison'], {handlebars: Handlebars});
 const fs = require('fs');
+const trim = require('lodash.trim');
 const {resolve, join} = require('path');
 
+const Handlebars = require("handlebars");
+require('handlebars-helpers')(['string', 'comparison', 'object'], {handlebars: Handlebars});
 registerPartialsInDirectory(join(__dirname, '../../views/partials'));
 registerPartialsInDirectory(join(__dirname, '../../views/partials/example-requests'));
 registerPartialsInDirectory(join(__dirname, '../../views/components'));
@@ -25,6 +26,10 @@ Handlebars.registerHelper('httpMethodToCssColour', function (method: string) {
     };
     return new Handlebars.SafeString(colours[method.toUpperCase()]);
 });
+Handlebars.registerHelper('printQueryParamsAsString', printQueryParamsAsString);
+Handlebars.registerHelper('escapeString', escapeString);
+Handlebars.registerHelper('isNonEmptyObject', isNonEmptyObject);
+Handlebars.registerHelper('getParameterNamesAndValuesForFormData', getParameterNamesAndValuesForFormData);
 
 function writeIndexMarkdownFile(config) {
     fs.mkdirSync(join(__dirname, '../../docs/'), {recursive: true});
@@ -122,4 +127,58 @@ function registerPartialsInDirectory(path) {
         const template = fs.readFileSync(path + '/' + filename, 'utf8');
         Handlebars.registerPartial(name, template);
     });
+}
+
+function printQueryParamsAsString(cleanQueryParams: Record<string, any>): string {
+    let qs = '';
+
+    for (let [parameter, value] of Object.entries(cleanQueryParams)) {
+        let paramName = encodeURIComponent(parameter);
+
+        if (!Array.isArray(value)) {
+            // List query param (eg filter[]=haha should become "filter[]": "haha")
+            qs += `${paramName}[]=${encodeURIComponent(value[0])}&`;
+        } else if (typeof value === 'object') {
+            // Hash query param (eg filter[name]=john should become "filter[name]": "john")
+            for (let [item, itemValue] of Object.entries(value)) {
+                qs += `${paramName}[${encodeURIComponent(item)}]=${encodeURIComponent(itemValue)}&`;
+            }
+        } else {
+            qs += `${paramName}=${encodeURIComponent(value)}&`;
+        }
+
+    }
+    return trim(qs, '&');
+}
+
+function escapeString(string) {
+    return JSON.stringify({[string]: 1}).slice(2, -4);
+}
+
+/**
+ * Expand a request parameter into one or more parameters to be used when sending as form-data.
+ * A primitive value like ("name", "John") is returned as ["name" => "John"]
+ * Lists like ("filter", ["haha"]) becomes ["filter[]" => "haha"]
+ * Maps like ("filter", ["name" => "john", "age" => "12"]) become ["filter[name]" => "john", "filter[age]" => 12]
+ */
+function getParameterNamesAndValuesForFormData(parameter: string, value: any) {
+    if (Array.isArray(value)) {
+        return {[`${parameter}[]`]: value[0]};
+    }
+
+    if (typeof value === "object") {
+        // Transform hashes
+        let params = {};
+        for (let [item, itemValue] of Object.entries(value)) {
+            params[`${parameter}[${item}]`] = itemValue;
+        }
+        return params;
+    }
+
+    // Primitives
+    return {[parameter]: value};
+}
+
+function isNonEmptyObject(value) {
+    return value != null && value.constructor === Object && Object.keys(value).length > 0;
 }

@@ -38,11 +38,13 @@ export declare namespace scribe {
 
     export type Headers = Record<string, string>
 
-    export type UrlParameters = Record<string, UrlParameter>
+    export type ParameterBag<T extends Parameter = Parameter> = Record<string, T>
 
-    export type QueryParameters = Record<string, QueryParameter>
+    export type UrlParameters = ParameterBag<UrlParameter>
 
-    export type BodyParameters = Record<string, BodyParameter>
+    export type QueryParameters = ParameterBag<QueryParameter>
+
+    export type BodyParameters = ParameterBag<BodyParameter>
 
     export type ResponseFields = Record<string, ResponseField>
 
@@ -61,6 +63,9 @@ export declare namespace scribe {
         urlParameters?: UrlParameters
         queryParameters?: QueryParameters
         bodyParameters?: BodyParameters
+        cleanQueryParameters?: Record<string, any>
+        cleanBodyParameters?: Record<string, any>
+        fileParameters?: Record<string, any>
         responses?: Response[]
         responseFields?: ResponseFields
         route: express.Route,

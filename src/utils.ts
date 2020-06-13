@@ -1,3 +1,5 @@
+import {scribe} from "../typedefs/core";
+
 function isPortTaken(host) {
     // Based on https://gist.github.com/timoxley/1689041
     const net = require('net');
@@ -28,4 +30,15 @@ function getParameterExample(type = 'string', regex: string = null) {
     return randexp.gen();
 }
 
-export = { isPortTaken, getParameterExample };
+function removeEmptyOptionalParametersAndTransformToKeyValue(parameters: scribe.ParameterBag = {}) {
+    const cleanParameters = {};
+    for (let [name, parameter] of Object.entries(parameters)) {
+        if (parameter.value === null && !parameter.required) {
+            continue;
+        }
+        cleanParameters[name] = parameter.value;
+    }
+    return cleanParameters;
+}
+
+export = { isPortTaken, getParameterExample, removeEmptyOptionalParametersAndTransformToKeyValue };

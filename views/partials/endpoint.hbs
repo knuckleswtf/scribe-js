@@ -1,19 +1,19 @@
-## {{ defaultValue route.metadata.title route.uri}}
+## {{ defaultValue endpoint.metadata.title endpoint.uri}}
 
-{{> components.badges.auth authenticated=route.metadata.authenticated }}
+{{> components.badges.auth authenticated=endpoint.metadata.authenticated }}
 
-{{{ defaultValue route.metadata.description '' }}}
+{{{ defaultValue endpoint.metadata.description '' }}}
 
 > Example request:
 
-{{!--
 {{#each exampleLanguages }}
-    {{> (append "partials.example-requests." this) route=../route baseUrl=../settings.baseUrl}}
+```{{this}}
+{{> (append "partials.example-requests." this) endpoint=../endpoint baseUrl=../baseUrl}}
+```
 {{/each}}
---}}
 
-{{#if route.responses.length }}
-{{#each route.responses }}
+{{#if endpoint.responses.length }}
+{{#each endpoint.responses }}
 > Example response ({{defaultValue this.description this.status}}):
 
 ```json
@@ -23,32 +23,32 @@
 {{/if}}
 
 ### Request
-{{#each route.methods }}
+{{#each endpoint.methods }}
 {{> components.badges.http-method method=this }} **`{{ ../this.uri }}`**
 
 {{/each}}
-{{#if route.urlParameters.length }}
+{{#if (isNonEmptyObject endpoint.urlParameters) }}
 <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
-{{#each route.urlParameters }}
+{{#each endpoint.urlParameters }}
 {{> components.field-details name=this.name type=null required=this.required description=this.description }}
 {{/each}}
 {{/if}}
-{{#if route.queryParameters.length }}
+{{#if (isNonEmptyObject endpoint.queryParameters) }}
 <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
-{{#each route.queryParameters }}
+{{#each endpoint.queryParameters }}
 {{> components.field-details name=this.name type=null required=this.required description=this.description }}
 {{/each}}
 {{/if}}
-{{#if route.bodyParameters.length }}
+{{#if (isNonEmptyObject endpoint.bodyParameters) }}
 <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
-{{#each route.bodyParameters }}
+{{#each endpoint.bodyParameters }}
 {{> components.field-details name=this.name type=this.type required=this.required description=this.description }}
 {{/each}}
 {{/if}}
 
-{{#if route.responseFields.length }}
+{{#if (isNonEmptyObject endpoint.responseFields) }}
 <h4 class="fancy-heading-panel"><b>Response Fields</b></h4>
-{{#each route.responseFields }}
+{{#each endpoint.responseFields }}
 {{> components.field-details name=this.name type=this.type required=true description=this.description }}
 {{/each}}
 {{/if}}
