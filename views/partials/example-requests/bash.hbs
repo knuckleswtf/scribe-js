@@ -13,8 +13,7 @@ curl -X {{endpoint.methods.[0] }} \
 {{#each endpoint.fileParameters}} \
     -F "{{@key}}=@{{this.path}}"
 {{/each}}
-{{else}}{{#if (isNonEmptyObject endpoint.cleanBodyParameters) }} \
+{{else if (isNonEmptyObject endpoint.cleanBodyParameters) }} \
     -d '{{{JSONstringify endpoint.cleanBodyParameters}}}'
-{{/if}}
 {{/if}}
 

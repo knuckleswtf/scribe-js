@@ -29,6 +29,7 @@ Handlebars.registerHelper('httpMethodToCssColour', function (method: string) {
 Handlebars.registerHelper('printQueryParamsAsString', printQueryParamsAsString);
 Handlebars.registerHelper('escapeString', escapeString);
 Handlebars.registerHelper('isNonEmptyObject', isNonEmptyObject);
+Handlebars.registerHelper('printQueryParamsAsKeyValue', printQueryParamsAsKeyValue);
 Handlebars.registerHelper('getParameterNamesAndValuesForFormData', getParameterNamesAndValuesForFormData);
 
 function writeIndexMarkdownFile(config) {
@@ -181,4 +182,51 @@ function getParameterNamesAndValuesForFormData(parameter: string, value: any) {
 
 function isNonEmptyObject(value) {
     return value != null && value.constructor === Object && Object.keys(value).length > 0;
+}
+
+function printQueryParamsAsKeyValue(cleanQueryParameters, opts = {}): string {
+    let defaults = {
+        quote: '"',
+        delimiter: ":",
+        spacesIndentation: 4,
+        braces: "{}",
+        closingBraceIndentation: 0,
+        startLinesWith: '',
+        endLinesWith: ','
+    };
+    let options = Object.assign(defaults, opts);
+
+    let output = options.braces[0] ? `{${options.braces[0]}\n` : '';
+    for (let [parameter, value] of Object.entries(cleanQueryParameters)) {
+            if (Array.isArray(value)) {
+                // List query param (eg filter[]=haha should become "filter[]": "haha")
+                output += " ".repeat(options.spacesIndentation);
+                output += options.startLinesWith
+                    + options.quote + `${parameter}[]` + options.quote
+                    + options.delimiter + " "
+                    + options.quote + value[0] + options.quote
+                    + options.endLinesWith + "\n";
+            } else if (typeof value === "object") {
+                // Hash query param (eg filter[name]=john should become "filter[name]": "john")
+                for (let [item, itemValue] of Object.entries(value)) {
+                    output += " ".repeat(options.spacesIndentation);
+                    output += options.startLinesWith
+                        + options.quote + `${parameter}[${item}]` + options.quote
+                        + options.delimiter + " "
+                        + options.quote + itemValue + options.quote
+                        + options.endLinesWith + "\n";
+                }
+            } else {
+                // Primitives
+                output += " ".repeat(options.spacesIndentation);
+                output += options.startLinesWith
+                    + options.quote + parameter + options.quote
+                    + options.delimiter + " "
+                    + options.quote + value + options.quote
+                    + options.endLinesWith + "\n";
+            }
+    }
+
+    let closing = options.braces[1] ? " ".repeat(options.closingBraceIndentation) + options.braces[1] : '';
+    return output + closing;
 }

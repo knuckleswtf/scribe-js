@@ -9,7 +9,9 @@
 {{#each exampleLanguages }}
 ```{{this}}
 {{> (append "partials.example-requests." this) endpoint=../endpoint baseUrl=../baseUrl}}
+
 ```
+
 {{/each}}
 
 {{#if endpoint.responses.length }}
