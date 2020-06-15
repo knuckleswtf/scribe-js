@@ -1,4 +1,4 @@
-<h1 align="center">Scribe for JavaScript</h1>
+<h1 align="center">Scribe for Node.js</h1>
 
 <p align="center">
   <img src="logo-scribe.png"><br>
@@ -14,3 +14,6 @@ Node.js 10 or higher is required. Supported frameworks:
 - Express
 
 More coming!
+
+## About Scribe for Node.js
+Scribe is a port of [Scribe for Laravel](https://github.com/knuckleswtf/scribe).
