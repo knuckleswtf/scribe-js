@@ -121,6 +121,7 @@ config.routes.forEach(async (routeGroup) => {
     html.writeAuthMarkdownFile(config);
     html.writeGroupMarkdownFiles(endpointsToDocument, config);
 
+    // For now, I'm using my local Pastel PHP binary, until I can get Pastel ported to JS.
     const pathToPastel = 'D:\\Projects\\pastel\\pastel';
     spawn.sync('php', [pathToPastel, 'generate', require('path').resolve(__dirname, '../docs/index.md')], {stdio: 'inherit'})
 });

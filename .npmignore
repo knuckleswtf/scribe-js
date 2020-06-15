@@ -1,0 +1,5 @@
+src/**
+docs/**
+*.png
+config.js
+tsconfig.json
