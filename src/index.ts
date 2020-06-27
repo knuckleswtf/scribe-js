@@ -1,7 +1,5 @@
 import {scribe} from "../typedefs/core";
 
-const VERSION = require('./package.json').version;
-
 const spawn = require('cross-spawn');
 const matcher = require('matcher');
 
