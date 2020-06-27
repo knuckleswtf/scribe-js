@@ -18,5 +18,9 @@ Node.js 10 or higher is required. Supported frameworks:
 
 More coming!
 
+```bash
+npm i @knuckleswtf/scribe --save-dev
+```
+
 ## About Scribe for Node.js
 Scribe is a port of [Scribe for Laravel](https://github.com/knuckleswtf/scribe).
