@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Generate API documentation for humans from your Node.js codebase.",
   "main": "dist/index.js",
+  "bin": "dist/cli.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -23,7 +24,9 @@
   },
   "homepage": "https://github.com/knuckleswtf/scribe-js#readme",
   "dependencies": {
+    "@knuckleswtf/pastel": "^0.2.0",
     "@types/node": "^14.0.5",
+    "commander": "^5.1.0",
     "cross-spawn": "^7.0.2",
     "faker": "^4.1.0",
     "handlebars": "^4.7.6",
