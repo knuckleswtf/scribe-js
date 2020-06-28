@@ -84,6 +84,9 @@ export declare namespace scribe {
 
     export interface Config {
         baseUrl: string,
+        static: {
+            outputPath: string,
+        },
         title: string,
         logo: false | string,
         router: SupportedRouters,

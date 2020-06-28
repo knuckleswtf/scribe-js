@@ -1,15 +1,15 @@
 import {scribe} from "../../typedefs/core";
 
-const fs = require('fs');
-const trim = require('lodash.trim');
-const {resolve, join} = require('path');
+import fs = require('fs');
+import trim = require('lodash.trim');
+import path = require('path');
 
-const Handlebars = require("handlebars");
+import Handlebars = require("handlebars");
 require('handlebars-helpers')(['string', 'comparison', 'object'], {handlebars: Handlebars});
-registerPartialsInDirectory(join(__dirname, '../../views/partials'));
-registerPartialsInDirectory(join(__dirname, '../../views/partials/example-requests'));
-registerPartialsInDirectory(join(__dirname, '../../views/components'));
-registerPartialsInDirectory(join(__dirname, '../../views/components/badges'));
+registerPartialsInDirectory(path.join(__dirname, '../../views/partials'));
+registerPartialsInDirectory(path.join(__dirname, '../../views/partials/example-requests'));
+registerPartialsInDirectory(path.join(__dirname, '../../views/components'));
+registerPartialsInDirectory(path.join(__dirname, '../../views/components/badges'));
 
 Handlebars.registerHelper('defaultValue', function (value, defaultValue) {
     const out = value || defaultValue;
@@ -32,20 +32,19 @@ Handlebars.registerHelper('isNonEmptyObject', isNonEmptyObject);
 Handlebars.registerHelper('printQueryParamsAsKeyValue', printQueryParamsAsKeyValue);
 Handlebars.registerHelper('getParameterNamesAndValuesForFormData', getParameterNamesAndValuesForFormData);
 
-function writeIndexMarkdownFile(config) {
-    fs.mkdirSync(join(__dirname, '../../docs/'), {recursive: true});
-    const template = Handlebars.compile(fs.readFileSync(resolve(__dirname, '../../views/index.hbs'), 'utf8'));
+function writeIndexMarkdownFile(config: scribe.Config, sourceOutputPath: string) {
+    const template = Handlebars.compile(fs.readFileSync(path.resolve(__dirname, '../../views/index.hbs'), 'utf8'));
     const markdown = template({
         settings: config,
         introText: config.introText
     });
-    fs.writeFileSync(join(__dirname, '../../docs/index.md'), markdown);
+    fs.writeFileSync(sourceOutputPath + '/index.md', markdown);
 }
 
-function writeAuthMarkdownFile(config) {
-    const template = Handlebars.compile(fs.readFileSync(resolve(__dirname, '../../views/authentication.hbs'), 'utf8'));
+function writeAuthMarkdownFile(config: scribe.Config, sourceOutputPath: string) {
+    const template = Handlebars.compile(fs.readFileSync(path.resolve(__dirname, '../../views/authentication.hbs'), 'utf8'));
     const isAuthed = config.auth.enabled || false;
-    let extraInfo = '', authDescription = '';
+    let extraAuthInfo = '', authDescription = '';
 
     if (isAuthed) {
         const strategy = config.auth.in;
@@ -64,9 +63,6 @@ function writeAuthMarkdownFile(config) {
             case 'body':
                 authDescription += `a parameter **\`${parameterName}\`** in the body of the request.`;
                 break;
-            case 'query_or_body':
-                authDescription += `a parameter **\`${parameterName}\`** either in the query string or in the request body.`;
-                break;
             case 'bearer':
                 authDescription += "an **`Authorization`** header with the value **`\"Bearer {your-token}\"`**.";
                 break;
@@ -77,25 +73,25 @@ function writeAuthMarkdownFile(config) {
                 authDescription += `a **\`${parameterName}\`** header with the value **\`"{your-token}"\`**.`;
                 break;
         }
-        extraInfo = config.auth.extraInfo || '';
+        extraAuthInfo = config.auth.extraInfo || '';
     }
 
     const markdown = template({
         isAuthed,
         authDescription,
-        extraAuthInfo: extraInfo,
+        extraAuthInfo,
     });
-    fs.writeFileSync(join(__dirname, '../../docs/authentication.md'), markdown);
+    fs.writeFileSync(sourceOutputPath + '/authentication.md', markdown);
 }
 
-function writeGroupMarkdownFiles(endpointsToDocument, config) {
-    fs.mkdirSync(join(__dirname, '../../docs/groups/'), {recursive: true});
+function writeGroupMarkdownFiles(endpointsToDocument: scribe.Endpoint[], config: scribe.Config, sourceOutputPath: string) {
+    !fs.existsSync(sourceOutputPath + '/groups') && fs.mkdirSync(sourceOutputPath + '/groups');
 
     const groupBy = require('lodash.groupby');
     const groupedEndpoints: { [groupName: string]: scribe.Endpoint[] } = groupBy(endpointsToDocument, 'metadata.groupName');
 
     for (let group of Object.values(groupedEndpoints)) {
-        const template = Handlebars.compile(fs.readFileSync(resolve(__dirname, '../../views/partials/group.hbs'), 'utf8'));
+        const template = Handlebars.compile(fs.readFileSync(path.resolve(__dirname, '../../views/partials/group.hbs'), 'utf8'));
         const groupName = group[0].metadata.groupName;
         const markdown = template({
             settings: config,
@@ -106,7 +102,7 @@ function writeGroupMarkdownFiles(endpointsToDocument, config) {
 
         const slugify = require('slugify');
         const fileName = slugify(groupName, {lower: true});
-        fs.writeFileSync(join(__dirname, `../../docs/groups/${fileName}.md`), markdown);
+        fs.writeFileSync(sourceOutputPath + `/groups/${fileName}.md`, markdown);
     }
 }
 

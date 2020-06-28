@@ -1,10 +1,13 @@
 module.exports = {
-    baseUrl: 'http://localhost:8800',
-    title: "Mykeels' API",
+    baseUrl: 'http://localhost:3000',
+    title: "API Documentation",
     logo: false,
     router: 'express',
+    static: {
+        outputPath: 'public/docs'
+    },
     auth: {
-        enabled: true,
+        enabled: false,
         in: 'bearer',
         name: 'token',
         useValue: process.env.SCRIBE_AUTH_KEY,
