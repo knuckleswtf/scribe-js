@@ -2,7 +2,7 @@
   "name": "@knuckleswtf/scribe",
   "version": "0.0.1",
   "description": "Generate API documentation for humans from your Node.js codebase.",
-  "main": "dist/index.js",
+  "main": "dist/decorator.js",
   "bin": "dist/cli.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -28,6 +28,7 @@
     "@types/node": "^14.0.5",
     "commander": "^5.1.0",
     "cross-spawn": "^7.0.2",
+    "docblock-parser": "^1.0.0",
     "faker": "^4.1.0",
     "handlebars": "^4.7.6",
     "handlebars-helpers": "^0.10.0",
@@ -37,7 +38,11 @@
     "lodash.trim": "^4.5.1",
     "matcher": "^3.0.0",
     "randexp": "^0.5.3",
+    "require-in-the-middle": "^5.0.3",
     "slugify": "^1.4.0",
     "typescript": "^3.9.3"
+  },
+  "devDependencies": {
+    "express": "^4.17.1"
   }
 }

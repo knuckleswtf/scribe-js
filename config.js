@@ -17,6 +17,11 @@ module.exports = {
         {
             include: ['*'],
             exclude: ['*.websocket'],
+            apply: {
+                headers: {
+
+                }
+            }
         }
     ],
     exampleLanguages: [
