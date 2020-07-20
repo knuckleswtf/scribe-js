@@ -40,11 +40,18 @@ async function parseDocBlocksFromFile(file) {
     }
     return docBlocks[file];
 }
-function parseParameterTag(tagContent) {
-    const parsed = /\s*\{(\w+?)\}\s+([^\s]+)\s+(required\s*)?(.+)\s*/.exec(tagContent);
-    const [_, type, name, required, description] = parsed;
-    return {name, type, required: Boolean(required), description};
-}
+
+const defaultTagValues = {
+    authenticated: false,
+    group: null,
+    groupDescription: null,
+    header: [],
+    urlParam: [],
+    queryParam: [],
+    bodyParam: [],
+    response: [],
+    responseField: [],
+};
 
 function parseDocBlockString(docBlock) {
     const parsed = docblockParser({
@@ -53,32 +60,30 @@ function parseDocBlockString(docBlock) {
             group: docblockParser.singleParameterTag,
             groupDescription: docblockParser.multilineTilEmptyLineOrTag,
             header: docblockParser.multiParameterTag(/\s+/),
+            urlParam: docblockParser.multilineTilEmptyLineOrTag,
+            queryParam: docblockParser.multilineTilEmptyLineOrTag,
+            bodyParam: docblockParser.multilineTilEmptyLineOrTag,
             response: docblockParser.multilineTilEmptyLineOrTag,
+            responseField: docblockParser.multilineTilEmptyLineOrTag,
         },
         // Title and description are separated by an empty line
         text: docblockParser.multilineTilEmptyLineOrTag
     }).parse(docBlock);
 
     const [title = null, description = null] = parsed.text ? parsed.text : [null, null];
-    const result = parsed.tags;
+    const result = Object.assign({}, defaultTagValues, parsed.tags);
+
     result.title = title ? title.replace(/^\/\*\*\s*/, '') : null;
     result.description = description || null;
 
-    result.bodyParam = result.bodyParam ? [].concat(result.bodyParam).reduce((all, paramTag) => {
-        const parsed = parseParameterTag(paramTag);
-        all[parsed.name] = parsed;
-        return all;
-    }, {}) : {};
-    result.queryParam = result.queryParam ? [].concat(result.queryParam).reduce((all, paramTag) => {
-        const parsed = parseParameterTag(paramTag);
-        all[parsed.name] = parsed;
-        return all;
-    }, {}) : {};
-    result.urlParam = result.urlParam ? [].concat(result.urlParam).reduce((all, paramTag) => {
-        const parsed = parseParameterTag(paramTag);
-        all[parsed.name] = parsed;
-        return all;
-    }, {}) : {};
+    result.urlParam = transformFieldListToObject(result.urlParam);
+    result.queryParam = transformFieldListToObject(result.queryParam);
+    result.bodyParam = transformFieldListToObject(result.bodyParam);
+    result.responseField = transformFieldListToObject(result.responseField);
+
+    result.response = [].concat(result.response).map(parseResponseTagContent);
+
+    result.header = transformHeaderListIntoKeyValue([].concat(result.header));
 
     return result;
 }
@@ -87,3 +92,33 @@ export = {
     parseDocBlocksFromFile,
     parseDocBlockString,
 };
+
+function parseParameterTagContent(tagContent) {
+    const [, type, name, required, description] = /\s*{(\w+?)}\s+([\S]+)\s+(required\s*)?(.+)\s*/.exec(tagContent);
+    return {name, type, required: Boolean(required), description};
+}
+
+function transformFieldListToObject(fields) {
+    return [].concat(fields).reduce((all, paramTag) => {
+        const parsed = parseParameterTagContent(paramTag);
+        all[parsed.name] = parsed;
+        return all;
+    }, {});
+}
+
+function parseResponseTagContent(tagContent) {
+    // Todo add support for scenarios
+    const [, status = 200, content = null] = /^(\d{3})?\s*(\S[\s\S]*)?$/.exec(tagContent);
+    return {
+        status,
+        content: content != null ? content.trim() : content
+    };
+}
+
+function transformHeaderListIntoKeyValue(tagContent) {
+    const headers = {};
+    while (tagContent.length) {
+        headers[tagContent.shift()] = tagContent.shift();
+    }
+    return headers;
+}
