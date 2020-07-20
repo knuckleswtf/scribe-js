@@ -5,7 +5,7 @@
   "main": "dist/decorator.js",
   "bin": "dist/cli.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -43,6 +43,7 @@
     "typescript": "^3.9.3"
   },
   "devDependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "jest": "^26.1.0"
   }
 }
