@@ -1,6 +1,9 @@
 import docblockParser = require('docblock-parser');
 import fs = require('fs');
 import readline = require('readline');
+import {scribe} from "../../typedefs/core";
+import BodyParameter = scribe.BodyParameter;
+import DocBlock = scribe.DocBlock;
 
 const docBlocks = {};
 
@@ -53,7 +56,7 @@ const defaultTagValues = {
     responseField: [],
 };
 
-function parseDocBlockString(docBlock) {
+function parseDocBlockString(docBlock: string): DocBlock {
     const parsed = docblockParser({
         tags: {
             authenticated: docblockParser.booleanTag,
@@ -74,7 +77,7 @@ function parseDocBlockString(docBlock) {
     const result = Object.assign({}, defaultTagValues, parsed.tags);
 
     result.title = title ? title.replace(/^\/\*\*\s*/, '') : null;
-    result.description = description || null;
+    result.description = description;
 
     result.urlParam = transformFieldListToObject(result.urlParam);
     result.queryParam = transformFieldListToObject(result.queryParam);
@@ -93,9 +96,27 @@ export = {
     parseDocBlockString,
 };
 
-function parseParameterTagContent(tagContent) {
-    const [, type, name, required, description] = /\s*{(\w+?)}\s+([\S]+)\s+(required\s*)?(.+)\s*/.exec(tagContent);
-    return {name, type, required: Boolean(required), description};
+function parseParameterTagContent(tagContent: string): BodyParameter {
+    let [, type, name, required, description] = /\s*{(\w+?)}\s+([\S]+)(\s+required\s*)?(.*)/.exec(tagContent);
+    let value;
+
+    if (description) {
+        const parsedDescription = /(.*)\s*Example:\s+(.+)?/.exec(description);
+        if (parsedDescription) {
+            description = parsedDescription[1];
+            value = parsedDescription[2];
+        }
+    }
+
+    description  = description.trim();
+    return {
+        name,
+        // @ts-ignore
+        type,
+        required: required ? required.includes('required') : false,
+        description: description || null,
+        value: value ? value.trim() : null,
+    };
 }
 
 function transformFieldListToObject(fields) {
@@ -118,6 +139,7 @@ function parseResponseTagContent(tagContent) {
 function transformHeaderListIntoKeyValue(tagContent) {
     const headers = {};
     while (tagContent.length) {
+        // odd keys are the header names, even keys are the values
         headers[tagContent.shift()] = tagContent.shift();
     }
     return headers;

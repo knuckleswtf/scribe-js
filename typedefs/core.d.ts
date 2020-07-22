@@ -10,13 +10,13 @@ export declare namespace scribe {
 
     interface Parameter {
         name: string,
-        description: string,
-        required: boolean
-        value: any
+        description?: string|null,
+        required?: boolean,
+        value?: any,
     }
 
     export interface BodyParameter extends Parameter {
-        type: 'string'|'integer'|'number',
+        type: Body,
     }
 
     export type QueryParameter = Parameter
@@ -58,6 +58,7 @@ export declare namespace scribe {
         uri: string,
         boundUri?: string,
         methods: string[],
+        docblock: {},
         metadata?: Metadata
         headers?: Headers
         urlParameters?: UrlParameters
@@ -142,5 +143,18 @@ export declare namespace scribe {
 
     export interface ResponseFieldsStrategy extends Strategy {
         run: (endpoint: Endpoint, config: Config) => ResponseField[]
+    }
+
+    export interface DocBlock {
+        title?: string|null,
+        authenticated?: boolean,
+        group?: string|null,
+        groupDescription?: string|null,
+        header: Record<string, string>,
+        urlParam: ParameterBag<BodyParameter>,
+        queryParam: ParameterBag<BodyParameter>,
+        bodyParam: ParameterBag<BodyParameter>,
+        response: Record<number, Response>,
+        responseField: ParameterBag<BodyParameter>,
     }
 }
