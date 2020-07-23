@@ -147,6 +147,7 @@ export declare namespace scribe {
 
     export interface DocBlock {
         title?: string|null,
+        description?: string|null,
         authenticated?: boolean,
         group?: string|null,
         groupDescription?: string|null,

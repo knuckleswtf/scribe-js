@@ -1,12 +1,15 @@
 import {scribe} from "../../../typedefs/core";
+import d = require("../../utils/docblocks");
 
-function run(endpoint: scribe.Endpoint, config) {
+async function run(endpoint: scribe.Endpoint, config) {
+    const docblock = await d.getDocBlockForEndpoint(endpoint);
+
     return {
-        groupName: config.defaultGroup,
-        groupDescription: '',
-        title: null,
-        description: '',
-        authenticated: false,
+        groupName: docblock.group || config.defaultGroup,
+        groupDescription: docblock.groupDescription,
+        title: docblock.title,
+        description: docblock.description,
+        authenticated: docblock.authenticated,
     };
 }
 
