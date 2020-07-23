@@ -3,12 +3,13 @@ import {ListenOptions} from "net";
 import events from "events";
 
 export declare namespace express {
-    interface Router extends Function {
-        stack?: Layer[]
+    interface AugmentedRouter extends Function {
+        stack?: Layer[],
+        _scribe: {handlers: {}},
     }
 
     interface Layer {
-        handle: Router
+        handle: AugmentedRouter
         name: 'router' | 'bound dispatch' | '<anonymous>' | string // Name of the middleware function
         params?: any;
         path?: string;

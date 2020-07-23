@@ -1,4 +1,4 @@
-const { parseDocBlocksFromFile, parseDocBlockString } = require('../../dist/utils/docblocks');
+const {parseDocBlocksFromFile, parseDocBlockString, getDocBlockForEndpoint} = require('../../dist/utils/docblocks');
 const path = require('path');
 
 test('can retrieve all docblocks from a file', async () => {
@@ -8,14 +8,14 @@ test('can retrieve all docblocks from a file', async () => {
     expect(docBlocks[0].startsAt).toEqual(1);
     expect(docBlocks[0].endsAt).toEqual(6);
 
-    expect(docBlocks[1].startsAt).toEqual(11);
-    expect(docBlocks[1].endsAt).toEqual(16);
+    expect(docBlocks[1].startsAt).toEqual(12);
+    expect(docBlocks[1].endsAt).toEqual(17);
 
-    expect(docBlocks[2].startsAt).toEqual(18);
-    expect(docBlocks[2].endsAt).toEqual(21);
+    expect(docBlocks[2].startsAt).toEqual(19);
+    expect(docBlocks[2].endsAt).toEqual(22);
 
-    expect(docBlocks[3].startsAt).toEqual(26);
-    expect(docBlocks[3].endsAt).toEqual(40);
+    expect(docBlocks[3].startsAt).toEqual(27);
+    expect(docBlocks[3].endsAt).toEqual(41);
 });
 
 test('parses docblock tags as expected', async () => {
@@ -48,7 +48,7 @@ test('parses docblock tags as expected', async () => {
     expect(parsedDocBlock.header).toEqual({'X-Hello': 'World'});
     expect(parsedDocBlock.urlParam).toEqual({
         id: {
-        name: 'id',
+            name: 'id',
             type: 'number',
             required: false,
             description: "The id.",
@@ -123,4 +123,61 @@ test('parses docblock tags as expected', async () => {
         },
     });
 
+});
+
+test('can retrieve the docblock for an endpoint based on its declaration file and line', async () => {
+    const file1 = path.resolve(__dirname + '/../fixtures/file_with_docblocks.js');
+
+    let docBlock = await getDocBlockForEndpoint({declaredAt: [file1, 11]});
+    expect(docBlock).toEqual(null);
+
+    docBlock = await getDocBlockForEndpoint({declaredAt: [file1, 42]});
+    expect(docBlock).toEqual({
+            title: 'Title',
+            description: "Description. Still part\nof the description.",
+            authenticated: true,
+            group: 'The group',
+            groupDescription: null,
+            header: {'X-Hello': 'World'},
+            urlParam: {
+                ID: {
+                    name: 'ID',
+                    type: 'string',
+                    required: false,
+                    description: "The id. This description\n spans multiple lines.",
+                    value: null
+                }
+            },
+            queryParam: {
+                page: {
+                    name: 'page',
+                    type: 'string',
+                    required: false,
+                    description: 'The page',
+                    value: null
+                }
+            },
+            bodyParam: {
+                type: {
+                    name: 'type',
+                    type: 'string',
+                    required: false,
+                    description: 'The type',
+                    value: null
+                },
+                otherType: {
+                    name: 'otherType',
+                    type: 'string',
+                    required: false,
+                    description: 'The other type',
+                    value: null
+                }
+            },
+            response: [],
+            responseField: {},
+        }
+    );
+
+    docBlock = await getDocBlockForEndpoint({declaredAt: [file1, 45]});
+    expect(docBlock).toEqual(null);
 });

@@ -1,10 +1,10 @@
 import { scribe } from "../../../typedefs/core";
 declare function run(endpoint: scribe.Endpoint, config: any): {
     groupName: any;
-    groupDescription: string;
+    groupDescription: any;
     title: any;
-    description: string;
-    authenticated: boolean;
+    description: any;
+    authenticated: any;
 };
 declare const _default: {
     routers: any[];

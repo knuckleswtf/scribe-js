@@ -58,7 +58,7 @@ export declare namespace scribe {
         uri: string,
         boundUri?: string,
         methods: string[],
-        docblock: {},
+        declaredAt: [string, number],
         metadata?: Metadata
         headers?: Headers
         urlParameters?: UrlParameters
