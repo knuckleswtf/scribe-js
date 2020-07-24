@@ -1,11 +1,11 @@
 import { scribe } from "../../../typedefs/core";
-declare function run(endpoint: scribe.Endpoint, config: any): Promise<{
+declare function run(endpoint: scribe.Endpoint, config: any): {
     groupName: any;
-    groupDescription: any;
+    groupDescription: string;
     title: any;
-    description: any;
-    authenticated: any;
-}>;
+    description: string;
+    authenticated: boolean;
+};
 declare const _default: {
     routers: any[];
     run: typeof run;
