@@ -29,44 +29,47 @@ function generate(configFile: string, mainFile: string, serverFile: string) {
 
         const strategies = config.strategies || {
             metadata: [
-                require('./2_extract_info/1_metadata/docblocks'),
+                require('./2_extract_info/1_metadata/docblocks') as scribe.MetadataStrategy,
             ],
             headers: [
-//            require('./2_extract_info/2_headers/'),
+                require('./2_extract_info/2_headers/docblocks') as scribe.HeadersStrategy,
             ],
             urlParameters: [
-                require('./2_extract_info/3_url_parameters/express_route_api'),
+                require('./2_extract_info/3_url_parameters/express_route_api') as scribe.UrlParametersStrategy,
+                require('./2_extract_info/3_url_parameters/docblocks') as scribe.UrlParametersStrategy,
             ],
             queryParameters: [
-//            require('./2_extract_info/4_query_parameters/'),
+                require('./2_extract_info/4_query_parameters/docblocks') as scribe.QueryParametersStrategy,
             ],
             bodyParameters: [
-                require('./2_extract_info/5_body_parameters/read_source_code'),
+                require('./2_extract_info/5_body_parameters/read_source_code') as scribe.BodyParametersStrategy,
+                require('./2_extract_info/5_body_parameters/docblocks') as scribe.BodyParametersStrategy,
             ],
             responses: [
-                require('./2_extract_info/6_responses/response_call'),
+                require('./2_extract_info/6_responses/response_call') as scribe.ResponsesStrategy,
+                require('./2_extract_info/6_responses/docblocks') as scribe.ResponsesStrategy,
             ],
             responseFields: [
-                // require('./2_extract_info/7_response_fields/'),
+                require('./2_extract_info/7_response_fields/docblocks') as scribe.ResponseFieldsStrategy,
             ],
         };
 
         for (let endpoint of endpointsToDocument) {
             for (let metadataStrategy of strategies.metadata) {
                 if (shouldUseWithRouter(metadataStrategy, config.router)) {
-                    endpoint.metadata = Object.assign({}, endpoint.metadata, metadataStrategy.run(endpoint, config));
+                    endpoint.metadata = Object.assign({}, endpoint.metadata, await metadataStrategy.run(endpoint, config));
                 }
             }
 
             for (let headersStrategy of strategies.headers) {
                 if (shouldUseWithRouter(headersStrategy, config.router)) {
-                    endpoint.headers = Object.assign({}, endpoint.headers, headersStrategy.run(endpoint, config));
+                    endpoint.headers = Object.assign({}, endpoint.headers, await headersStrategy.run(endpoint, config));
                 }
             }
 
             for (let urlParametersStrategy of strategies.urlParameters) {
                 if (shouldUseWithRouter(urlParametersStrategy, config.router)) {
-                    endpoint.urlParameters = Object.assign({}, endpoint.urlParameters, urlParametersStrategy.run(endpoint, config));
+                    endpoint.urlParameters = Object.assign({}, endpoint.urlParameters, await urlParametersStrategy.run(endpoint, config));
                 }
 
                 // Replace parameters in URL
@@ -85,14 +88,14 @@ function generate(configFile: string, mainFile: string, serverFile: string) {
 
             for (let queryParametersStrategy of strategies.queryParameters) {
                 if (shouldUseWithRouter(queryParametersStrategy, config.router)) {
-                    endpoint.queryParameters = Object.assign({}, endpoint.queryParameters, queryParametersStrategy.run(endpoint, config));
+                    endpoint.queryParameters = Object.assign({}, endpoint.queryParameters, await queryParametersStrategy.run(endpoint, config));
                 }
             }
             endpoint.cleanQueryParameters = utils.removeEmptyOptionalParametersAndTransformToKeyValue(endpoint.queryParameters);
 
             for (let bodyParametersStrategy of strategies.bodyParameters) {
                 if (shouldUseWithRouter(bodyParametersStrategy, config.router)) {
-                    endpoint.bodyParameters = Object.assign({}, endpoint.bodyParameters, bodyParametersStrategy.run(endpoint, config));
+                    endpoint.bodyParameters = Object.assign({}, endpoint.bodyParameters, await bodyParametersStrategy.run(endpoint, config));
                 }
             }
             endpoint.cleanBodyParameters = utils.removeEmptyOptionalParametersAndTransformToKeyValue(endpoint.bodyParameters);
@@ -115,7 +118,7 @@ function generate(configFile: string, mainFile: string, serverFile: string) {
 
             for (let responseFieldsStrategy of strategies.responseFields) {
                 if (shouldUseWithRouter(responseFieldsStrategy, config.router)) {
-                    endpoint.responseFields = Object.assign({}, endpoint.responseFields, responseFieldsStrategy.run(endpoint, config));
+                    endpoint.responseFields = Object.assign({}, endpoint.responseFields, await responseFieldsStrategy.run(endpoint, config));
                 }
             }
         }

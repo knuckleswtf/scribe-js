@@ -4,6 +4,7 @@ import exp from "constants";
 export declare namespace scribe {
 
     export interface ResponseField {
+        name: string,
         description: string,
         type: 'string',
     }
@@ -46,7 +47,7 @@ export declare namespace scribe {
 
     export type BodyParameters = ParameterBag<BodyParameter>
 
-    export type ResponseFields = Record<string, ResponseField>
+    export type ResponseFields = ParameterBag<ResponseField>
 
     export interface Response {
         status: number,
@@ -126,15 +127,15 @@ export declare namespace scribe {
     }
 
     export interface UrlParametersStrategy extends Strategy {
-        run: (endpoint: Endpoint, config: Config) => UrlParameter[]
+        run: (endpoint: Endpoint, config: Config) => UrlParameters
     }
 
     export interface QueryParametersStrategy extends Strategy {
-        run: (endpoint: Endpoint, config: Config) => QueryParameter[]
+        run: (endpoint: Endpoint, config: Config) => QueryParameters
     }
 
     export interface BodyParametersStrategy extends Strategy {
-        run: (endpoint: Endpoint, config: Config) => BodyParameter[]
+        run: (endpoint: Endpoint, config: Config) => BodyParameters
     }
 
     export interface ResponsesStrategy extends Strategy {
@@ -142,7 +143,7 @@ export declare namespace scribe {
     }
 
     export interface ResponseFieldsStrategy extends Strategy {
-        run: (endpoint: Endpoint, config: Config) => ResponseField[]
+        run: (endpoint: Endpoint, config: Config) => ResponseFields
     }
 
     export interface DocBlock {

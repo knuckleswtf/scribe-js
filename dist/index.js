@@ -25,22 +25,25 @@ function generate(configFile, mainFile, serverFile) {
                 require('./2_extract_info/1_metadata/docblocks'),
             ],
             headers: [
-            //            require('./2_extract_info/2_headers/') as scribe.MetadataStrategy,
+                require('./2_extract_info/2_headers/docblocks'),
             ],
             urlParameters: [
                 require('./2_extract_info/3_url_parameters/express_route_api'),
+                require('./2_extract_info/3_url_parameters/docblocks'),
             ],
             queryParameters: [
-            //            require('./2_extract_info/4_query_parameters/') as scribe.MetadataStrategy,
+                require('./2_extract_info/4_query_parameters/docblocks'),
             ],
             bodyParameters: [
                 require('./2_extract_info/5_body_parameters/read_source_code'),
+                require('./2_extract_info/5_body_parameters/docblocks'),
             ],
             responses: [
                 require('./2_extract_info/6_responses/response_call'),
+                require('./2_extract_info/6_responses/docblocks'),
             ],
             responseFields: [
-            // require('./2_extract_info/7_response_fields/') as scribe.MetadataStrategy,
+                require('./2_extract_info/7_response_fields/docblocks'),
             ],
         };
         for (let endpoint of endpointsToDocument) {
