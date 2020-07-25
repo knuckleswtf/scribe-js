@@ -15,7 +15,8 @@ module.exports = function (app) {
             }
 
             frameAtCallSite = frames[1].replace(/.+\(|\)/g, '');
-            const [filePath, lineNumber, characterNumber] = frameAtCallSite.split(/:(?=\d)/);
+            const [filePath, lineNumber, characterNumber]
+                = frameAtCallSite.split(/:(?=\d)/);  // any colon followed by a number. This is important bc file paths may have colons
 
             const returned = original(...args);
 

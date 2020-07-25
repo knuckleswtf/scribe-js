@@ -3,14 +3,15 @@ import {scribe} from "../../typedefs/core";
 
 const findLastIndex = require('lodash.findlastindex');
 
-function getRoutesFromRouter(router: express.Router, basePath = ''): scribe.Endpoint[] {
+function getRoutesFromRouter(router: express.DecoratedRouter, basePath = ''): scribe.Endpoint[] {
     const endpoints = router.stack.map(function mapRouteToEndpointObject(layer): scribe.Endpoint|scribe.Endpoint[] {
         if (layer.route && typeof layer.route.path === 'string') {
             return {
                 uri: basePath + layer.route.path,
                 handler: layer.route.stack[0].handle,
                 route: layer.route,
-                methods: Object.keys(layer.route.methods).map(method => method.toUpperCase())
+                methods: Object.keys(layer.route.methods).map(method => method.toUpperCase()),
+                declaredAt: router._scribe.handlers[layer.route.path] ?? [],
             };
         }
 
