@@ -13,6 +13,16 @@ function generate(configFile: string, mainFile: string, serverFile: string) {
     const config: scribe.Config = require(configFile);
     const app = require(mainFile);
 
+    if (!app._router) {
+        console.error("Something's not right. Did you remember to export your `app` object from your main file?");
+        process.exit(1);
+    }
+
+    if (!app._decoratedByScribe) {
+        console.error("Something's not right. Did you remember to add `require('@knuckleswtf/scribe')(app)` before registering your Express routes?");
+        process.exit(1);
+    }
+
     config.routes.forEach(async (routeGroup) => {
         const getEndpoints = require(`./1_get_routes/${config.router}`);
 

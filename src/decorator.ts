@@ -1,6 +1,7 @@
 const methods = ['get', 'post', 'put', 'patch', 'head', 'delete', 'all'];
 
 module.exports = function (app) {
+    app._decoratedByScribe = true;
     methods.forEach(function decorateRouterMethodWithStackTraceCapturer (method) {
         const original = app[method].bind(app);
         app[method] = function (...args) {
