@@ -55,25 +55,25 @@ function generate(configFile: string, mainFile: string, serverFile: string) {
                 require('./2_extract_info/1_metadata/docblocks') as scribe.MetadataStrategy,
             ],
             headers: [
-                require('./2_extract_info/2_headers/docblocks') as scribe.HeadersStrategy,
+                require('./2_extract_info/2_headers/header_tag') as scribe.HeadersStrategy,
             ],
             urlParameters: [
                 require('./2_extract_info/3_url_parameters/express_route_api') as scribe.UrlParametersStrategy,
-                require('./2_extract_info/3_url_parameters/docblocks') as scribe.UrlParametersStrategy,
+                require('./2_extract_info/3_url_parameters/url_param_tag') as scribe.UrlParametersStrategy,
             ],
             queryParameters: [
-                require('./2_extract_info/4_query_parameters/docblocks') as scribe.QueryParametersStrategy,
+                require('./2_extract_info/4_query_parameters/query_param_tag') as scribe.QueryParametersStrategy,
             ],
             bodyParameters: [
                 require('./2_extract_info/5_body_parameters/read_source_code') as scribe.BodyParametersStrategy,
-                require('./2_extract_info/5_body_parameters/docblocks') as scribe.BodyParametersStrategy,
+                require('./2_extract_info/5_body_parameters/body_param_tag') as scribe.BodyParametersStrategy,
             ],
             responses: [
+                require('./2_extract_info/6_responses/response_tag') as scribe.ResponsesStrategy,
                 require('./2_extract_info/6_responses/response_call') as scribe.ResponsesStrategy,
-                require('./2_extract_info/6_responses/docblocks') as scribe.ResponsesStrategy,
             ],
             responseFields: [
-                require('./2_extract_info/7_response_fields/docblocks') as scribe.ResponseFieldsStrategy,
+                require('./2_extract_info/7_response_fields/response_field_tag') as scribe.ResponseFieldsStrategy,
             ],
         };
 
