@@ -80,19 +80,20 @@ function generate(configFile: string, mainFile: string, serverFile: string) {
         for (let endpoint of endpointsToDocument) {
             for (let metadataStrategy of strategies.metadata) {
                 if (shouldUseWithRouter(metadataStrategy, config.router)) {
-                    endpoint.metadata = Object.assign({}, endpoint.metadata, await metadataStrategy.run(endpoint, config));
+                    endpoint.metadata = Object.assign({}, endpoint.metadata, await metadataStrategy.run(endpoint, config, routeGroup));
                 }
             }
 
             for (let headersStrategy of strategies.headers) {
                 if (shouldUseWithRouter(headersStrategy, config.router)) {
-                    endpoint.headers = Object.assign({}, endpoint.headers, await headersStrategy.run(endpoint, config));
+                    endpoint.headers = Object.assign({}, endpoint.headers, await headersStrategy.run(endpoint, config, routeGroup));
                 }
             }
 
             for (let urlParametersStrategy of strategies.urlParameters) {
                 if (shouldUseWithRouter(urlParametersStrategy, config.router)) {
-                    endpoint.urlParameters = Object.assign({}, endpoint.urlParameters, await urlParametersStrategy.run(endpoint, config));
+                    endpoint.urlParameters
+                        = Object.assign({}, endpoint.urlParameters, await urlParametersStrategy.run(endpoint, config, routeGroup));
                 }
 
                 // Replace parameters in URL
@@ -111,14 +112,16 @@ function generate(configFile: string, mainFile: string, serverFile: string) {
 
             for (let queryParametersStrategy of strategies.queryParameters) {
                 if (shouldUseWithRouter(queryParametersStrategy, config.router)) {
-                    endpoint.queryParameters = Object.assign({}, endpoint.queryParameters, await queryParametersStrategy.run(endpoint, config));
+                    endpoint.queryParameters
+                        = Object.assign({}, endpoint.queryParameters, await queryParametersStrategy.run(endpoint, config, routeGroup));
                 }
             }
             endpoint.cleanQueryParameters = utils.removeEmptyOptionalParametersAndTransformToKeyValue(endpoint.queryParameters);
 
             for (let bodyParametersStrategy of strategies.bodyParameters) {
                 if (shouldUseWithRouter(bodyParametersStrategy, config.router)) {
-                    endpoint.bodyParameters = Object.assign({}, endpoint.bodyParameters, await bodyParametersStrategy.run(endpoint, config));
+                    endpoint.bodyParameters
+                        = Object.assign({}, endpoint.bodyParameters, await bodyParametersStrategy.run(endpoint, config, routeGroup));
                 }
             }
             endpoint.cleanBodyParameters = utils.removeEmptyOptionalParametersAndTransformToKeyValue(endpoint.bodyParameters);
@@ -137,7 +140,7 @@ function generate(configFile: string, mainFile: string, serverFile: string) {
             for (let responsesStrategy of strategies.responses) {
                 if (shouldUseWithRouter(responsesStrategy, config.router)) {
 
-                    const responses = await responsesStrategy.run(endpoint, config)
+                    const responses = await responsesStrategy.run(endpoint, config, routeGroup)
                     endpoint.responses = endpoint.responses.concat(responses)
                 }
             }
@@ -145,7 +148,8 @@ function generate(configFile: string, mainFile: string, serverFile: string) {
 
             for (let responseFieldsStrategy of strategies.responseFields) {
                 if (shouldUseWithRouter(responseFieldsStrategy, config.router)) {
-                    endpoint.responseFields = Object.assign({}, endpoint.responseFields, await responseFieldsStrategy.run(endpoint, config));
+                    endpoint.responseFields
+                        = Object.assign({}, endpoint.responseFields, await responseFieldsStrategy.run(endpoint, config, routeGroup));
                 }
             }
         }

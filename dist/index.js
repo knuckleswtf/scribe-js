@@ -43,41 +43,42 @@ function generate(configFile, mainFile, serverFile) {
                 require('./2_extract_info/1_metadata/docblocks'),
             ],
             headers: [
-                require('./2_extract_info/2_headers/docblocks'),
+                require('./2_extract_info/2_headers/header_tag'),
             ],
             urlParameters: [
                 require('./2_extract_info/3_url_parameters/express_route_api'),
-                require('./2_extract_info/3_url_parameters/docblocks'),
+                require('./2_extract_info/3_url_parameters/url_param_tag'),
             ],
             queryParameters: [
-                require('./2_extract_info/4_query_parameters/docblocks'),
+                require('./2_extract_info/4_query_parameters/query_param_tag'),
             ],
             bodyParameters: [
                 require('./2_extract_info/5_body_parameters/read_source_code'),
-                require('./2_extract_info/5_body_parameters/docblocks'),
+                require('./2_extract_info/5_body_parameters/body_param_tag'),
             ],
             responses: [
+                require('./2_extract_info/6_responses/response_tag'),
                 require('./2_extract_info/6_responses/response_call'),
-                require('./2_extract_info/6_responses/docblocks'),
             ],
             responseFields: [
-                require('./2_extract_info/7_response_fields/docblocks'),
+                require('./2_extract_info/7_response_fields/response_field_tag'),
             ],
         };
         for (let endpoint of endpointsToDocument) {
             for (let metadataStrategy of strategies.metadata) {
                 if (shouldUseWithRouter(metadataStrategy, config.router)) {
-                    endpoint.metadata = Object.assign({}, endpoint.metadata, await metadataStrategy.run(endpoint, config));
+                    endpoint.metadata = Object.assign({}, endpoint.metadata, await metadataStrategy.run(endpoint, config, routeGroup));
                 }
             }
             for (let headersStrategy of strategies.headers) {
                 if (shouldUseWithRouter(headersStrategy, config.router)) {
-                    endpoint.headers = Object.assign({}, endpoint.headers, await headersStrategy.run(endpoint, config));
+                    endpoint.headers = Object.assign({}, endpoint.headers, await headersStrategy.run(endpoint, config, routeGroup));
                 }
             }
             for (let urlParametersStrategy of strategies.urlParameters) {
                 if (shouldUseWithRouter(urlParametersStrategy, config.router)) {
-                    endpoint.urlParameters = Object.assign({}, endpoint.urlParameters, await urlParametersStrategy.run(endpoint, config));
+                    endpoint.urlParameters
+                        = Object.assign({}, endpoint.urlParameters, await urlParametersStrategy.run(endpoint, config, routeGroup));
                 }
                 // Replace parameters in URL
                 endpoint.boundUri = Object.values(endpoint.urlParameters)
@@ -93,13 +94,15 @@ function generate(configFile, mainFile, serverFile) {
             }
             for (let queryParametersStrategy of strategies.queryParameters) {
                 if (shouldUseWithRouter(queryParametersStrategy, config.router)) {
-                    endpoint.queryParameters = Object.assign({}, endpoint.queryParameters, await queryParametersStrategy.run(endpoint, config));
+                    endpoint.queryParameters
+                        = Object.assign({}, endpoint.queryParameters, await queryParametersStrategy.run(endpoint, config, routeGroup));
                 }
             }
             endpoint.cleanQueryParameters = utils.removeEmptyOptionalParametersAndTransformToKeyValue(endpoint.queryParameters);
             for (let bodyParametersStrategy of strategies.bodyParameters) {
                 if (shouldUseWithRouter(bodyParametersStrategy, config.router)) {
-                    endpoint.bodyParameters = Object.assign({}, endpoint.bodyParameters, await bodyParametersStrategy.run(endpoint, config));
+                    endpoint.bodyParameters
+                        = Object.assign({}, endpoint.bodyParameters, await bodyParametersStrategy.run(endpoint, config, routeGroup));
                 }
             }
             endpoint.cleanBodyParameters = utils.removeEmptyOptionalParametersAndTransformToKeyValue(endpoint.bodyParameters);
@@ -115,14 +118,15 @@ function generate(configFile, mainFile, serverFile) {
             endpoint.responses = [];
             for (let responsesStrategy of strategies.responses) {
                 if (shouldUseWithRouter(responsesStrategy, config.router)) {
-                    const responses = await responsesStrategy.run(endpoint, config);
+                    const responses = await responsesStrategy.run(endpoint, config, routeGroup);
                     endpoint.responses = endpoint.responses.concat(responses);
                 }
             }
             appProcess && appProcess.kill();
             for (let responseFieldsStrategy of strategies.responseFields) {
                 if (shouldUseWithRouter(responseFieldsStrategy, config.router)) {
-                    endpoint.responseFields = Object.assign({}, endpoint.responseFields, await responseFieldsStrategy.run(endpoint, config));
+                    endpoint.responseFields
+                        = Object.assign({}, endpoint.responseFields, await responseFieldsStrategy.run(endpoint, config, routeGroup));
                 }
             }
         }

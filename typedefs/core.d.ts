@@ -103,6 +103,11 @@ export declare namespace scribe {
             {
                 include: string[],
                 exclude: string[],
+                apply: {
+                    responseCalls: {
+                        methods: Array<'GET'|'POST'|'PUT'|'PATCH'|'DELETE'|'*'>
+                    }
+                }
             }
         ],
         exampleLanguages: string[],
@@ -113,38 +118,24 @@ export declare namespace scribe {
         }
     }
 
-    export interface Strategy {
+    export interface Strategy<T = any> {
         routers: SupportedRouters[] | null,
-        run: (endpoint: Endpoint, config: Config) => any
+        run: (endpoint: Endpoint, config: Config, routeGroup: typeof config.routes[0]) => T
     }
 
-    export interface MetadataStrategy extends Strategy {
-        run: (endpoint: Endpoint, config: Config) => Metadata
-    }
+    export interface MetadataStrategy extends Strategy<Metadata> {}
 
-    export interface HeadersStrategy extends Strategy {
-        run: (endpoint: Endpoint, config: Config) => Headers
-    }
+    export interface HeadersStrategy extends Strategy<Headers> {}
 
-    export interface UrlParametersStrategy extends Strategy {
-        run: (endpoint: Endpoint, config: Config) => UrlParameters
-    }
+    export interface UrlParametersStrategy extends Strategy<UrlParameters> {}
 
-    export interface QueryParametersStrategy extends Strategy {
-        run: (endpoint: Endpoint, config: Config) => QueryParameters
-    }
+    export interface QueryParametersStrategy extends Strategy<QueryParameters> {}
 
-    export interface BodyParametersStrategy extends Strategy {
-        run: (endpoint: Endpoint, config: Config) => BodyParameters
-    }
+    export interface BodyParametersStrategy extends Strategy<BodyParameters> {}
 
-    export interface ResponsesStrategy extends Strategy {
-        run: (endpoint: Endpoint, config: Config) => Response[]
-    }
+    export interface ResponsesStrategy extends Strategy<Response[]> {}
 
-    export interface ResponseFieldsStrategy extends Strategy {
-        run: (endpoint: Endpoint, config: Config) => ResponseFields
-    }
+    export interface ResponseFieldsStrategy extends Strategy<ResponseFields> {}
 
     export interface DocBlock {
         title?: string|null,

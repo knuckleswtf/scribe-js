@@ -1,7 +1,26 @@
 import {scribe} from "../../../typedefs/core";
 
 
-async function run(endpoint: scribe.Endpoint, config): Promise<scribe.Response[]> {
+function shouldMakeResponseCall(config: scribe.Config, endpoint: scribe.Endpoint, routeGroup: typeof config.routes[0]) {
+    // If there's already a success response, don't make a response call
+    if (endpoint.responses.find(r => r.status >= 200 && r.status <= 300)) {
+        return false;
+    }
+
+    const allowedMethods = routeGroup.apply.responseCalls.methods;
+    // @ts-ignore
+    if (allowedMethods.includes('*') || allowedMethods.includes(Object.keys(endpoint.route.methods)[0].toUpperCase())) {
+        return true;
+    }
+
+    return false;
+}
+
+async function run(endpoint: scribe.Endpoint, config: scribe.Config, routeGroup: typeof config.routes[0]): Promise<scribe.Response[]> {
+    if (!shouldMakeResponseCall(config, endpoint, routeGroup)) {
+        return [];
+    }
+
     console.log("Hitting " + endpoint.uri);
 
     const http = require('http');
