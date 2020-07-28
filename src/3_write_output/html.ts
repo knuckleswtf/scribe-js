@@ -3,8 +3,10 @@ import {scribe} from "../../typedefs/core";
 import fs = require('fs');
 import trim = require('lodash.trim');
 import path = require('path');
-
+import slugify = require('slugify');
+import matcher = require('matcher');
 import Handlebars = require("handlebars");
+
 require('handlebars-helpers')(['string', 'comparison', 'object'], {handlebars: Handlebars});
 registerPartialsInDirectory(path.join(__dirname, '../../views/partials'));
 registerPartialsInDirectory(path.join(__dirname, '../../views/partials/example-requests'));
@@ -90,7 +92,7 @@ function writeGroupMarkdownFiles(endpointsToDocument: scribe.Endpoint[], config:
     const groupBy = require('lodash.groupby');
     const groupedEndpoints: { [groupName: string]: scribe.Endpoint[] } = groupBy(endpointsToDocument, 'metadata.groupName');
 
-    for (let group of Object.values(groupedEndpoints)) {
+    const groupFileNames = Object.values(groupedEndpoints).map(function writeGroupFileAndReturnFileName(group) {
         const template = Handlebars.compile(fs.readFileSync(path.resolve(__dirname, '../../views/partials/group.hbs'), 'utf8'));
         const groupName = group[0].metadata.groupName;
         const markdown = template({
@@ -100,10 +102,30 @@ function writeGroupMarkdownFiles(endpointsToDocument: scribe.Endpoint[], config:
             groupDescription: group.find(e => Boolean(e.metadata.groupDescription))?.metadata.groupDescription ?? '',
         });
 
-        const slugify = require('slugify');
+        // @ts-ignore
         const fileName = slugify(groupName, {lower: true});
-        fs.writeFileSync(sourceOutputPath + `/groups/${fileName}.md`, markdown);
-    }
+        const routeGroupMarkdownFile = sourceOutputPath + `/groups/${fileName}.md`;
+/*
+        if ($this->hasFileBeenModified(routeGroupMarkdownFile)) {
+            if ($this->shouldOverwrite) {
+                console.log(`WARNING: Discarding manual changes for file ${routeGroupMarkdownFile} because you specified --force`);
+            } else {
+                console.log(`WARNING: Skipping modified file ${routeGroupMarkdownFile}`);
+                return `${fileName}.md`;
+            }
+        }*/
+        fs.writeFileSync(routeGroupMarkdownFile, markdown);
+        return `${fileName}.md`;
+    });
+
+    // Now, we need to delete any other Markdown files in the groups/ directory.
+    // Why? Because, if we don't, if a user renames a group, the old file will still exist,
+    // so the docs will have those endpoints repeated under the two groups.
+    const filesInGroupFolder = fs.readdirSync(sourceOutputPath + "/groups");
+    const filesNotPresentInThisRun = filesInGroupFolder.filter(fileName => !matcher.isMatch(groupFileNames, fileName));
+    filesNotPresentInThisRun.forEach(fileName => {
+        fs.unlinkSync(`${sourceOutputPath}/groups/${fileName}`);
+    });
 }
 
 export = {
