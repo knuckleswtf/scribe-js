@@ -1,0 +1,1 @@
+{"version":3,"file":"header_tag.js","sourceRoot":"","sources":["../../../src/2_extract_info/2_headers/header_tag.ts"],"names":[],"mappings":";AACA,2CAA4C;AAE5C,KAAK,UAAU,GAAG,CAAC,QAAyB,EAAE,MAAM;IAChD,MAAM,QAAQ,GAAG,MAAM,CAAC,CAAC,sBAAsB,CAAC,QAAQ,CAAC,IAAI,EAAqB,CAAC;IAEnF,OAAO,QAAQ,CAAC,MAAM,IAAI,EAAE,CAAC;AACjC,CAAC;AAED,iBAAS;IACL,OAAO,EAAE,EAAE;IACX,GAAG;CACN,CAAC"}
