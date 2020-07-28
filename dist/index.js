@@ -20,7 +20,7 @@ function generate(configFile, mainFile, serverFile) {
     }
     const app = require(mainFile);
     if (!app._router) {
-        console.error("Something's not right. Did you remember to export your `app` object from your main file?");
+        console.error("Couldn't find an export. Did you remember to export your `app` object from your main file?");
         process.exit(1);
     }
     if (!app._decoratedByScribe) {
@@ -103,11 +103,14 @@ function generate(configFile, mainFile, serverFile) {
                 }
             }
             endpoint.cleanBodyParameters = utils.removeEmptyOptionalParametersAndTransformToKeyValue(endpoint.bodyParameters);
-            // Using a single global app process here to avoid premature kills
             let appProcess;
-            const url = new URL(config.baseUrl);
-            if (!(await utils.isPortTaken(url.port || 80))) {
-                appProcess = spawn('node', [serverFile], { stdio: 'inherit' });
+            if (serverFile) {
+                // Using a single global app process here to avoid premature kills
+                const url = new URL(config.baseUrl);
+                if (!(await utils.isPortTaken(url.port || 80).catch(() => {
+                }))) {
+                    appProcess = spawn('node', [serverFile], { stdio: 'inherit' });
+                }
             }
             endpoint.responses = [];
             for (let responsesStrategy of strategies.responses) {
