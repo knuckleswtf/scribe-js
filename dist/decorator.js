@@ -1,6 +1,20 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const path = require("path");
 const methods = ['get', 'post', 'put', 'patch', 'head', 'delete', 'all'];
 module.exports = function (app) {
     app._decoratedByScribe = true;
+    const router = getRouter();
+    (router == 'express') && expressDecorate(app);
+};
+function getRouter() {
+    const pkgJson = require(path.resolve('package.json'));
+    if ('express' in pkgJson.dependencies) {
+        return 'express';
+    }
+    return '';
+}
+function expressDecorate(app) {
     methods.forEach(function decorateRouterMethodWithStackTraceCapturer(method) {
         const original = app[method].bind(app);
         app[method] = function (...args) {
@@ -21,5 +35,5 @@ module.exports = function (app) {
             return returned;
         };
     });
-};
+}
 //# sourceMappingURL=decorator.js.map

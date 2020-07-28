@@ -5,14 +5,18 @@ const spawn = require("cross-spawn");
 const matcher = require("matcher");
 const path = require("path");
 const fs = require("fs");
+const log = require('debug')('lib:scribe');
 const utils = require("./utils");
 function generate(configFile, mainFile, serverFile) {
     const config = require(configFile);
     if (!config.router) {
+        let router;
         const pkgJson = require(path.resolve('package.json'));
         if ('express' in pkgJson.dependencies) {
-            config.router = 'express';
+            router = 'express';
         }
+        config.router = router;
+        log(`Detected router: ${router}`);
     }
     const app = require(mainFile);
     if (!app._router) {
