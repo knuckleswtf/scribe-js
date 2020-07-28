@@ -86,17 +86,15 @@ export declare namespace scribe {
 
     export interface Config {
         baseUrl: string,
-        static: {
-            outputPath: string,
-        },
         title: string,
         logo: false | string,
-        router: SupportedRouters,
+        outputPath: string,
+        router?: SupportedRouters,
         auth: {
             enabled: boolean,
             in: 'query' | 'body' | 'bearer' | 'basic' | 'header',
             name: string,
-            useValue: any,
+            authUsing: any,
             extraInfo: string,
         },
         routes: [

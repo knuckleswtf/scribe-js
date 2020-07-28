@@ -141,7 +141,7 @@ function generate(configFile, appFile, serverFile) {
         html.writeAuthMarkdownFile(config, sourceOutputPath);
         html.writeGroupMarkdownFiles(endpointsToDocument, config, sourceOutputPath);
         const pastel = require('@knuckleswtf/pastel');
-        await pastel.generate(sourceOutputPath + '/index.md', path.resolve(config.static.outputPath));
+        await pastel.generate(sourceOutputPath + '/index.md', path.resolve(config.outputPath));
     });
 }
 // Possible (Express, exported app):

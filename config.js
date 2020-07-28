@@ -2,14 +2,12 @@ module.exports = {
     baseUrl: 'http://localhost:3000',
     title: "API Documentation",
     logo: false,
-    static: {
-        outputPath: 'public/docs'
-    },
+    outputPath: 'public/docs',
     auth: {
         enabled: false,
         in: 'bearer',
         name: 'token',
-        useValue: process.env.SCRIBE_AUTH_KEY,
+        authUsing: () => process.env.SCRIBE_AUTH_KEY,
         extraInfo: 'You can retrieve your token by visiting your dashboard and clicking <b>Generate API token</b>.',
     },
     routes: [
