@@ -21,6 +21,8 @@ program
     if (!fs.existsSync(configFile)) {
         console.log(`⚠ Config file ${configFile} does not exist. Initialising with a default config file...`);
         createConfigFile();
+        console.log(`Take a moment to update this file, and then run this command again when you're ready.`);
+        return;
     }
     const generate = require('./index');
     await generate(configFile, mainFile, serverFile);
