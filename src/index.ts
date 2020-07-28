@@ -6,6 +6,7 @@ import spawn = require('cross-spawn');
 import matcher = require('matcher');
 import path = require('path');
 import fs = require('fs');
+const log = require('debug')('lib:scribe');
 
 import utils = require('./utils');
 
@@ -13,10 +14,14 @@ function generate(configFile: string, mainFile: string, serverFile: string) {
     const config: scribe.Config = require(configFile);
 
     if (!config.router) {
+        let router;
         const pkgJson = require(path.resolve('package.json'));
         if ('express' in pkgJson.dependencies) {
-            config.router = 'express';
+            router = 'express';
         }
+
+        config.router = router;
+        log(`Detected router: ${router}`);
     }
 
     const app = require(mainFile);
