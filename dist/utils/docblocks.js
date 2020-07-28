@@ -114,10 +114,11 @@ function parseParameterTagContent(tagContent) {
 }
 function parseResponseTagContent(tagContent) {
     // Todo add support for scenarios
-    const [, status = 200, content = null] = /^(\d{3})?\s*(\S[\s\S]*)?$/.exec(tagContent);
+    let [, status = 200, content = null] = /^(\d{3})?\s*(\S[\s\S]*)?$/.exec(tagContent);
+    content = content != null ? content.replace(/\n\/\s*$/, '').trim() : content; // For some reason, the docblock parser sometimes returns the final slash
     return {
         status,
-        content: content != null ? content.trim() : content
+        content
     };
 }
 function transformHeaderListIntoKeyValue(tagContent) {

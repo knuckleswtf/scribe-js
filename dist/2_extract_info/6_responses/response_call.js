@@ -1,5 +1,20 @@
 "use strict";
-async function run(endpoint, config) {
+function shouldMakeResponseCall(config, endpoint, routeGroup) {
+    // If there's already a success response, don't make a response call
+    if (endpoint.responses.find(r => r.status >= 200 && r.status <= 300)) {
+        return false;
+    }
+    const allowedMethods = routeGroup.apply.responseCalls.methods;
+    // @ts-ignore
+    if (allowedMethods.includes('*') || allowedMethods.includes(Object.keys(endpoint.route.methods)[0].toUpperCase())) {
+        return true;
+    }
+    return false;
+}
+async function run(endpoint, config, routeGroup) {
+    if (!shouldMakeResponseCall(config, endpoint, routeGroup)) {
+        return [];
+    }
     console.log("Hitting " + endpoint.uri);
     const http = require('http');
     let responseContent;
