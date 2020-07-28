@@ -11,6 +11,14 @@ import utils = require('./utils');
 
 function generate(configFile: string, mainFile: string, serverFile: string) {
     const config: scribe.Config = require(configFile);
+
+    if (!config.router) {
+        const pkgJson = require(path.resolve('package.json'));
+        if ('express' in pkgJson.dependencies) {
+            config.router = 'express';
+        }
+    }
+
     const app = require(mainFile);
 
     if (!app._router) {

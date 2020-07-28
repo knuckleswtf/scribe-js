@@ -8,6 +8,12 @@ const fs = require("fs");
 const utils = require("./utils");
 function generate(configFile, mainFile, serverFile) {
     const config = require(configFile);
+    if (!config.router) {
+        const pkgJson = require(path.resolve('package.json'));
+        if ('express' in pkgJson.dependencies) {
+            config.router = 'express';
+        }
+    }
     const app = require(mainFile);
     if (!app._router) {
         console.error("Something's not right. Did you remember to export your `app` object from your main file?");

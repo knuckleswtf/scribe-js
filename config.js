@@ -2,7 +2,6 @@ module.exports = {
     baseUrl: 'http://localhost:3000',
     title: "API Documentation",
     logo: false,
-    router: 'express',
     static: {
         outputPath: 'public/docs'
     },
@@ -20,6 +19,9 @@ module.exports = {
             apply: {
                 headers: {
 
+                },
+                responseCalls: {
+                    methods: ['GET'],
                 }
             }
         }
