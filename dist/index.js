@@ -7,7 +7,11 @@ const path = require("path");
 const fs = require("fs");
 const log = require('debug')('lib:scribe');
 const utils = require("./utils");
-function generate(configFile, mainFile, serverFile) {
+function generate(configFile, appFile, serverFile) {
+    if (!serverFile) {
+        console.log("WARNING: You didn't specify a server file. This means that either your app is started by your app file, or you forgot.");
+        console.log("If you forgot, you'll need to specify a server file for response calls to work.");
+    }
     const config = require(configFile);
     if (!config.router) {
         let router;
@@ -18,9 +22,9 @@ function generate(configFile, mainFile, serverFile) {
         config.router = router;
         log(`Detected router: ${router}`);
     }
-    const app = require(mainFile);
+    const app = require(appFile);
     if (!app._router) {
-        console.error("Couldn't find an export. Did you remember to export your `app` object from your main file?");
+        console.error("Couldn't find an export from your app file. Did you remember to export your `app` object?");
         process.exit(1);
     }
     if (!app._decoratedByScribe) {

@@ -14,18 +14,18 @@ program
         '.scribe.config.js'
     )
     .requiredOption(
-        '-m, --main <file>',
-        'Main file of your API. This file should export your app/router object (Express).',
+        '-a, --app <file>',
+        'The file where you create your application (Express/). This file should export your app/router object.',
     )
     .option(
         '-s, --server <file>',
         'Server file of your API. This is the file that is executed by Node to start your server. ' +
-        'You can omit this if your main file also starts your server.',
+        'You can omit this if your app file also starts your server.',
     )
     .description("Generate API documentation from your Node.js codebase.")
-    .action(async ({ config, main, server }) => {
+    .action(async ({ config, app, server }) => {
         const configFile = path.resolve(config);
-        const mainFile = path.resolve(main);
+        const appFile = path.resolve(app);
         const serverFile = server ? path.resolve(server) : null;
 
         if (!fs.existsSync(configFile)) {
@@ -36,7 +36,7 @@ program
         }
 
         const generate = require('./index');
-        await generate(configFile, mainFile, serverFile);
+        await generate(configFile, appFile, serverFile);
     });
 
 program
