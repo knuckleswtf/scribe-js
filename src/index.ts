@@ -134,10 +134,10 @@ function generate(configFile: string, appFile: string, serverFile?: string) {
             let appProcess;
             if (serverFile) {
                 // Using a single global app process here to avoid premature kills
-                const url = new URL(config.baseUrl);
-                if (!(await utils.isPortTaken(url.port || 80).catch(() => {
-                }))) {
+                try {
                     appProcess = spawn('node', [serverFile], {stdio: 'inherit'});
+                } catch (e) {
+                    // do nothing; app is probably running already
                 }
             }
 

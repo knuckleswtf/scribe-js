@@ -103,6 +103,7 @@ export declare namespace scribe {
                 exclude: string[],
                 apply: {
                     responseCalls: {
+                        baseUrl: string,
                         methods: Array<'GET'|'POST'|'PUT'|'PATCH'|'DELETE'|'*'>
                     }
                 }

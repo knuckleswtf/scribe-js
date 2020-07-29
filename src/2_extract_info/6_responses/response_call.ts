@@ -26,7 +26,7 @@ async function run(endpoint: scribe.Endpoint, config: scribe.Config, routeGroup:
     const http = require('http');
     let responseContent: string;
     const promise = new Promise<scribe.Response>((resolve, reject) => {
-        const req = http.request(config.baseUrl + endpoint.uri,
+        const req = http.request(routeGroup.apply.responseCalls.baseUrl.replace(/\/$/, '') + endpoint.uri,
             {
                 method: Object.keys(endpoint.route.methods)[0],
             },

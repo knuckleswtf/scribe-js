@@ -19,7 +19,7 @@ async function run(endpoint, config, routeGroup) {
     const http = require('http');
     let responseContent;
     const promise = new Promise((resolve, reject) => {
-        const req = http.request(config.baseUrl + endpoint.uri, {
+        const req = http.request(routeGroup.apply.responseCalls.baseUrl.replace(/\/$/, '') + endpoint.uri, {
             method: Object.keys(endpoint.route.methods)[0],
         }, (resp) => {
             let data = '';
