@@ -1,21 +1,4 @@
 "use strict";
-function isPortTaken(host) {
-    // Based on https://gist.github.com/timoxley/1689041
-    const net = require('net');
-    return new Promise((resolve, reject) => {
-        const testServer = net.createServer()
-            .once('error', function (err) {
-            if (err.code === 'EADDRINUSE')
-                return resolve(true);
-            return reject(err);
-        })
-            .once('listening', function () {
-            testServer.close();
-            return resolve(false);
-        })
-            .listen(host);
-    });
-}
 function getParameterExample(type = 'string', regex = null) {
     const RandExp = require('randexp');
     const faker = require('faker');
@@ -36,5 +19,5 @@ function removeEmptyOptionalParametersAndTransformToKeyValue(parameters = {}) {
     }
     return cleanParameters;
 }
-module.exports = { isPortTaken, getParameterExample, removeEmptyOptionalParametersAndTransformToKeyValue };
+module.exports = { getParameterExample, removeEmptyOptionalParametersAndTransformToKeyValue };
 //# sourceMappingURL=utils.js.map
