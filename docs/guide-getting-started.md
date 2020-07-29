@@ -47,6 +47,9 @@ Now let's do a test run. Run the command to generate your docs.
    .. Note:: Scribe needs your app file to extract information about your routes. It needs your server file to try to start your app for `response calls <documenting-endpoint-responses.html#generating-responses-automatically-via-response-calls>`_  (if it isn't already running). If your app file is the same as your server file (your app file also starts your HTTP server), you can omit the :code:`-s <your-server-file>`
 ```
 
+```eval_rst
+   .. Note:: If your app file is also your server file, you might notice that the Scribe process "hangs" after it's done Generating. Feel free to kill the process (for instance, by hitting Ctrl-C).`
+```
 
 Visit your newly generated docs. Find the `docs/index.html` file in your `public/` folder and open it in your browser.
 
