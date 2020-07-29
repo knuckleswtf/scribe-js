@@ -1,6 +1,6 @@
 # Getting Started
 
-## Set up the package
+## Install and configure
 First, install the package:
 
 ```bash
@@ -13,10 +13,10 @@ Next, create your config file:
  ./node_modules/.bin/scribe init
 ```
 
-This will create a `.scribe.config.js` file in your project directory. Cool.
+This will ask you a few questions and create a `.scribe.config.js` file in your project directory. There are a few other useful settings you should change in that file, but we'll leave them as is for now..
 
-## Configuration and initialisation
-Almost ready! Just a few things...
+## Initialise
+Almost ready!
 
 Two things you need to know:
 - **Your "app file"** is the file where you create your Express app. and attach routes. Usually an `index.js` or `app.js`.
@@ -30,16 +30,14 @@ Got that? Cool. Here are the key things to do:
 module.exports = app;
 ```
 
-- Add this line in your app file. Make sure it's paced before your routes are registered:
+- Add this line in your app file. Make sure it's placed before your routes are registered:
 
 ```js
 require('@knuckleswtf/scribe')(app)
 ```
 
-Lastly, take a peek at your config file (`.scribe.config.js`).
-
 ## Do a test run
-Now, let's do a test run. Run the command to generate your docs.
+Now let's do a test run. Run the command to generate your docs.
 
 ```bash
  ./node_modules/.bin/scribe generate -a <your-app-file>.js -s <your-server-file>
@@ -52,12 +50,12 @@ Now, let's do a test run. Run the command to generate your docs.
 
 Visit your newly generated docs. Find the `docs/index.html` file in your `public/` folder and open it in your browser.
 
-There's also a Postman collection generated for you by default. You can get it by visiting `public/docs/collection.json` for `static` type, and `<your-app>/docs.json` for `laravel` type.
+There's also a Postman collection generated for you. You can get it by visiting `public/docs/collection.json`.
 
 Great! You've seen what Scribe can do. Now, let's refine our docs to match what we want.
 
 ## Add general information about your API
-First, let's add some general info about the API. Here are some things you can customise with Scribe:
+Here are some things you can customise with Scribe:
 - The introductory text
 - Authentication information
 - Languages for the example requests
@@ -65,14 +63,14 @@ First, let's add some general info about the API. Here are some things you can c
 
 For details, check out [Documenting API information](documenting-api-information.html).
 
-## Choose your routes
-Next up, decide what routes you want to document. This is configured in the `routes` key of `.scribe.config.js`. By default, Scribe will try to document all of your routes, so if you're okay with that, you can leave it at that.
+## Filter your routes
+You might also want to decide what routes you want to document. By default, Scribe will try to document all of your routes (except websocket routes), so if you're okay with that, you can leave it at that.
 
 If you'd like to exclude some routes, there are two ways:
 
 - In the docblock for the endpoint, add this tag: `@hideFromAPIDocumentation`.
 
-- The second way is by setting your `routes` config. Here's what it looks like:
+- Set the `routes` key in your `.scribe.config.js`. Here's what it looks like:
 
 ```js
 
@@ -97,7 +95,7 @@ By default, all your routes are in a single group, and we recommend leaving them
 
 [Here's the full documentation on configuring routes](config.html#routes).
 
-## Add information to your routes
+## Add more information to your routes
 Scribe tries to figure out information about your routes, but it needs more help from you to go far. Here's some information you can enrich:
 - Groups (you can group your endpoints by domain eg "User management", "Order information")
 - URL parameters
