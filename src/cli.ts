@@ -13,9 +13,10 @@ program
         'Scribe config file',
         '.scribe.config.js'
     )
-    .requiredOption(
+    .option(
         '-a, --app <file>',
         'The file where you create your application (Express/). This file should export your app/router object.',
+        'index.js',
     )
     .option(
         '-s, --server <file>',
