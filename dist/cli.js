@@ -20,8 +20,8 @@ program
     const serverFile = server ? path.resolve(server) : null;
     if (!fs.existsSync(configFile)) {
         console.log(`⚠ Config file ${configFile} does not exist. Initialising with a default config file...`);
-        createConfigFile();
-        console.log(`Take a moment to update this file, and then run this command again when you're ready.`);
+        console.log();
+        await createConfigFile();
         return;
     }
     const generate = require('./index');
@@ -32,11 +32,43 @@ program
     .description("Create config file with default options.")
     .action(createConfigFile);
 program.parse(process.argv);
-function createConfigFile() {
+async function createConfigFile() {
     const fileName = '.scribe.config.js';
+    const config = require('../config.js');
+    console.log(`Hi! We'll ask a few questions to help set up your config file. All questions are optional and you can set the values yourself later.`);
+    console.log('Hit Enter to skip a question.');
+    console.log();
+    const inquirer = require('inquirer');
     try {
-        fs.copyFileSync(path.join(__dirname, '../config.js'), path.resolve(fileName));
-        console.log(`✔ Config file ${path.resolve(fileName)} created.`);
+        const responses = await inquirer
+            .prompt([
+            {
+                type: 'input',
+                name: 'title',
+                message: "What's the name of your API? :",
+                default: path.basename(path.resolve('./')),
+            },
+            {
+                type: 'input',
+                name: 'baseUrl',
+                message: "What base URL do you want to show up in your API docs? :",
+                default: config.baseUrl,
+            },
+            {
+                type: 'input',
+                name: 'responseCallBaseUrl',
+                message: "What base URL are you running your API on locally? :",
+                default: config.routes[0].apply.responseCalls.baseUrl,
+            },
+        ]);
+        console.log("Cool, thanks!");
+        console.log();
+        config.title = responses.title + ' Documentation';
+        config.baseUrl = responses.baseUrl;
+        config.routes[0].apply.responseCalls.baseUrl = responses.responseCallBaseUrl;
+        const configText = `module.exports = ` + JSON.stringify(config, null, 4);
+        fs.writeFileSync(path.resolve(fileName), configText);
+        console.log(`✔ Config file ${path.resolve(fileName)} created. Take a moment to check it out, and then run \`generate\` when you're ready.`);
     }
     catch (e) {
         console.log(`❗ Failed to create config file ${fileName}: ${e.message}`);
