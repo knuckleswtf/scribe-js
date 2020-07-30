@@ -58,6 +58,9 @@ async function createConfigFile() {
 
     const inquirer = require('inquirer');
 
+    // Basically ucwords (folderName)
+    const inferredName = path.basename(path.resolve('./')).split(/[-_\s]+/)
+        .map(word => word[0].toUpperCase() + word.slice(1)).join(' ');
     try {
         const responses = await inquirer
             .prompt([
@@ -65,7 +68,7 @@ async function createConfigFile() {
                     type: 'input',
                     name: 'title',
                     message: "What's the name of your API? :",
-                    default: path.basename(path.resolve('./')), // Use folder name
+                    default: inferredName,
                 },
                 {
                     type: 'input',
