@@ -18,8 +18,6 @@ Generate API documentation for humans from your Node.js codebase. [Here's what t
    documenting/index
    generating-documentation
    config
-   architecture
-   contributing
 ```
 
 ## Supported frameworks

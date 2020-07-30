@@ -19,7 +19,7 @@ This will ask you a few questions and create a `.scribe.config.js` file in your 
 Almost ready!
 
 Two things you need to know:
-- **Your "app file"** is the file where you create your Express app. and attach routes. Usually an `index.js` or `app.js`.
+- **Your "app file"** is the file where you create your Express app and attach routes. Usually an `index.js` or `app.js`.
 - **Your server file** is the file where you actually start your server (usually by calling `app.listen()`). Sometimes it's the same as your app file, sometimes is's a different file (like `bin/www`).
 
 Got that? Cool. Here are the key things to do:

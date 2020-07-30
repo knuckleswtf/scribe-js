@@ -8,7 +8,7 @@ Here's a rundown of what's available in the `.scribe.config.js` file.
 ## Output settings
 
 ### `outputPath`
-Output folder. The HTML documentation, assets and Postman collection will be generated to this folder. Source Markdown will be in resources/docs. Default: `public/docs`.
+Output folder. The HTML documentation, assets and Postman collection will be generated to this folder. Source Markdown will be in `/docs`. Default: `public/docs`.
 
 ### `baseUrl`
 The base URL to be used in examples.
@@ -32,7 +32,7 @@ When [documenting your api](documenting/index.html), you use `@group` annotation
 ### `exampleLanguages`
 For each endpoint, an example request is shown in each of the languages specified in this array. Currently only `bash`, and `javascript` are supported. Default: `["bash", "javascript"]` 
  
-### `postman`
+### `postman` [coming soon]
 Along with the HTML docs, Scribe can automatically generate a Postman collection for your routes. This section is where you can configure or disable that.
 
 The collection will be created in `<outputPath>/collection.json`.
@@ -60,7 +60,7 @@ Here are the available settings:
 
 - `name`: The name of the parameter (eg `token`, `key`, `apiKey`) or header (eg `Authorization`, `Api-Key`). When `in` is set to `bearer` or `basic`, this value will be ignored, and the header used will be `Authorization`.
 
-- `useValue`: The value of the parameter to be used by Scribe to authenticate response calls. You can also specify a function that will be called during the response call to provide the authentication value.  This will **not** be included in the generated documentation. If this value is null or a function that returns null, Scribe will use a random value.
+- `useValue` [coming soon]: The value of the parameter to be used by Scribe to authenticate response calls. You can also specify a function that will be called during the response call to provide the authentication value.  This will **not** be included in the generated documentation. If this value is null or a function that returns null, Scribe will use a random value.
 
 - `extraInfo`: Any extra authentication-related info for your users. For instance, you can describe how to find or generate their auth credentials. Markdown and HTML are supported. This will be included in the `Authentication` section.
 
@@ -69,22 +69,7 @@ The `routes` section is an array of items describing what routes in your applica
 
 Each item in the `routes` array is a _route group_, an array containing rules defining what routes belong in that group, and what settings to apply to them.
 
-- `match`: Here you define the rules that will be used to determine what routes in your application fall into this group. There are three kinds of rules defined here (keys in the `match` array):
-
-- `domains`: This key takes an array of domain names as its value. Only routes which are defined on the domains specified here will be matched as part of this group. Defaults to `[*]` (routes on all domains).
- 
-- `prefixes`: The prefixes key is similar to the `domains` key, but is based on URL path prefixes (ie. what the part starts with, after the domain name). Defaults to `[*]` (all routes, regardless of path).
- 
-```eval_rst
-.. Important:: The :code:`domains` and :code:`prefixes` keys are required for all route groups.
-```
-
-- `versions`: This only applies when `router` is `dingo`. When using Dingo router, all routes must be specified inside versions. This means that you must specify the versions to be matched along with the domains and prefixes when describing a route group.
-
-```eval_rst
-.. Important:: Wildcards in :code:`versions` are not supported; you must list out all the versions you want to match.
- ```
- - `include`: A list of patterns (route names or paths) which should be included in this group, *even if they do not match the rules in the `match` section*.
+ - `include`: A list of patterns (route paths) which should be included in this group, *even if they do not match the rules in the `match` section*.
 
 - `exclude`: A list of patterns (route names or paths) which should be excluded from this group, *even if they match the rules in the `match` section*.
 
@@ -106,13 +91,22 @@ routes: {
 }
 ```
 
+Or this:
+
+```
+routes: {
+    include: ['/users/*', '/ping'],
+    exclude: [],
+}
+```
+
 ```eval_rst
 .. Tip:: You can use :code:`*` as a wildcard in :code:`domains, :code:`prefixes`, :code:`include` and :code:`exclude`. For instance, :code:`'exclude' => ['users/*']` will exclude all routes with URLs starting with 'users/'.
 ```
 
 - `apply`: The `apply` section of the route group is where you specify any additional settings to be applied to those routes when generating documentation. There are a number of settings you can tweak here:
 
-  - `headers`: Any headers you specify here will be added to the headers shown in the example requests in your documentation. They will also be included in response calls. Headers are specified as key => value strings.
+  - `headers` [coming soon]: Any headers you specify here will be added to the headers shown in the example requests in your documentation. They will also be included in response calls. Headers are specified as key => value strings.
 
   - `responseCalls`: These are the settings that will be applied when making ["response calls"](documenting-endpoint-responses.html#generating-responses-automatically-via-response-calls). 
 
@@ -120,7 +114,7 @@ routes: {
 .. Tip:: By splitting your routes into groups, you can apply different settings to different routes.
 ```
 
-### `fakerSeed`
+### `fakerSeed` [coming soon]
 When generating example requests, Scribe uses the `faker` package to generate random values. If you would like the package to generate the same example values for parameters on each run, set this to any number (eg. 1234).
 
 ```eval_rst

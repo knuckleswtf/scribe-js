@@ -69,7 +69,7 @@ You can set whatever you want as the `extraInfo`. A good idea would be to tell y
 The `useValue` field is only used by Scribe for response calls. It won't be included in the generated output or examples. You can specify a hardcoded value or a function that will be called during the response call.
 
 For more information, see the [reference documentation on the auth section](config.html#auth).
-co
+
 ## Introductory text
 The `introText` key in `.scribe.config.js` is where you can set the text shown to readers in the "Introduction" section. If your text is too long to be put in a config file, you can create a `prepend.md` containing the intro text and put it in the `resources/docs` folder.
 
