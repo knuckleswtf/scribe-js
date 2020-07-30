@@ -59,7 +59,7 @@ async function createConfigFile() {
     const inquirer = require('inquirer');
 
     // Basically ucwords (folderName)
-    const inferredName = path.basename(path.resolve('./')).split(/[-_\s]+/)
+    const inferredApiName = path.basename(path.resolve('./')).split(/[-_\s]+/)
         .map(word => word[0].toUpperCase() + word.slice(1)).join(' ');
     try {
         const responses = await inquirer
@@ -68,7 +68,7 @@ async function createConfigFile() {
                     type: 'input',
                     name: 'title',
                     message: "What's the name of your API? :",
-                    default: inferredName,
+                    default: inferredApiName,
                 },
                 {
                     type: 'input',
@@ -86,14 +86,23 @@ async function createConfigFile() {
         console.log("Cool, thanks!");
         console.log();
 
-        config.title = responses.title + ' Documentation';
-        config.baseUrl = responses.baseUrl;
-        config.routes[0].apply.responseCalls.baseUrl = "http://localhost:" + responses.localPort;
+        let title = responses.title + ' Documentation';
+        let baseUrl = responses.baseUrl;
+        let responseCallsBaseUrl = "http://localhost:" + responses.localPort;
 
-        const configText = `module.exports = ` + JSON.stringify(config, null, 4);
+        // Doing a string find + replace rather than JSON.stringify because we want to preserve comments
+        let fileContents = fs.readFileSync(path.join(__dirname, '../config.js'), 'utf8');
+        fileContents = fileContents.replace(/title: "(.+)"/, `title: "${title}"`);
+        let occurrence = 0;
+        fileContents = fileContents.replace(/baseUrl: "(.+)"/g, () => {
+            occurrence++;
+            return (occurrence == 2) ? `baseUrl: "${responseCallsBaseUrl}"` : `baseUrl: "${baseUrl}"`;
+        });
 
-        fs.writeFileSync(path.resolve(fileName), configText);
-        console.log(`✔ Config file ${path.resolve(fileName)} created. Take a moment to check it out, and then run \`generate\` when you're ready.`);
+        fs.writeFileSync(path.resolve(fileName), fileContents);
+
+        console.log(`✔ Config file ${path.resolve(fileName)} created.`);
+        console.log(`Take a moment to check it out, and then run \`generate\` when you're ready.`);
     } catch (e) {
         console.log(`❗ Failed to create config file ${fileName}: ${e.message}`);
     }

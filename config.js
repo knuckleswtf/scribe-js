@@ -1,5 +1,5 @@
 module.exports = {
-    baseUrl: 'http://yourApi.dev',
+    baseUrl: "http://yourApi.dev",
     title: "API Documentation",
     logo: false,
     outputPath: 'public/docs',
@@ -19,8 +19,11 @@ module.exports = {
 
                 },
                 responseCalls: {
-                    baseUrl: 'http://localhost:3000',
+                    baseUrl: "http://localhost:3000",
                     methods: ['GET'],
+                    environment: {
+                        // NODE_ENV: 'docs
+                    }
                 }
             }
         }
