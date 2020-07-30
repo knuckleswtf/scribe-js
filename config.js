@@ -21,7 +21,7 @@ module.exports = {
                 responseCalls: {
                     baseUrl: "http://localhost:3000",
                     methods: ['GET'],
-                    environment: {
+                    env: {
                         // NODE_ENV: 'docs
                     }
                 }

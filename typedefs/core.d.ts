@@ -104,7 +104,8 @@ export declare namespace scribe {
                 apply: {
                     responseCalls: {
                         baseUrl: string,
-                        methods: Array<'GET'|'POST'|'PUT'|'PATCH'|'DELETE'|'*'>
+                        methods: Array<'GET'|'POST'|'PUT'|'PATCH'|'DELETE'|'*'>,
+                        env: Record<string, any>,
                     }
                 }
             }

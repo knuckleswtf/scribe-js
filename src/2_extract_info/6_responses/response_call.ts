@@ -1,4 +1,7 @@
 import {scribe} from "../../../typedefs/core";
+import fs = require("fs");
+import path = require("path");
+
 
 
 function shouldMakeResponseCall(config: scribe.Config, endpoint: scribe.Endpoint, routeGroup: typeof config.routes[0]) {
@@ -19,6 +22,17 @@ function shouldMakeResponseCall(config: scribe.Config, endpoint: scribe.Endpoint
 async function run(endpoint: scribe.Endpoint, config: scribe.Config, routeGroup: typeof config.routes[0]): Promise<scribe.Response[]> {
     if (!shouldMakeResponseCall(config, endpoint, routeGroup)) {
         return [];
+    }
+
+    const docsEnvFile = path.resolve(".env.docs");
+    if (fs.existsSync(docsEnvFile)) {
+        require('dotenv').config({path: docsEnvFile});
+    }
+
+    if (routeGroup.apply.responseCalls.env) {
+        for (let [key, value] of Object.entries(routeGroup.apply.responseCalls.env)) {
+            process.env[key] = value;
+        }
     }
 
     console.log("Hitting " + endpoint.uri);

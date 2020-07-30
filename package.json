@@ -29,6 +29,7 @@
     "commander": "^5.1.0",
     "cross-spawn": "^7.0.2",
     "docblock-parser": "^1.0.0",
+    "dotenv": "^8.2.0",
     "faker": "^4.1.0",
     "handlebars": "^4.7.6",
     "handlebars-helpers": "^0.10.0",

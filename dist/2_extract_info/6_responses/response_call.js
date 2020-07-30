@@ -1,4 +1,6 @@
 "use strict";
+const fs = require("fs");
+const path = require("path");
 function shouldMakeResponseCall(config, endpoint, routeGroup) {
     // If there's already a success response, don't make a response call
     if (endpoint.responses.find(r => r.status >= 200 && r.status <= 300)) {
@@ -14,6 +16,15 @@ function shouldMakeResponseCall(config, endpoint, routeGroup) {
 async function run(endpoint, config, routeGroup) {
     if (!shouldMakeResponseCall(config, endpoint, routeGroup)) {
         return [];
+    }
+    const docsEnvFile = path.resolve(".env.docs");
+    if (fs.existsSync(docsEnvFile)) {
+        require('dotenv').config({ path: docsEnvFile });
+    }
+    if (routeGroup.apply.responseCalls.env) {
+        for (let [key, value] of Object.entries(routeGroup.apply.responseCalls.env)) {
+            process.env[key] = value;
+        }
     }
     console.log("Hitting " + endpoint.uri);
     const http = require('http');

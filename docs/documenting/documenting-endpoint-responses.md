@@ -122,9 +122,11 @@ If you don't specify an example response using any of the other means described 
 
 The configuration for response calls is located in the `apply.responseCalls` section for each route group in `.scribe.config.js`. This means that you can apply different settings for different sets of routes. Here are some important things to note:
 
+- The `baseUrl` is the URL Scribe will make requests to. Set this to `http://localhost:<your-port>`, where `<your-port` is the port you run your API on in localhost.
+
 - By default, response calls are only made for `GET` routes, but you can configure this by setting the `responseCalls.methods` key to an array of methods (e.g. `['GET', 'PUT']`). Set it to `['*']` to mean all methods. Leave it as an empty array to turn off response calls for that route group.
 
-- You can also modify the environment variables directly by adding a :code:`.env.docs` file or using the `environment` key. Scribe will load these env variables after starting your server, but before beginning response calls.
+- You can also modify the environment variables directly by adding a :code:`.env.docs` file or using the `env` key. Scribe will load these env variables after starting your server, but before beginning response calls.
 
 - By default, the package will generate dummy values for your documented query, body and file parameters and send in the request. If you specified example values using `@bodyParam` or `@queryParam`, those will be used instead. You can configure additional parameters or overwrite the existing ones for the request in the `responseCalls.queryParams`, `responseCalls.bodyParams`, and `responseCalls.fileParams` sections. For file parameters, each value should be a valid absolute path to a file on the machine. [coming soon]
 
