@@ -59,16 +59,16 @@ async function createConfigFile() {
             },
             {
                 type: 'input',
-                name: 'responseCallBaseUrl',
-                message: "What base URL are you running your API on locally? :",
-                default: config.routes[0].apply.responseCalls.baseUrl,
+                name: 'localPort',
+                message: "What port do you run your API on in localhost? :",
+                default: 3000,
             },
         ]);
         console.log("Cool, thanks!");
         console.log();
         config.title = responses.title + ' Documentation';
         config.baseUrl = responses.baseUrl;
-        config.routes[0].apply.responseCalls.baseUrl = responses.responseCallBaseUrl;
+        config.routes[0].apply.responseCalls.baseUrl = "http://localhost:" + responses.localPort;
         const configText = `module.exports = ` + JSON.stringify(config, null, 4);
         fs.writeFileSync(path.resolve(fileName), configText);
         console.log(`✔ Config file ${path.resolve(fileName)} created. Take a moment to check it out, and then run \`generate\` when you're ready.`);
