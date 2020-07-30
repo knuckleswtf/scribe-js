@@ -1,6 +1,6 @@
 {
   "name": "@knuckleswtf/scribe",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Generate API documentation for humans from your Node.js codebase.",
   "main": "dist/decorator.js",
   "bin": "dist/cli.js",
