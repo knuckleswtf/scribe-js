@@ -7,7 +7,7 @@ module.exports = {
         enabled: false,
         in: 'bearer',
         name: 'token',
-        authUsing: () => process.env.SCRIBE_AUTH_KEY,
+        useValue: () => process.env.SCRIBE_AUTH_KEY,
         extraInfo: 'You can retrieve your token by visiting your dashboard and clicking <b>Generate API token</b>.',
     },
     routes: [

@@ -94,7 +94,7 @@ export declare namespace scribe {
             enabled: boolean,
             in: 'query' | 'body' | 'bearer' | 'basic' | 'header',
             name: string,
-            authUsing: any,
+            useValue: any,
             extraInfo: string,
         },
         routes: [
