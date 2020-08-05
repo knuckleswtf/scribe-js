@@ -71,7 +71,7 @@ You might also want to decide what routes you want to document. By default, Scri
 
 If you'd like to exclude some routes, there are two ways:
 
-- In the docblock for the endpoint, add this tag: `@hideFromAPIDocumentation`.
+- In the docblock for the endpoint, add this tag: `@hideFromApiDocs`.
 
 - Set the `routes` key in your `.scribe.config.js`. Here's what it looks like:
 

@@ -14,4 +14,4 @@ Scribe tries to infer information about your API from your code, but you can enr
 ```
 
 ## Excluding endpoints from the documentation
-You can exclude endpoints from the documentation by using the `@hideFromAPIDocumentation` tag in the method or class doc block. Scribe will not extract any information about the route or add it to the generated docs.
+You can exclude endpoints from the documentation by using the `@hideFromApiDocs` tag in the relevant doc block (on the route declaration). Scribe will not extract any information about the route or add it to the generated docs.

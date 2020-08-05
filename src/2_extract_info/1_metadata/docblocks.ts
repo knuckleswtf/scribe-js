@@ -1,8 +1,7 @@
 import {scribe} from "../../../typedefs/core";
-import d = require("../../utils/docblocks");
 
 async function run(endpoint: scribe.Endpoint, config: scribe.Config) {
-    const docblock = await d.getDocBlockForEndpoint(endpoint) || {} as scribe.DocBlock;
+    const docblock = endpoint.docblock;
 
     return {
         groupName: docblock.group || config.defaultGroup,

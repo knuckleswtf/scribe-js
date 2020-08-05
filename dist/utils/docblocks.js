@@ -3,6 +3,7 @@ const docblockParser = require("docblock-parser");
 const fs = require("fs");
 const readline = require("readline");
 const defaultTagValues = {
+    hideFromApiDocs: false,
     authenticated: false,
     group: null,
     groupDescription: null,
@@ -49,6 +50,7 @@ async function parseDocBlocksFromFile(file) {
 function parseDocBlockString(docBlock) {
     const parsed = docblockParser({
         tags: {
+            hideFromApiDocs: docblockParser.booleanTag,
             authenticated: docblockParser.booleanTag,
             group: docblockParser.singleParameterTag,
             groupDescription: docblockParser.multilineTilTag,

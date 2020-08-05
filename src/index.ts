@@ -6,6 +6,7 @@ import spawn = require('cross-spawn');
 import matcher = require('matcher');
 import path = require('path');
 import fs = require('fs');
+import d = require("./utils/docblocks");
 const log = require('debug')('lib:scribe');
 
 import utils = require('./utils');
@@ -46,14 +47,22 @@ function generate(configFile: string, appFile: string, serverFile?: string) {
 
         const endpoints: scribe.Endpoint[] = getEndpoints(app);
 
-        let endpointsToDocument = endpoints.filter(e => {
+        let endpointsToDocument: scribe.Endpoint[] = [];
+
+        for (let e of endpoints) {
             if (routeGroup.exclude.length) {
                 const shouldExclude = matcher.isMatch(e.uri, routeGroup.exclude);
-                if (shouldExclude) return false;
+                if (shouldExclude) continue;
             }
 
-            return matcher.isMatch(e.uri, routeGroup.include);
-        });
+            if (!(matcher.isMatch(e.uri, routeGroup.include))) continue;
+
+            // Done in here to prevent docblock parsing for endpoints which have already been excluded
+            e.docblock = await d.getDocBlockForEndpoint(e) || {} as scribe.DocBlock;
+            if (e.docblock.hideFromApiDocs == false) {
+                endpointsToDocument.push(e);
+            }
+        }
 
         const strategies = config.strategies || {
             metadata: [

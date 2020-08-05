@@ -7,6 +7,7 @@ import DocBlock = scribe.DocBlock;
 
 
 const defaultTagValues = {
+    hideFromApiDocs: false,
     authenticated: false,
     group: null,
     groupDescription: null,
@@ -65,6 +66,7 @@ async function parseDocBlocksFromFile(file): Promise<{
 function parseDocBlockString(docBlock: string): DocBlock {
     const parsed = docblockParser({
         tags: {
+            hideFromApiDocs: docblockParser.booleanTag,
             authenticated: docblockParser.booleanTag,
             group: docblockParser.singleParameterTag,
             groupDescription: docblockParser.multilineTilTag,

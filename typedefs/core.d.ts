@@ -72,6 +72,7 @@ export declare namespace scribe {
         responseFields?: ResponseFields
         route: express.Route,
         handler: Function,
+        docblock?: DocBlock,
     }
 
     export type SupportedRouters = 'express';
@@ -138,6 +139,7 @@ export declare namespace scribe {
     export interface ResponseFieldsStrategy extends Strategy<ResponseFields> {}
 
     export interface DocBlock {
+        hideFromApiDocs?: boolean,
         title?: string|null,
         description?: string|null,
         authenticated?: boolean,

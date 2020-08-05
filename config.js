@@ -98,7 +98,7 @@ module.exports = {
                      * You can also create a `.env.docs` file instead.
                      */
                     env: {
-                        // NODE_ENV: 'docs
+                        // NODE_ENV: 'docs'
                     }
                 }
             }

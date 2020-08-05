@@ -1,7 +1,6 @@
 "use strict";
-const d = require("../../utils/docblocks");
 async function run(endpoint, config) {
-    const docblock = await d.getDocBlockForEndpoint(endpoint) || {};
+    const docblock = endpoint.docblock;
     return {
         groupName: docblock.group || config.defaultGroup,
         groupDescription: docblock.groupDescription,
