@@ -1,3 +1,5 @@
+import {RequestAuthDefinition} from "postman-collection";
+
 module.exports = {
     /*
      * The base URL to be used in examples.
@@ -104,6 +106,20 @@ module.exports = {
             }
         }
     ],
+
+    /*
+     * Generate a Postman collection in addition to HTML docs.
+     * The collection will be generated to {outputPath}/collection.json.
+     * Collection schema: https://schema.getpostman.com/json/collection/v2.1.0/collection.json
+     */
+    postman: {
+        enabled: true,
+        description: '',
+        /*
+         * The "Auth" section that should appear in the collection. See the schema docs for more information.
+         */
+        auth: null,
+    },
 
     /*
      * Example requests for each endpoint will be shown in each of these languages.

@@ -15,7 +15,7 @@ includes:
 logo: {{ settings.logo }}
 
 toc_footers:
-{{#if showPostmanCollectionButton }}
-- <a href="{{ postmanCollectionLink }}">View Postman Collection</a>
+{{#if settings.postman.enabled }}
+- <a href="collection.json">View Postman Collection</a>
 {{/if}}
 - <a href='http://github.com/knuckleswtf/scribe'>Documentation powered by Scribe ✍</a>

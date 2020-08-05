@@ -153,6 +153,12 @@ function generate(configFile, appFile, serverFile) {
         html.writeGroupMarkdownFiles(groupedEndpoints, config, sourceOutputPath);
         const pastel = require('@knuckleswtf/pastel');
         await pastel.generate(sourceOutputPath + '/index.md', path.resolve(config.outputPath));
+        if (config.postman.enabled) {
+            console.log(`Writing postman collection to ${path.resolve(config.outputPath)}...`);
+            const postman = require("./3_write_output/postman")(config);
+            postman.writePostmanCollectionFile(groupedEndpoints, path.resolve(config.outputPath));
+            console.log("Postman collection generated,");
+        }
     });
 }
 // Possible (Express, exported app):

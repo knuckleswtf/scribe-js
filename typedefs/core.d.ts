@@ -1,5 +1,6 @@
 import {express} from "./express";
 import exp from "constants";
+import {RequestAuthDefinition} from "postman-collection";
 
 export declare namespace scribe {
 
@@ -111,6 +112,11 @@ export declare namespace scribe {
                 }
             }
         ],
+        postman: {
+            enabled: boolean,
+            description: string,
+            auth?: RequestAuthDefinition,
+        },
         exampleLanguages: string[],
         defaultGroup: string,
         introText: string,

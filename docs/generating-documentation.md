@@ -26,7 +26,7 @@ Running this command will:
 ## Viewing the generated docs
 To access your generated docs, find the `index.html` file in your `outputPath` folder (by default, `public/docs`) and open that in your browser.
 
-## Postman collection generation [coming soon]
+## Postman collection generation
 By default, a Postman collection file which you can import into API clients like Postman or Insomnia is generated alongside your docs. You can view it by visiting `public/docs/collection.json`. This link will also be added to the sidebar of your docs.
 
 You can configure Postman collection generation in the `postman` section of your `.scribe.config.js` file.

@@ -94,7 +94,6 @@ You should see the following Blade files when you publish views:
    
 The following Blade files are present in the `partials` directory:
 - `frontmetter.blade.php`: This gets transformed into a string, which is then passed to the `index.blade.php` file as `$frontmatter`. It has access to the following variables:
-   - `$showPostmanCollectionButton` boolean that is true if Postman collection generation was enabled
    - the `$postmanCollectionLink` string that contains the URL to the Postman file (typically `./collection.json`), and
    - the `$settings` array that contains `logo`, `languages` and `title`.
 

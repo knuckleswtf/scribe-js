@@ -168,15 +168,25 @@ function generate(configFile: string, appFile: string, serverFile?: string) {
             }
         }
 
+        const groupBy = require('lodash.groupby');
+        const groupedEndpoints: { [groupName: string]: scribe.Endpoint[] } = groupBy(endpointsToDocument, 'metadata.groupName');
+
         const html = require("./3_write_output/html");
         const sourceOutputPath = path.resolve('docs');
         !fs.existsSync(sourceOutputPath) && fs.mkdirSync(sourceOutputPath, {recursive: true});
         html.writeIndexMarkdownFile(config, sourceOutputPath);
         html.writeAuthMarkdownFile(config, sourceOutputPath);
-        html.writeGroupMarkdownFiles(endpointsToDocument, config, sourceOutputPath);
+        html.writeGroupMarkdownFiles(groupedEndpoints, config, sourceOutputPath);
 
         const pastel = require('@knuckleswtf/pastel');
         await pastel.generate(sourceOutputPath + '/index.md', path.resolve(config.outputPath));
+
+        if (config.postman.enabled) {
+            console.log(`Writing postman collection to ${path.resolve(config.outputPath)}...`);
+            const postman = require("./3_write_output/postman")(config);
+            postman.writePostmanCollectionFile(groupedEndpoints, path.resolve(config.outputPath));
+            console.log("Postman collection generated,");
+        }
     });
 }
 

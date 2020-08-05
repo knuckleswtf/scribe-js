@@ -32,14 +32,16 @@ When [documenting your api](documenting/index.html), you use `@group` annotation
 ### `exampleLanguages`
 For each endpoint, an example request is shown in each of the languages specified in this array. Currently only `bash`, and `javascript` are supported. Default: `["bash", "javascript"]` 
  
-### `postman` [coming soon]
-Along with the HTML docs, Scribe can automatically generate a Postman collection for your routes. This section is where you can configure or disable that.
+### `postman`
+Along with the HTML docs, Scribe can automatically generate a Postman collection for your endpoints. This section is where you can configure or disable that.
 
 The collection will be created in `<outputPath>/collection.json`.
 
 - `enabled`: Whether to generate a Postman API collection. Default: `true`
 
 - `description`: The description for the generated Postman collection.
+
+- `auth`: The custom data to use for Postman's "auth" section. See the schema docs at [https://schema.getpostman.com/json/collection/v2.1.0/collection.json](https://schema.getpostman.com/json/collection/v2.1.0/collection.json).
 
 ## Extraction settings
 ### `auth`
