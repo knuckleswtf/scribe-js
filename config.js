@@ -1,5 +1,3 @@
-import {RequestAuthDefinition} from "postman-collection";
-
 module.exports = {
     /*
      * The base URL to be used in examples.
