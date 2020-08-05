@@ -34,6 +34,12 @@ Handlebars.registerHelper('isNonEmptyObject', isNonEmptyObject);
 Handlebars.registerHelper('printQueryParamsAsKeyValue', printQueryParamsAsKeyValue);
 Handlebars.registerHelper('getParameterNamesAndValuesForFormData', getParameterNamesAndValuesForFormData);
 
+export = {
+    writeIndexMarkdownFile,
+    writeAuthMarkdownFile,
+    writeGroupMarkdownFiles,
+};
+
 function writeIndexMarkdownFile(config: scribe.Config, sourceOutputPath: string) {
     const template = Handlebars.compile(fs.readFileSync(path.resolve(__dirname, '../../views/index.hbs'), 'utf8'));
     const markdown = template({
@@ -86,20 +92,16 @@ function writeAuthMarkdownFile(config: scribe.Config, sourceOutputPath: string) 
     fs.writeFileSync(sourceOutputPath + '/authentication.md', markdown);
 }
 
-function writeGroupMarkdownFiles(endpointsToDocument: scribe.Endpoint[], config: scribe.Config, sourceOutputPath: string) {
+function writeGroupMarkdownFiles(groupedEndpoints: { [groupName: string]: scribe.Endpoint[] } , config: scribe.Config, sourceOutputPath: string) {
     !fs.existsSync(sourceOutputPath + '/groups') && fs.mkdirSync(sourceOutputPath + '/groups');
 
-    const groupBy = require('lodash.groupby');
-    const groupedEndpoints: { [groupName: string]: scribe.Endpoint[] } = groupBy(endpointsToDocument, 'metadata.groupName');
-
-    const groupFileNames = Object.values(groupedEndpoints).map(function writeGroupFileAndReturnFileName(group) {
+    const groupFileNames = Object.entries(groupedEndpoints).map(function writeGroupFileAndReturnFileName([groupName, endpoints]) {
         const template = Handlebars.compile(fs.readFileSync(path.resolve(__dirname, '../../views/partials/group.hbs'), 'utf8'));
-        const groupName = group[0].metadata.groupName;
         const markdown = template({
             settings: config,
-            endpoints: group,
+            endpoints,
             groupName,
-            groupDescription: group.find(e => Boolean(e.metadata.groupDescription))?.metadata.groupDescription ?? '',
+            groupDescription: endpoints.find(e => Boolean(e.metadata.groupDescription))?.metadata.groupDescription ?? '',
         });
 
         // @ts-ignore
@@ -128,11 +130,6 @@ function writeGroupMarkdownFiles(endpointsToDocument: scribe.Endpoint[], config:
     });
 }
 
-export = {
-    writeIndexMarkdownFile,
-    writeAuthMarkdownFile,
-    writeGroupMarkdownFiles,
-};
 
 function registerPartialsInDirectory(path) {
     fs.readdirSync(path).forEach((filename) => {

@@ -77,19 +77,16 @@ function writeAuthMarkdownFile(config, sourceOutputPath) {
     });
     fs.writeFileSync(sourceOutputPath + '/authentication.md', markdown);
 }
-function writeGroupMarkdownFiles(endpointsToDocument, config, sourceOutputPath) {
+function writeGroupMarkdownFiles(groupedEndpoints, config, sourceOutputPath) {
     !fs.existsSync(sourceOutputPath + '/groups') && fs.mkdirSync(sourceOutputPath + '/groups');
-    const groupBy = require('lodash.groupby');
-    const groupedEndpoints = groupBy(endpointsToDocument, 'metadata.groupName');
-    const groupFileNames = Object.values(groupedEndpoints).map(function writeGroupFileAndReturnFileName(group) {
+    const groupFileNames = Object.entries(groupedEndpoints).map(function writeGroupFileAndReturnFileName([groupName, endpoints]) {
         var _a, _b;
         const template = Handlebars.compile(fs.readFileSync(path.resolve(__dirname, '../../views/partials/group.hbs'), 'utf8'));
-        const groupName = group[0].metadata.groupName;
         const markdown = template({
             settings: config,
-            endpoints: group,
+            endpoints,
             groupName,
-            groupDescription: (_b = (_a = group.find(e => Boolean(e.metadata.groupDescription))) === null || _a === void 0 ? void 0 : _a.metadata.groupDescription) !== null && _b !== void 0 ? _b : '',
+            groupDescription: (_b = (_a = endpoints.find(e => Boolean(e.metadata.groupDescription))) === null || _a === void 0 ? void 0 : _a.metadata.groupDescription) !== null && _b !== void 0 ? _b : '',
         });
         // @ts-ignore
         const fileName = slugify(groupName, { lower: true });

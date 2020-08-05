@@ -143,12 +143,14 @@ function generate(configFile, appFile, serverFile) {
                 }
             }
         }
+        const groupBy = require('lodash.groupby');
+        const groupedEndpoints = groupBy(endpointsToDocument, 'metadata.groupName');
         const html = require("./3_write_output/html");
         const sourceOutputPath = path.resolve('docs');
         !fs.existsSync(sourceOutputPath) && fs.mkdirSync(sourceOutputPath, { recursive: true });
         html.writeIndexMarkdownFile(config, sourceOutputPath);
         html.writeAuthMarkdownFile(config, sourceOutputPath);
-        html.writeGroupMarkdownFiles(endpointsToDocument, config, sourceOutputPath);
+        html.writeGroupMarkdownFiles(groupedEndpoints, config, sourceOutputPath);
         const pastel = require('@knuckleswtf/pastel');
         await pastel.generate(sourceOutputPath + '/index.md', path.resolve(config.outputPath));
     });
