@@ -4,11 +4,10 @@ module.exports = generate;
 const spawn = require("cross-spawn");
 const matcher = require("matcher");
 const path = require("path");
-const fs = require("fs");
 const d = require("./utils/docblocks");
 const log = require('debug')('lib:scribe');
 const utils = require("./utils");
-function generate(configFile, appFile, serverFile) {
+function generate(configFile, appFile, serverFile, shouldOverwriteMarkdownFiles = false) {
     if (!serverFile) {
         console.log("WARNING: You didn't specify a server file. This means that either your app is started by your app file, or you forgot.");
         console.log("If you forgot, you'll need to specify a server file for response calls to work.");
@@ -145,12 +144,9 @@ function generate(configFile, appFile, serverFile) {
         }
         const groupBy = require('lodash.groupby');
         const groupedEndpoints = groupBy(endpointsToDocument, 'metadata.groupName');
-        const html = require("./3_write_output/html");
+        const markdown = require("./3_write_output/markdown")(config);
         const sourceOutputPath = path.resolve('docs');
-        !fs.existsSync(sourceOutputPath) && fs.mkdirSync(sourceOutputPath, { recursive: true });
-        html.writeIndexMarkdownFile(config, sourceOutputPath);
-        html.writeAuthMarkdownFile(config, sourceOutputPath);
-        html.writeGroupMarkdownFiles(groupedEndpoints, config, sourceOutputPath);
+        markdown.writeDocs(groupedEndpoints, sourceOutputPath, shouldOverwriteMarkdownFiles);
         const pastel = require('@knuckleswtf/pastel');
         await pastel.generate(sourceOutputPath + '/index.md', path.resolve(config.outputPath));
         if (config.postman.enabled) {

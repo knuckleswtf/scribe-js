@@ -24,8 +24,13 @@ program
         'Server file of your API. This is the file that is executed by Node to start your server. ' +
         'You can omit this if your app file also starts your server.',
     )
+    .option(
+        '-f, --force',
+        "Discard any changes you've made to the source Markdown files",
+        false,
+    )
     .description("Generate API documentation from your Node.js codebase.")
-    .action(async ({config, app, server}) => {
+    .action(async ({config, app, server, force}) => {
         const configFile = path.resolve(config);
         const appFile = path.resolve(app);
         const serverFile = server ? path.resolve(server) : null;
@@ -38,7 +43,7 @@ program
         }
 
         const generate = require('./index');
-        await generate(configFile, appFile, serverFile);
+        await generate(configFile, appFile, serverFile, force);
     });
 
 program

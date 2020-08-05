@@ -4,8 +4,8 @@ Scribe offers you multiple options to customize how your documentation is render
 ## Manually modifying the documentation after generating
 Sometimes you might need to add or remove extra information about your API that Scribe doesn't support. You can do this by editing the generated Markdown files manually, and then letting Scribe transform them to HTML.
 
-The Markdown files are located in your `resources/docs` folder and include the following:
-- `index.md`: This contains the front matter (see the [Pastel docs](https://github.com/knuckleswtf/pastel)) and the Introduction section
+After generation, the Markdown files are located in your `resources/docs` folder and include the following:
+- `index.md`: This contains the front matter (see the [Pastel docs](https://github.com/knuckleswtf/pastel-js)) and the Introduction section
 - `authentication.md`: This contains the Authentication section
 - `groups/`: This folder contains your endpoints. Each Markdown file here represents a group of endpoints (the ones you specified by using `@group`). 
  
@@ -40,7 +40,7 @@ If you wish to automatically add the same content to the docs every time you gen
 The contents of `prepend.md` will be added after the Introduction section, while the contents of `append.md` will show up at the end of the document.
  
 
-## Adding more example languages
+## Adding more example languages [coming soon]
 For each endpoint, an example request is shown in [each language configured](config.html#example-languages). To add a language which is not supported by this package, you'll have to create your own view for how an example should render. Here's how:
  
 First, publish the vendor views by running:
@@ -77,10 +77,10 @@ In the template, you have the `$baseUrl` and `$route` variables available to you
 
 Finally, add the language to the `exampleLanguages` array in your config and generate your documentation as usual. 
 
-## Customizing the code used in examples
+## Customizing the code used in examples templates [coming soon]
 Customising existing language templates follows the same process as described above: publish assets, then modify the Blade templates in `resources/views/vendor/scribe/partials/example-requests` as necessary.
 
-## Changing the Markdown templates
+## Changing the Markdown templates [coming soon]
 If you need to go even further, you can take a look at editing the included Blade views.
 
 ### Included views
@@ -110,7 +110,7 @@ The following Blade files are present in the `partials` directory:
    - `$settings` (the same settings variable passed to frontmatter),
    - `$route`: an array which contains the information extracted from the various stages (see [the plugin API](plugins.html#api) for details).
    
-### Included components
+### Included components [coming soon]
 There are also a number of included components that you can utilize in your Blade files, located in the `components` folder:
 - `field-details.blade.php`: This is the template for rendering details about a field. It takes in the attributes `name`, `description`, `type`, and `required`. Typically, you'd use this to render a parameter in your route Blade file.
 
