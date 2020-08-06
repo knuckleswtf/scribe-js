@@ -1,7 +1,7 @@
 # Documenting responses from an endpoint
 It's helpful if your API's consumers can see what a response should be like before writing any code. There are multiple strategies to provide example responses for your endpoint:
 - describing the response using the `@response` tag
-- specifying a file containing the response using the `@responseFile` tag [coming soon]
+- specifying a file containing the response using the `@responseFile` tag
 - letting Scribe generate the response by making a "response call"
 
 You can use all of these strategies within the same endpoint. Scribe will display all the responses it finds.
@@ -61,10 +61,10 @@ To indicate a binary response, use `<<binary>>` as the value of the response, fo
 
 ![](../images/endpoint-responses-3.png)
 
-## `@responseFile` [coming soon]
+## `@responseFile`
 `@responseFile` works similarly to `@response`, but instead of inlining the response, you pass a file containing your JSON response. This can be helpful if your response body is large. 
 
-To use `@responseFile`, place the response as a JSON string in a file somewhere within your project and specify the relative path to it. For instance, we can put this response in a file named `users.get.json` in `docs/responses/`:
+To use `@responseFile`, place the response as a JSON string in a file somewhere within your project and specify the path to it, relative to your project root. For instance, we can put this response in a file named `users.get.json` in `<project>/docs/responses/`:
 
 ```
 {"id":4,"name":"Jessica Jones"}

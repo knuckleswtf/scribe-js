@@ -16,6 +16,7 @@ const defaultTagValues = {
     queryParam: [],
     bodyParam: [],
     response: [],
+    responseFile: [],
     responseField: [],
 };
 
@@ -75,6 +76,7 @@ function parseDocBlockString(docBlock: string): DocBlock {
             queryParam: docblockParser.multilineTilEmptyLineOrTag,
             bodyParam: docblockParser.multilineTilEmptyLineOrTag,
             response: docblockParser.multilineTilEmptyLineOrTag,
+            responseFile: docblockParser.multilineTilEmptyLineOrTag,
             responseField: docblockParser.multilineTilEmptyLineOrTag,
         },
         // Title and description are separated by an empty line
@@ -93,6 +95,7 @@ function parseDocBlockString(docBlock: string): DocBlock {
     result.responseField = transformFieldListToObject(result.responseField);
 
     result.response = [].concat(result.response).map(parseResponseTagContent);
+    result.responseFile = [].concat(result.responseFile).map(parseResponseFileTagContent);
 
     result.header = transformHeaderListIntoKeyValue([].concat(result.header));
 
@@ -155,6 +158,16 @@ function parseResponseTagContent(tagContent) {
     return {
         status,
         content
+    };
+}
+
+function parseResponseFileTagContent(tagContent) {
+    // Example content:  '404 responses/model.not.found.json {"type": "User"}'
+    let [, status = 200, filePath = null, extraJson = null] = /^(\d{3})?\s*(.*?)({.*})?$/.exec(tagContent);
+    return {
+        status,
+        filePath: filePath.trim(),
+        extraJson: extraJson ? extraJson.trim() : null,
     };
 }
 

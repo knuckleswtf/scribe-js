@@ -5,7 +5,6 @@ import {scribe} from "../typedefs/core";
 import spawn = require('cross-spawn');
 import matcher = require('matcher');
 import path = require('path');
-import fs = require('fs');
 import d = require("./utils/docblocks");
 const log = require('debug')('lib:scribe');
 
@@ -84,6 +83,7 @@ function generate(configFile: string, appFile: string, serverFile?: string, shou
             ],
             responses: [
                 require('./2_extract_info/6_responses/response_tag') as scribe.ResponsesStrategy,
+                require('./2_extract_info/6_responses/responsefile_tag') as scribe.ResponsesStrategy,
                 require('./2_extract_info/6_responses/response_call') as scribe.ResponsesStrategy,
             ],
             responseFields: [

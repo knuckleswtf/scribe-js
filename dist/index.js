@@ -69,6 +69,7 @@ function generate(configFile, appFile, serverFile, shouldOverwriteMarkdownFiles 
             ],
             responses: [
                 require('./2_extract_info/6_responses/response_tag'),
+                require('./2_extract_info/6_responses/responsefile_tag'),
                 require('./2_extract_info/6_responses/response_call'),
             ],
             responseFields: [

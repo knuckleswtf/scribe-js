@@ -44,7 +44,7 @@ export = (config: scribe.Config) => {
         sourceOutputPath: string,
         shouldOverwriteMarkdownFiles: boolean
     ) {
-        fileModificationTimesFile = sourceOutputPath + '/.filemtimes';
+        fileModificationTimesFile = path.join(sourceOutputPath, '/.filemtimes');
         lastTimesWeModifiedTheseFiles = fetchLastTimeWeModifiedFilesFromTrackingFile(fileModificationTimesFile);
 
         !fs.existsSync(sourceOutputPath) && fs.mkdirSync(sourceOutputPath, {recursive: true});
@@ -63,7 +63,7 @@ export = (config: scribe.Config) => {
     }
 
     function writeIndexMarkdownFile(sourceOutputPath: string, shouldOverwriteMarkdownFiles: boolean = false) {
-        const indexMarkdownFile = sourceOutputPath + '/index.md';
+        const indexMarkdownFile = path.join(sourceOutputPath, '/index.md');
         if (hasFileBeenModified(indexMarkdownFile, lastTimesWeModifiedTheseFiles)) {
             if (shouldOverwriteMarkdownFiles) {
                 console.log(`WARNING: Discarding manual changes for file ${indexMarkdownFile} because you specified --force`);
@@ -82,7 +82,7 @@ export = (config: scribe.Config) => {
     }
 
     function writeAuthMarkdownFile(sourceOutputPath: string, shouldOverwriteMarkdownFiles: boolean = false) {
-        const authMarkdownFile = sourceOutputPath + '/authentication.md';
+        const authMarkdownFile = path.join(sourceOutputPath, '/authentication.md');
         if (hasFileBeenModified(authMarkdownFile, lastTimesWeModifiedTheseFiles)) {
             if (shouldOverwriteMarkdownFiles) {
                 console.log(`WARNING: Discarding manual changes for file ${authMarkdownFile} because you specified --force`);
@@ -139,7 +139,8 @@ export = (config: scribe.Config) => {
         sourceOutputPath: string,
         shouldOverwriteMarkdownFiles: boolean = false
     ) {
-        !fs.existsSync(sourceOutputPath + '/groups') && fs.mkdirSync(sourceOutputPath + '/groups');
+        const groupsPath = path.join(sourceOutputPath, '/groups')
+        !fs.existsSync(groupsPath) && fs.mkdirSync(groupsPath);
 
         const groupFileNames = Object.entries(groupedEndpoints).map(function writeGroupFileAndReturnFileName([groupName, endpoints]) {
             const template = Handlebars.compile(fs.readFileSync(path.resolve(__dirname, '../../views/partials/group.hbs'), 'utf8'));
@@ -186,16 +187,16 @@ export = (config: scribe.Config) => {
 
 };
 
-function registerPartialsInDirectory(path) {
-    fs.readdirSync(path).forEach((filename) => {
+function registerPartialsInDirectory(partialPath: string) {
+    fs.readdirSync(partialPath).forEach((filename) => {
         const matches = /^([^.]+).hbs$/.exec(filename);
         if (!matches) {
             return;
         }
 
         // Convert name so we can reference with dot syntax in views
-        const name = path.replace(/.*views(\/|\\)/g, '').replace(/\/|\\/g, '.') + `.${matches[1]}`;
-        const template = fs.readFileSync(path + '/' + filename, 'utf8');
+        const name = partialPath.replace(/.*views(\/|\\)/g, '').replace(/\/|\\/g, '.') + `.${matches[1]}`;
+        const template = fs.readFileSync(path.join(partialPath, filename), 'utf8');
         Handlebars.registerPartial(name, template);
     });
 }

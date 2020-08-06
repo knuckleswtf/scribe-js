@@ -30,15 +30,15 @@ Handlebars.registerHelper('escapeString', escapeString);
 Handlebars.registerHelper('isNonEmptyObject', isNonEmptyObject);
 Handlebars.registerHelper('printQueryParamsAsKeyValue', printQueryParamsAsKeyValue);
 Handlebars.registerHelper('getParameterNamesAndValuesForFormData', getParameterNamesAndValuesForFormData);
-function registerPartialsInDirectory(path) {
-    fs.readdirSync(path).forEach((filename) => {
+function registerPartialsInDirectory(partialPath) {
+    fs.readdirSync(partialPath).forEach((filename) => {
         const matches = /^([^.]+).hbs$/.exec(filename);
         if (!matches) {
             return;
         }
         // Convert name so we can reference with dot syntax in views
-        const name = path.replace(/.*views(\/|\\)/g, '').replace(/\/|\\/g, '.') + `.${matches[1]}`;
-        const template = fs.readFileSync(path + '/' + filename, 'utf8');
+        const name = partialPath.replace(/.*views(\/|\\)/g, '').replace(/\/|\\/g, '.') + `.${matches[1]}`;
+        const template = fs.readFileSync(path.join(partialPath, filename), 'utf8');
         Handlebars.registerPartial(name, template);
     });
 }
@@ -157,17 +157,38 @@ function getFileModificationTime(filePath) {
         return 0;
     }
 }
+function writeModificationTimesTrackingFile(trackingFilePath, lastTimesWeModifiedTheseFiles) {
+    let content = "# GENERATED. YOU SHOULDN'T MODIFY OR DELETE THIS FILE.\n";
+    content += "# Scribe uses this file to know when you change something manually in your docs.\n";
+    content += Object.entries(lastTimesWeModifiedTheseFiles)
+        .map(([filePath, mtime]) => `${filePath}=${mtime}`).join("\n");
+    fs.writeFileSync(trackingFilePath, content);
+}
+function fetchLastTimeWeModifiedFilesFromTrackingFile(trackingFilePath) {
+    if (fs.existsSync(trackingFilePath)) {
+        const mtimeFileContent = fs.readFileSync(trackingFilePath, "utf8").trim().split("\n");
+        // First two lines are comments
+        mtimeFileContent.shift();
+        mtimeFileContent.shift();
+        return mtimeFileContent.reduce(function (all, line) {
+            const [filePath, modificationTime] = line.split("=");
+            all[filePath] = modificationTime;
+            return all;
+        }, {});
+    }
+    return {};
+}
 module.exports = (config) => {
     let lastTimesWeModifiedTheseFiles = {};
     let fileModificationTimesFile = path.resolve('public/docs/.filemtimes');
     function writeDocs(groupedEndpoints, sourceOutputPath, shouldOverwriteMarkdownFiles) {
-        fileModificationTimesFile = sourceOutputPath + '/.filemtimes';
-        lastTimesWeModifiedTheseFiles = fetchLastTimeWeModifiedFilesFromTrackingFile();
+        fileModificationTimesFile = path.join(sourceOutputPath, '/.filemtimes');
+        lastTimesWeModifiedTheseFiles = fetchLastTimeWeModifiedFilesFromTrackingFile(fileModificationTimesFile);
         !fs.existsSync(sourceOutputPath) && fs.mkdirSync(sourceOutputPath, { recursive: true });
         writeIndexMarkdownFile(sourceOutputPath, shouldOverwriteMarkdownFiles);
         writeAuthMarkdownFile(sourceOutputPath, shouldOverwriteMarkdownFiles);
         writeGroupMarkdownFiles(groupedEndpoints, sourceOutputPath, shouldOverwriteMarkdownFiles);
-        writeModificationTimesTrackingFile();
+        writeModificationTimesTrackingFile(fileModificationTimesFile, lastTimesWeModifiedTheseFiles);
     }
     function writeFile(filePath, content) {
         fs.writeFileSync(filePath, content);
@@ -177,7 +198,7 @@ module.exports = (config) => {
         lastTimesWeModifiedTheseFiles[filePath] = Math.floor(Date.now() / 1000);
     }
     function writeIndexMarkdownFile(sourceOutputPath, shouldOverwriteMarkdownFiles = false) {
-        const indexMarkdownFile = sourceOutputPath + '/index.md';
+        const indexMarkdownFile = path.join(sourceOutputPath, '/index.md');
         if (hasFileBeenModified(indexMarkdownFile, lastTimesWeModifiedTheseFiles)) {
             if (shouldOverwriteMarkdownFiles) {
                 console.log(`WARNING: Discarding manual changes for file ${indexMarkdownFile} because you specified --force`);
@@ -195,7 +216,7 @@ module.exports = (config) => {
         writeFile(indexMarkdownFile, markdown);
     }
     function writeAuthMarkdownFile(sourceOutputPath, shouldOverwriteMarkdownFiles = false) {
-        const authMarkdownFile = sourceOutputPath + '/authentication.md';
+        const authMarkdownFile = path.join(sourceOutputPath, '/authentication.md');
         if (hasFileBeenModified(authMarkdownFile, lastTimesWeModifiedTheseFiles)) {
             if (shouldOverwriteMarkdownFiles) {
                 console.log(`WARNING: Discarding manual changes for file ${authMarkdownFile} because you specified --force`);
@@ -244,7 +265,8 @@ module.exports = (config) => {
         writeFile(authMarkdownFile, markdown);
     }
     function writeGroupMarkdownFiles(groupedEndpoints, sourceOutputPath, shouldOverwriteMarkdownFiles = false) {
-        !fs.existsSync(sourceOutputPath + '/groups') && fs.mkdirSync(sourceOutputPath + '/groups');
+        const groupsPath = path.join(sourceOutputPath, '/groups');
+        !fs.existsSync(groupsPath) && fs.mkdirSync(groupsPath);
         const groupFileNames = Object.entries(groupedEndpoints).map(function writeGroupFileAndReturnFileName([groupName, endpoints]) {
             var _a, _b;
             const template = Handlebars.compile(fs.readFileSync(path.resolve(__dirname, '../../views/partials/group.hbs'), 'utf8'));
@@ -277,27 +299,6 @@ module.exports = (config) => {
         filesNotPresentInThisRun.forEach(fileName => {
             fs.unlinkSync(`${sourceOutputPath}/groups/${fileName}`);
         });
-    }
-    function writeModificationTimesTrackingFile() {
-        let content = "# GENERATED. YOU SHOULDN'T MODIFY OR DELETE THIS FILE.\n";
-        content += "# Scribe uses this file to know when you change something manually in your docs.\n";
-        content += Object.entries(lastTimesWeModifiedTheseFiles)
-            .map(([filePath, mtime]) => `${filePath}=${mtime}`).join("\n");
-        fs.writeFileSync(fileModificationTimesFile, content);
-    }
-    function fetchLastTimeWeModifiedFilesFromTrackingFile() {
-        if (fs.existsSync(fileModificationTimesFile)) {
-            const mtimeFileContent = fs.readFileSync(fileModificationTimesFile, "utf8").trim().split("\n");
-            // First two lines are comments
-            mtimeFileContent.shift();
-            mtimeFileContent.shift();
-            return mtimeFileContent.reduce(function (all, line) {
-                const [filePath, modificationTime] = line.split("=");
-                all[filePath] = modificationTime;
-                return all;
-            }, {});
-        }
-        return {};
     }
     return {
         writeDocs,
