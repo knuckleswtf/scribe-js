@@ -54,6 +54,7 @@ function generate(configFile, appFile, serverFile, shouldOverwriteMarkdownFiles 
                 require('./2_extract_info/1_metadata/docblocks'),
             ],
             headers: [
+                require('./2_extract_info/2_headers/routegroup_apply'),
                 require('./2_extract_info/2_headers/header_tag'),
             ],
             urlParameters: [
@@ -118,6 +119,7 @@ function generate(configFile, appFile, serverFile, shouldOverwriteMarkdownFiles 
                 }
             }
             endpoint.cleanBodyParameters = utils.removeEmptyOptionalParametersAndTransformToKeyValue(endpoint.bodyParameters);
+            addAuthField(endpoint, config);
             let appProcess;
             if (serverFile) {
                 // Using a single global app process here to avoid premature kills
@@ -172,5 +174,57 @@ function shouldUseWithRouter(strategy, currentRouter) {
         return true;
     }
     return strategy.routers.includes(currentRouter);
+}
+function addAuthField(endpoint, config) {
+    endpoint.auth = null;
+    const isApiAuthed = config.auth.enabled;
+    if (!isApiAuthed || !endpoint.metadata.authenticated) {
+        return;
+    }
+    const strategy = config.auth.in;
+    const parameterName = config.auth.name;
+    const faker = require('faker');
+    // todo use faker seed if present
+    const token = faker.helpers.shuffle('abcdefghkvaZVDPE1864563'.split('')).join('');
+    let valueToUse = config.auth.useValue;
+    if (typeof valueToUse == 'function') {
+        valueToUse = valueToUse();
+    }
+    switch (strategy) {
+        case 'query':
+            endpoint.auth = `cleanQueryParameters.${parameterName}.${valueToUse || token}`;
+            endpoint.queryParameters[parameterName] = {
+                name: parameterName,
+                value: token,
+                type: 'string',
+                description: '',
+                required: true,
+            };
+            break;
+        case 'body':
+            endpoint.auth = `cleanBodyParameters.${parameterName}.${valueToUse || token}`;
+            endpoint.bodyParameters[parameterName] = {
+                name: parameterName,
+                value: token,
+                type: 'string',
+                description: '',
+                required: true,
+            };
+            break;
+        case 'bearer':
+            endpoint.auth = `headers.Authorization.Bearer ${valueToUse || token}`;
+            endpoint.headers.Authorization = `Bearer ${token}`;
+            break;
+        case 'basic':
+            const encodedToken = Buffer.from(token).toString('base64');
+            endpoint.auth = `headers.Authorization.Basic ${valueToUse || encodedToken}`;
+            endpoint.headers.Authorization = `Basic ${encodedToken}`;
+            break;
+        case 'header':
+            endpoint.auth = `headers.${parameterName}.${valueToUse || token}`;
+            endpoint.headers[parameterName] = token;
+            break;
+    }
+    return;
 }
 //# sourceMappingURL=index.js.map
