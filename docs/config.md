@@ -62,7 +62,7 @@ Here are the available settings:
 
 - `name`: The name of the parameter (eg `token`, `key`, `apiKey`) or header (eg `Authorization`, `Api-Key`). When `in` is set to `bearer` or `basic`, this value will be ignored, and the header used will be `Authorization`.
 
-- `useValue` [coming soon]: The value of the parameter to be used by Scribe to authenticate response calls. You can also specify a function that will be called during the response call to provide the authentication value.  This will **not** be included in the generated documentation. If this value is null or a function that returns null, Scribe will use a random value.
+- `useValue`: The value of the parameter to be used by Scribe to authenticate response calls. You can also specify a function that will be called during the response call to provide the authentication value.  This will **not** be included in the generated documentation. If this value is null or a function that returns null, Scribe will use a random value.
 
 - `extraInfo`: Any extra authentication-related info for your users. For instance, you can describe how to find or generate their auth credentials. Markdown and HTML are supported. This will be included in the `Authentication` section.
 
@@ -108,7 +108,7 @@ routes: {
 
 - `apply`: The `apply` section of the route group is where you specify any additional settings to be applied to those routes when generating documentation. There are a number of settings you can tweak here:
 
-  - `headers` [coming soon]: Any headers you specify here will be added to the headers shown in the example requests in your documentation. They will also be included in response calls. Headers are specified as key => value strings.
+  - `headers`: Any headers you specify here will be added to the headers shown in the example requests in your documentation. They will also be included in response calls. Headers are specified as key => value strings.
 
   - `responseCalls`: These are the settings that will be applied when making ["response calls"](documenting-endpoint-responses.html#generating-responses-automatically-via-response-calls). 
 

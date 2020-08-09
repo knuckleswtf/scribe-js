@@ -100,7 +100,7 @@ function printQueryParamsAsKeyValue(cleanQueryParameters, opts = {}) {
         endLinesWith: ','
     };
     let options = Object.assign(defaults, opts);
-    let output = options.braces[0] ? `{${options.braces[0]}\n` : '';
+    let output = options.braces[0] ? `${options.braces[0]}\n` : '';
     for (let [parameter, value] of Object.entries(cleanQueryParameters)) {
         if (Array.isArray(value)) {
             // List query param (eg filter[]=haha should become "filter[]": "haha")
