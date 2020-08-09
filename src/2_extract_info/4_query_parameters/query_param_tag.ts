@@ -1,10 +1,16 @@
 import {scribe} from "../../../typedefs/core";
-import d = require("../../utils/docblocks");
+const {getParameterExample, castValueToType} = require("../../utils/parameters");
 
 async function run(endpoint: scribe.Endpoint, config) {
-    const docblock = endpoint.docblock;
+    return Object.fromEntries(Object.values(endpoint.docblock.queryParam).map(p => {
+        if (p.value == null) {
+            // Set values for only required parameters
+            p.value = p.required ? getParameterExample(p.type || 'string') : null;
+        }
+        p.value = castValueToType(p.value, p.type);
 
-    return docblock.queryParam || {};
+        return [p.name, p];
+    }));
 }
 
 export = {

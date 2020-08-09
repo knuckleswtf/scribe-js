@@ -6,7 +6,7 @@ const matcher = require("matcher");
 const path = require("path");
 const d = require("./utils/docblocks");
 const log = require('debug')('lib:scribe');
-const utils = require("./utils");
+const utils = require("./utils/parameters");
 function generate(configFile, appFile, serverFile, shouldOverwriteMarkdownFiles = false) {
     if (!serverFile) {
         console.log("WARNING: You didn't specify a server file. This means that either your app is started by your app file, or you forgot.");

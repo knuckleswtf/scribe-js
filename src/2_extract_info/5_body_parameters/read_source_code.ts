@@ -1,5 +1,5 @@
 import {scribe} from "../../../typedefs/core";
-import utils = require("../../utils");
+import utils = require("../../utils/parameters");
 
 const { getParameterExample } = utils;
 

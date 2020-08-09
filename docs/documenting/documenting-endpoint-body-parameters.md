@@ -45,23 +45,41 @@ The body parameters will be included in the generated documentation text and exa
 ![](../images/endpoint-bodyparams-1.png)
 
 
-### Handling array and object parameters [coming soon]
+### Handling array and object parameters
 Sometimes you have body parameters that are arrays or objects. To handle them in `@bodyparam`, Scribe follows this convention:
-- For arrays: use `<name>.*`
-- For objects: use `<name>.<key>`.
+- For arrays: use a single field with type `<type of items>[]`
+- For objects: you need a parent field with type `object` and an entry for each field, named with the dot notation `<parent name>.<field>`.
+- For an array of objects, you need a parent field with type `object[]`, and an entry for each field, named with the dot notation `<parent name>.*.<field>`.
 
-This means that, for an array of objects, you'd use `<name>.*.<key>`.
 
-You can also add a "parent" description if you like, by using `@bodyParam` with the type as "object" or "array".
+For instance, if your request body is in this form:
+
+```json
+{
+  "user": {
+    "name": "User's name",
+    "age": 12
+  },
+  "friend_ids": [10, 23],
+  "cars": [
+    {
+      "year": 1997,
+      "make": "Toyota"
+    }
+  ]
+}
+```
+
+you'd write:
 
 ```js
 /**
  * @bodyParam {object} user required The user details
  * @bodyParam {string} user.name required The user's name
- * @bodyParam {string} user.age required The user's age
- * @bodyParam {array} friend_ids List of the user's friends.
- * @bodyParam {int} friend_ids.* User's friends.
- * @bodyParam {string} cars.*.year The year the car was made. Example: 1997
+ * @bodyParam {number} user.age required The user's age
+ * @bodyParam {int[]} friend_ids List of the user's friends.
+ * @bodyParam {object[]} cars List of cars
+ * @bodyParam {int} cars.*.year The year the car was made. Example: 1997
  * @bodyParam {string} cars.*.make The make of the car. Example: Toyota
  */
 ```

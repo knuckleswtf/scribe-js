@@ -7,7 +7,7 @@ export declare namespace scribe {
     export interface ResponseField {
         name: string,
         description: string,
-        type: 'string',
+        type: string,
     }
 
     interface Parameter {

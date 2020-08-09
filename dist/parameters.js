@@ -1,18 +1,15 @@
-import {scribe} from "../typedefs/core";
-
-function getParameterExample(type = 'string', regex: string = null) {
+"use strict";
+function getParameterExample(type = 'string', regex = null) {
     const RandExp = require('randexp');
     const faker = require('faker');
     if (!regex) {
         return faker.lorem.word();
     }
-
     const randexp = new RandExp(regex);
     randexp.max = 2;
     return randexp.gen();
 }
-
-function removeEmptyOptionalParametersAndTransformToKeyValue(parameters: scribe.ParameterBag = {}) {
+function removeEmptyOptionalParametersAndTransformToKeyValue(parameters = {}) {
     const cleanParameters = {};
     for (let [name, parameter] of Object.entries(parameters)) {
         if (parameter.value === null && !parameter.required) {
@@ -22,5 +19,5 @@ function removeEmptyOptionalParametersAndTransformToKeyValue(parameters: scribe.
     }
     return cleanParameters;
 }
-
-export = { getParameterExample, removeEmptyOptionalParametersAndTransformToKeyValue };
+module.exports = { getParameterExample, removeEmptyOptionalParametersAndTransformToKeyValue };
+//# sourceMappingURL=parameters.js.map

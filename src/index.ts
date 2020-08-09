@@ -8,7 +8,7 @@ import path = require('path');
 import d = require("./utils/docblocks");
 const log = require('debug')('lib:scribe');
 
-import utils = require('./utils');
+import utils = require('./utils/parameters');
 
 function generate(configFile: string, appFile: string, serverFile?: string, shouldOverwriteMarkdownFiles: boolean = false) {
     if (!serverFile) {

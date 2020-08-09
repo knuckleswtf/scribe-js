@@ -1,5 +1,5 @@
 "use strict";
-const utils = require("../../utils");
+const utils = require("../../utils/parameters");
 const { getParameterExample } = utils;
 const trim = require('lodash.trim');
 const keyBy = require('lodash.keyby');

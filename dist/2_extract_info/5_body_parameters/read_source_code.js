@@ -1,5 +1,5 @@
 "use strict";
-const utils = require("../../utils");
+const utils = require("../../utils/parameters");
 const { getParameterExample } = utils;
 function run(endpoint) {
     const handler = endpoint.route.stack[0].handle;
