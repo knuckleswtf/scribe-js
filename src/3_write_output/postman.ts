@@ -9,6 +9,7 @@ import {
 } from "postman-collection";
 import uuid = require('uuid');
 import striptags = require('striptags');
+import {URL} from "url";
 
 export = (config: scribe.Config) => {
     const baseUrl = config.baseUrl;

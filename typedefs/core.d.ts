@@ -15,13 +15,12 @@ export declare namespace scribe {
         description?: string|null,
         required?: boolean,
         value?: any,
+        type?: string,
     }
 
-    export interface BodyParameter extends Parameter {
-        type: Body,
-    }
+    export interface BodyParameter extends Parameter {}
 
-    export type QueryParameter = Parameter
+    export interface QueryParameter extends Parameter {}
 
     export interface UrlParameter extends Parameter {
         // String or regular expression to match url parameter in URL and replace with value and placeholder

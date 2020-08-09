@@ -37,11 +37,11 @@ export declare namespace express {
     }
 
     interface RequestHandler {
-        (req: Request, res: Response, next: NextFunction): any;
+        (req: {}, res: {}, next: NextFunction): any;
     }
 
     interface ErrorHandler {
-        (err: any, req: Request, res: Response, next: NextFunction): any;
+        (err: any, req: {}, res: {}, next: NextFunction): any;
     }
 
     type Handler = RequestHandler | ErrorHandler;
@@ -74,7 +74,7 @@ export declare namespace express {
          * For example, when :user is present in a route path, you may map user loading logic to automatically
          * provide req.user to the route, or perform validations on the parameter input.
          */
-        param(name: string | string[], handler: (req: Request, res: Response, next: NextFunction, value: any, name: string) => any): this;
+        param(name: string | string[], handler: (req: {}, res: {}, next: NextFunction, value: any, name: string) => any): this;
         path(): string;
         enabled(setting: string): boolean;
         disabled(setting: string): boolean;

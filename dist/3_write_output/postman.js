@@ -2,9 +2,10 @@
 const fs = require("fs");
 const uuid = require("uuid");
 const striptags = require("striptags");
+const url_1 = require("url");
 module.exports = (config) => {
     const baseUrl = config.baseUrl;
-    const parsedUrl = new URL(baseUrl);
+    const parsedUrl = new url_1.URL(baseUrl);
     function writePostmanCollectionFile(groupedEndpoints, outputPath) {
         const collection = makePostmanCollection(groupedEndpoints);
         fs.writeFileSync(outputPath + '/collection.json', collection);

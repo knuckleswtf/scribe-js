@@ -1,10 +1,11 @@
 import {scribe} from "../../../typedefs/core";
-import d = require("../../utils/docblocks");
 
 async function run(endpoint: scribe.Endpoint, config) {
     const docblock = endpoint.docblock;
 
-    return docblock.bodyParam || {};
+    return Object.fromEntries(Object.values(docblock.bodyParam).map(p => {
+        return [p.name, p];
+    }));
 }
 
 export = {
