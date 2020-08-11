@@ -1,4 +1,4 @@
-# Getting Started
+# Getting Started with Scribe for Adonis.js
 
 ## Install and configure
 First, install the package:

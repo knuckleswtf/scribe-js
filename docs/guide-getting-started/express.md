@@ -1,4 +1,4 @@
-# Getting Started
+# Getting Started with Scribe for Express
 
 ## Install and configure
 First, install the package:
