@@ -60,7 +60,7 @@ async function createConfigFile() {
             },
             {
                 type: 'input',
-                name: 'localPort',
+                name: '_',
                 message: "What port do you run your API on in localhost? :",
                 default: "3000",
             },

@@ -1,0 +1,33 @@
+{
+  "name": "@knuckleswtf/scribe-adonis",
+  "version": "0.0.3",
+  "description": "Generate API documentation for humans from your Adonis.js codebase.",
+  "main": "index.js",
+  "scripts": {
+    "test": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/knuckleswtf/scribe-js.git"
+  },
+  "keywords": [
+    "documentation",
+    "API",
+    "REST API",
+    "generate"
+  ],
+  "author": "Shalvah <shalvah.adebayo@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/knuckleswtf/scribe-js/issues"
+  },
+  "homepage": "https://github.com/knuckleswtf/scribe-js#readme",
+  "dependencies": {
+    "@knuckleswtf/scribe": "0.0.3"
+  },
+  "devDependencies": {
+    "@adonisjs/ace": "^5.0.8",
+    "@adonisjs/core": "^2.10.4",
+    "@adonisjs/fold": "^4.0.9"
+  }
+}

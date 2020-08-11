@@ -185,7 +185,6 @@ function addAuthField(endpoint, config) {
     const parameterName = config.auth.name;
     const faker = require('faker');
     // todo use faker seed if present
-    // config.fakerSeed && faker.seed(config.fakerSeed);
     const token = faker.helpers.shuffle('abcdefghkvaZVDPE1864563'.split('')).join('');
     let valueToUse = config.auth.useValue;
     if (typeof valueToUse == 'function') {
