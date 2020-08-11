@@ -52,50 +52,38 @@ async function createConfigFile() {
     console.log('Hit Enter to skip a question.');
     console.log();
     const inquirer = require('inquirer');
-    // Basically ucwords (folderName)
     const inferredApiName = path.basename(path.resolve('./')).split(/[-_\s]+/)
         .map(word => word[0].toUpperCase() + word.slice(1)).join(' ');
-    try {
-        const responses = await inquirer
-            .prompt([
-            {
-                type: 'input',
-                name: 'title',
-                message: "What's the name of your API? :",
-                default: inferredApiName,
-            },
-            {
-                type: 'input',
-                name: 'baseUrl',
-                message: "What base URL do you want to show up in your API docs? :",
-                default: config.baseUrl,
-            },
-            {
-                type: 'input',
-                name: 'localPort',
-                message: "What port do you run your API on in localhost? :",
-                default: "3000",
-            },
-        ]);
-        console.log("Cool, thanks!");
-        console.log();
-        let title = responses.title + ' Documentation';
-        let baseUrl = responses.baseUrl;
-        let responseCallsBaseUrl = "http://localhost:" + responses.localPort;
-        // Doing a string find + replace rather than JSON.stringify because we want to preserve comments
-        let fileContents = fs.readFileSync(path.resolve('node_modules/@knuckleswtf/scribe/config.js'), 'utf8');
-        fileContents = fileContents.replace(/title: "(.+)"/, `title: "${title}"`);
-        let occurrence = 0;
-        fileContents = fileContents.replace(/baseUrl: "(.+)"/g, () => {
-            occurrence++;
-            return (occurrence == 2) ? `baseUrl: "${responseCallsBaseUrl}"` : `baseUrl: "${baseUrl}"`;
-        });
-        fs.writeFileSync(path.resolve(fileName), fileContents);
-        console.log(`✔ Config file ${path.resolve(fileName)} created.`);
-        console.log(`Take a moment to check it out, and then run \`generate\` when you're ready.`);
-    }
-    catch (e) {
-        console.log(`❗ Failed to create config file ${fileName}: ${e.message}`);
-    }
+    // Basically ucwords (folderName)
+    const responses = await inquirer
+        .prompt([
+        {
+            type: 'input',
+            name: 'name',
+            message: "What's the name of your API? :",
+            default: inferredApiName,
+        },
+        {
+            type: 'input',
+            name: 'baseUrl',
+            message: "What base URL do you want to show up in your API docs? :",
+            default: config.baseUrl,
+        },
+        {
+            type: 'input',
+            name: 'localPort',
+            message: "What port do you run your API on in localhost? :",
+            default: "3000",
+        },
+    ]);
+    console.log("Cool, thanks!");
+    console.log();
+    const tools = require("@knuckleswtf/scribe/dist/tools");
+    tools.generateConfigFile(path.resolve(fileName), {
+        name: responses.name,
+        baseUrl: responses.baseUrl,
+        localPort: responses.localPort
+    });
+    console.log(`Take a moment to check it out, and then run \`generate\` when you're ready.`);
 }
 //# sourceMappingURL=cli.js.map
