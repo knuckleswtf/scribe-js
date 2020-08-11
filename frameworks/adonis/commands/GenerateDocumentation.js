@@ -7,11 +7,11 @@ const { Command } = require.main.require('@adonisjs/ace')
 
 class GenerateDocumentation extends Command {
     static get signature () {
-        return 'scribe:generate'
+        return 'scribe:generate {--force : Discard any changes you\'ve made to the Markdown files}'
     }
 
     static get description () {
-        return 'Tell something helpful about this command'
+        return 'Generate API documentation from your Adonis.js routes.'
     }
 
     async handle (args, options) {
@@ -26,12 +26,12 @@ class GenerateDocumentation extends Command {
                 {silent: true}
                 );
 
-            this.info("We've generated a config file with some default settings for you.");
-            this.info("Check it out later to see what you can tweak for better docs.");
+            tools.info("We've generated a config file with some default settings for you.");
+            tools.info("Check it out later to see what you can tweak for better docs.");
         }
 
         console.log();
-        this.info("Generating docs...");
+        tools.info("Generating docs...");
         console.log();
 
         const config = require(configFilePath);
