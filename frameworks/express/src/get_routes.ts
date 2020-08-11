@@ -26,8 +26,8 @@ function getRoutesFromRouter(router: express.DecoratedRouter, basePath = ''): sc
         .filter(function removeMiddleware(routeHandler, thisIndex, allRoutes) {
             const lastHandlerFunction = findLastIndex(
                 allRoutes,
-                (e: scribe.Endpoint) => {
-                    return (e._express.stack[0].method == routeHandler.route.stack[0].method) && (e.uri === routeHandler.uri);
+                (currentEndpoint: scribe.Endpoint) => {
+                    return (currentEndpoint._express.stack[0].method == routeHandler._express.stack[0].method) && (currentEndpoint.uri === routeHandler.uri);
                 });
             return lastHandlerFunction === thisIndex;
         });

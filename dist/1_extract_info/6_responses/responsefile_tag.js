@@ -1,13 +1,14 @@
 "use strict";
 const fs = require("fs");
 const path = require("path");
+const tools = require("../../tools");
 async function run(endpoint, config) {
     const responseFileTags = endpoint.docblock.responseFile || [];
     const responses = [];
     for (let t of responseFileTags) {
         let resolvedFilePath = path.resolve(t.filePath);
         if (!fs.existsSync(resolvedFilePath)) {
-            console.log(`WARNING: @responseFile ${resolvedFilePath} does not exist`);
+            tools.warn(`@responseFile ${resolvedFilePath} does not exist`);
             continue;
         }
         let content = fs.readFileSync(resolvedFilePath, "utf8");

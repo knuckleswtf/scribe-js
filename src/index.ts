@@ -9,6 +9,7 @@ import url = require('url');
 
 import d = require("./utils/docblocks");
 import p = require('./utils/parameters');
+import tools = require('./tools');
 
 const {isPortTaken} = require('./utils/response_calls');
 
@@ -22,8 +23,8 @@ function generate(
     shouldOverwriteMarkdownFiles: boolean = false
 ) {
     if (router == 'express' && !serverFile) {
-        console.log("WARNING: You didn't specify a server file. This means that either your app is started by your app file, or you forgot.");
-        console.log("If you forgot, you'll need to specify a server file for response calls to work.");
+        tools.warn("You didn't specify a server file. This means that either your app is started by your app file, or you forgot.");
+        tools.warn("If you forgot, you'll need to specify a server file for response calls to work.");
     }
 
     config.routes.forEach(async (routeGroup) => {
@@ -190,10 +191,10 @@ function generate(
         await pastel.generate(sourceOutputPath + '/index.md', path.resolve(config.outputPath));
 
         if (config.postman.enabled) {
-            console.log(`Writing postman collection to ${path.resolve(config.outputPath)}...`);
+            tools.info(`Writing postman collection to ${path.resolve(config.outputPath)}...`);
             const postman = require("./2_write_output/postman")(config);
             postman.writePostmanCollectionFile(groupedEndpoints, path.resolve(config.outputPath));
-            console.log("Postman collection generated,");
+            tools.success("Postman collection generated,");
         }
     });
 }

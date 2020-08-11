@@ -5,6 +5,7 @@ const path = require("path");
 const slugify = require("slugify");
 const matcher = require("matcher");
 const Handlebars = require("handlebars");
+const tools = require("../tools");
 require('handlebars-helpers')(['string', 'comparison', 'object'], { handlebars: Handlebars });
 registerPartialsInDirectory(path.join(__dirname, '../../views/partials'));
 registerPartialsInDirectory(path.join(__dirname, '../../views/partials/example-requests'));
@@ -201,10 +202,10 @@ module.exports = (config) => {
         const indexMarkdownFile = path.join(sourceOutputPath, '/index.md');
         if (hasFileBeenModified(indexMarkdownFile, lastTimesWeModifiedTheseFiles)) {
             if (shouldOverwriteMarkdownFiles) {
-                console.log(`WARNING: Discarding manual changes for file ${indexMarkdownFile} because you specified --force`);
+                tools.warn(`Discarding manual changes for file ${indexMarkdownFile} because you specified --force`);
             }
             else {
-                console.log(`WARNING: Skipping modified file ${indexMarkdownFile}`);
+                tools.warn(`Skipping modified file ${indexMarkdownFile}`);
                 return;
             }
         }
@@ -219,10 +220,10 @@ module.exports = (config) => {
         const authMarkdownFile = path.join(sourceOutputPath, '/authentication.md');
         if (hasFileBeenModified(authMarkdownFile, lastTimesWeModifiedTheseFiles)) {
             if (shouldOverwriteMarkdownFiles) {
-                console.log(`WARNING: Discarding manual changes for file ${authMarkdownFile} because you specified --force`);
+                tools.warn(`Discarding manual changes for file ${authMarkdownFile} because you specified --force`);
             }
             else {
-                console.log(`WARNING: Skipping modified file ${authMarkdownFile}`);
+                tools.warn(`Skipping modified file ${authMarkdownFile}`);
                 return;
             }
         }
@@ -281,10 +282,10 @@ module.exports = (config) => {
             const routeGroupMarkdownFile = sourceOutputPath + `/groups/${fileName}.md`;
             if (hasFileBeenModified(routeGroupMarkdownFile, lastTimesWeModifiedTheseFiles)) {
                 if (shouldOverwriteMarkdownFiles) {
-                    console.log(`WARNING: Discarding manual changes for file ${routeGroupMarkdownFile} because you specified --force`);
+                    tools.warn(`Discarding manual changes for file ${routeGroupMarkdownFile} because you specified --force`);
                 }
                 else {
-                    console.log(`WARNING: Skipping modified file ${routeGroupMarkdownFile}`);
+                    tools.warn(`Skipping modified file ${routeGroupMarkdownFile}`);
                     return `${fileName}.md`;
                 }
             }

@@ -15,7 +15,7 @@ program
     .option('-s, --server <file>', 'Server file of your API. This is the file that is executed by Node to start your server. ' +
     'You can omit this if your app file also starts your server.')
     .option('-f, --force', "Discard any changes you've made to the source Markdown files", false)
-    .description("Generate API documentation from your Node.js codebase.")
+    .description("Generate API documentation from your Express routes.")
     .action(async ({ config, app, server, force }) => {
     const configFile = path.resolve(config);
     const appFile = path.resolve(app);
@@ -38,23 +38,23 @@ program
     }
     const endpoints = require('./get_routes.js')(appObject);
     const { generate } = require('@knuckleswtf/scribe');
-    await generate(endpoints, configObject, serverFile, force);
+    await generate(endpoints, configObject, 'express', serverFile, force);
 });
 program
     .command('init')
-    .description("Create config file with default options.")
+    .description("Initialise a config file in the root of your project.")
     .action(createConfigFile);
 program.parse(process.argv);
 async function createConfigFile() {
     const fileName = '.scribe.config.js';
-    const config = require('@knuckleswtf/scribe/config.js');
-    console.log(`Hi! We'll ask a few questions to help set up your config file. All questions are optional and you can set the values yourself later.`);
-    console.log('Hit Enter to skip a question.');
+    const tools = require("@knuckleswtf/scribe/dist/tools");
+    tools.info(`Hi! We'll ask a few questions to help set up your config file. All questions are optional and you can set the values yourself later.`);
+    tools.info('Hit Enter to skip a question.');
     console.log();
     const inquirer = require('inquirer');
+    // Basically ucwords (folderName)
     const inferredApiName = path.basename(path.resolve('./')).split(/[-_\s]+/)
         .map(word => word[0].toUpperCase() + word.slice(1)).join(' ');
-    // Basically ucwords (folderName)
     const responses = await inquirer
         .prompt([
         {
@@ -67,7 +67,7 @@ async function createConfigFile() {
             type: 'input',
             name: 'baseUrl',
             message: "What base URL do you want to show up in your API docs? :",
-            default: config.baseUrl,
+            default: 'http://yourApi.dev',
         },
         {
             type: 'input',
@@ -76,14 +76,13 @@ async function createConfigFile() {
             default: "3000",
         },
     ]);
-    console.log("Cool, thanks!");
+    tools.info("Cool, thanks!");
     console.log();
-    const tools = require("@knuckleswtf/scribe/dist/tools");
     tools.generateConfigFile(path.resolve(fileName), {
         name: responses.name,
         baseUrl: responses.baseUrl,
         localPort: responses.localPort
     });
-    console.log(`Take a moment to check it out, and then run \`generate\` when you're ready.`);
+    tools.info(`Take a moment to check it out, and then run \`generate\` when you're ready.`);
 }
 //# sourceMappingURL=cli.js.map

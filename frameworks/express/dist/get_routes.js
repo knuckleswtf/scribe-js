@@ -7,7 +7,7 @@ function getRoutesFromRouter(router, basePath = '') {
             return {
                 uri: basePath + layer.route.path,
                 handler: layer.route.stack[0].handle,
-                route: layer.route,
+                _express: layer.route,
                 methods: Object.keys(layer.route.methods).map(method => method.toUpperCase()),
                 declaredAt: (_a = router._scribe.handlers[layer.route.path]) !== null && _a !== void 0 ? _a : [],
             };
@@ -20,8 +20,8 @@ function getRoutesFromRouter(router, basePath = '') {
         .filter(route => route)
         .reduce((allRoutes, endpoint) => (allRoutes).concat(endpoint), [])
         .filter(function removeMiddleware(routeHandler, thisIndex, allRoutes) {
-        const lastHandlerFunction = findLastIndex(allRoutes, (e) => {
-            return (e.route.stack[0].method == routeHandler.route.stack[0].method) && (e.uri === routeHandler.uri);
+        const lastHandlerFunction = findLastIndex(allRoutes, (currentEndpoint) => {
+            return (currentEndpoint._express.stack[0].method == routeHandler._express.stack[0].method) && (currentEndpoint.uri === routeHandler.uri);
         });
         return lastHandlerFunction === thisIndex;
     });

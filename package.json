@@ -31,6 +31,7 @@
     "handlebars": "^4.7.6",
     "handlebars-helpers": "^0.10.0",
     "inquirer": "^7.3.3",
+    "kleur": "^4.0.3",
     "lodash.groupby": "^4.6.0",
     "lodash.keyby": "^4.6.0",
     "lodash.trim": "^4.5.1",

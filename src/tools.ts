@@ -24,9 +24,9 @@ function generateConfigFile(configFilePath, values, options = {silent: false}) {
 
         fs.writeFileSync(configFilePath, fileContents);
 
-        options.silent || console.log(`✔ Config file ${configFilePath} created.`);
+        options.silent || success(`Config file ${configFilePath} created.`);
     } catch (e) {
-        console.log(`❗ Failed to create config file ${configFilePath}: ${e.message}`);
+        error(`Failed to create config file ${configFilePath}: ${e.message}`);
         process.exit(1);
     }
 }
@@ -54,7 +54,47 @@ async function searchFileLazily(filePath, content) {
     return false;
 }
 
-module.exports = {
+const kleur = require('kleur')
+kleur.enabled = process.env.NO_ANSI === 'false'
+
+function icon(type) {
+    const iconsMain = {
+        info: kleur.cyan('ℹ'),
+        success: kleur.green('✔'),
+        warn: kleur.yellow('⚠'),
+        error: kleur.red('✖')
+    }
+    const iconsForWindows = {
+        info: kleur.cyan('i'),
+        success: kleur.green('√'),
+        warn: kleur.yellow('‼'),
+        error: kleur.red('×')
+    }
+    return process.platform === 'win32' ? iconsForWindows[type] : iconsMain[type]
+}
+
+function info(input) {
+    console.log(kleur.cyan(input))
+}
+
+function warn(input) {
+    console.warn(icon('warn') + kleur.yellow(' ' + input));
+}
+
+function success(input) {
+    console.log(icon('success') + kleur.green(' ' + input))
+}
+
+function error(input) {
+    console.error(icon('error') + kleur.red(' ' + input));
+}
+
+
+export = {
     generateConfigFile,
-    searchFileLazily
+    searchFileLazily,
+    info,
+    warn,
+    success,
+    error,
 };

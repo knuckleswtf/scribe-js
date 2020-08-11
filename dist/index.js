@@ -7,12 +7,13 @@ const path = require("path");
 const url = require("url");
 const d = require("./utils/docblocks");
 const p = require("./utils/parameters");
+const tools = require("./tools");
 const { isPortTaken } = require('./utils/response_calls');
 const log = require('debug')('lib:scribe');
 function generate(endpoints, config, router, serverFile, shouldOverwriteMarkdownFiles = false) {
     if (router == 'express' && !serverFile) {
-        console.log("WARNING: You didn't specify a server file. This means that either your app is started by your app file, or you forgot.");
-        console.log("If you forgot, you'll need to specify a server file for response calls to work.");
+        tools.warn("You didn't specify a server file. This means that either your app is started by your app file, or you forgot.");
+        tools.warn("If you forgot, you'll need to specify a server file for response calls to work.");
     }
     config.routes.forEach(async (routeGroup) => {
         let endpointsToDocument = [];
@@ -157,10 +158,10 @@ function generate(endpoints, config, router, serverFile, shouldOverwriteMarkdown
         const pastel = require('@knuckleswtf/pastel');
         await pastel.generate(sourceOutputPath + '/index.md', path.resolve(config.outputPath));
         if (config.postman.enabled) {
-            console.log(`Writing postman collection to ${path.resolve(config.outputPath)}...`);
+            tools.info(`Writing postman collection to ${path.resolve(config.outputPath)}...`);
             const postman = require("./2_write_output/postman")(config);
             postman.writePostmanCollectionFile(groupedEndpoints, path.resolve(config.outputPath));
-            console.log("Postman collection generated,");
+            tools.success("Postman collection generated,");
         }
     });
 }

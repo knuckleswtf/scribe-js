@@ -1,6 +1,7 @@
 import {scribe} from "../../../typedefs/core";
 import fs = require("fs");
 import path = require("path");
+import tools = require('../../tools');
 
 async function run(endpoint: scribe.Endpoint, config) {
     const responseFileTags = endpoint.docblock.responseFile || [];
@@ -10,7 +11,7 @@ async function run(endpoint: scribe.Endpoint, config) {
     for (let t of responseFileTags) {
         let resolvedFilePath = path.resolve(t.filePath);
         if (!fs.existsSync(resolvedFilePath)) {
-            console.log(`WARNING: @responseFile ${resolvedFilePath} does not exist`);
+            tools.warn(`@responseFile ${resolvedFilePath} does not exist`);
             continue;
         }
 
