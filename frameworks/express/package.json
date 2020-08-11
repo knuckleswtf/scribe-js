@@ -3,7 +3,9 @@
   "version": "0.0.3",
   "description": "Generate API documentation for humans from your Express.js codebase.",
   "main": "dist/decorator.js",
-  "bin": "dist/cli.js",
+  "bin": {
+    "scribe": "dist/cli.js"
+  },
   "scripts": {
     "test": ""
   },
