@@ -77,7 +77,7 @@ class GenerateDocumentation extends Command {
         // Make sure app is started for response calls
 
         const { generate } = require('@knuckleswtf/scribe');
-        await generate(endpoints, config, 'adonis', path.resolve('server.js'));
+        await generate(endpoints, config, 'adonis', path.resolve('server.js'), options.force || false);
     }
 }
 

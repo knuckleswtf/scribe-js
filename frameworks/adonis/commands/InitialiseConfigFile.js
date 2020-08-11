@@ -39,7 +39,7 @@ class InitialiseConfigFile extends Command {
             localPort: localPort
         });
 
-        tools.success(`Take a moment to check it out, and then run \`scribe:generate\` when you're ready.`);
+        tools.info(`Take a moment to check it out, and then run \`scribe:generate\` when you're ready.`);
     }
 }
 
