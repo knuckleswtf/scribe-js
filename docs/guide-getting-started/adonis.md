@@ -4,51 +4,22 @@
 First, install the package:
 
 ```bash
-npm i @knuckleswtf/scribe
+npm i @knuckleswtf/scribe-adonis
 ```
 
 Next, create your config file:
 
 ```bash
- ./node_modules/.bin/scribe init
+node ace scribe:init
 ```
 
-This will ask you a few questions and create a `.scribe.config.js` file in your project directory. There are a few other useful settings you should change in that file, but we'll leave them as is for now..
-
-## Initialise
-Almost ready!
-
-Two things you need to know:
-- **Your "app file"** is the file where you create your Express app and attach routes. Usually an `index.js` or `app.js`.
-- **Your server file** is the file where you actually start your server (usually by calling `app.listen()`). Sometimes it's the same as your app file, sometimes is's a different file (like `bin/www`).
-
-Got that? Cool. Here are the key things to do:
-
-- Make sure to export the `app` object from the app file.
-
-```js
-module.exports = app;
-```
-
-- Add this line in your app file. Make sure it's placed before your routes are registered:
-
-```js
-require('@knuckleswtf/scribe')(app)
-```
+This will ask you a few questions and create a `.scribe.config.js` file in your project directory. There are a few other useful settings you should change in that file, but we'll leave them as is for now.
 
 ## Do a test run
 Now let's do a test run. Run the command to generate your docs.
 
 ```bash
- ./node_modules/.bin/scribe generate -a <your-app-file>.js -s <your-server-file>
-```
-
-```eval_rst
-   .. Note:: Scribe needs your app file to extract information about your routes. It needs your server file to try to start your app for `response calls <documenting-endpoint-responses.html#generating-responses-automatically-via-response-calls>`_  (if it isn't already running). If your app file is the same as your server file (your app file also starts your HTTP server), you can omit the :code:`-s <your-server-file>`
-```
-
-```eval_rst
-   .. Note:: If your app file is also your server file, you might notice that the Scribe process "hangs" after it's done Generating. Feel free to kill the process (for instance, by hitting Ctrl-C).`
+ node ace scribe:generate
 ```
 
 Visit your newly generated docs. Find the `docs/index.html` file in your `public/` folder and open it in your browser.
@@ -111,6 +82,6 @@ Scribe tries to figure out information about your routes, but it needs more help
 Check out how to do this in the guide on [Documenting your API](documenting.html).
 
 ## Generate and publish
-After making changes as needed, you can run `scribe generate` as many times as you want.
+After making changes as needed, you can run `scribe:generate` as many times as you want.
 
 When you're happy with how your documentation looks, you're good to go. You can add the generated documentation to your version control and deploy as normal, and your users will be able to access it as you've configured.
