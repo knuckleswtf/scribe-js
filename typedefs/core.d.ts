@@ -1,4 +1,4 @@
-import {express} from "./express";
+import {express} from "../frameworks/express/express";
 import exp from "constants";
 import {RequestAuthDefinition} from "postman-collection";
 

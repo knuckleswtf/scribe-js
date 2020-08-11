@@ -2,8 +2,7 @@
   "name": "@knuckleswtf/scribe",
   "version": "0.0.3",
   "description": "Generate API documentation for humans from your Node.js codebase.",
-  "main": "dist/decorator.js",
-  "bin": "dist/cli.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "jest"
   },
@@ -25,7 +24,6 @@
   "homepage": "https://github.com/knuckleswtf/scribe-js#readme",
   "dependencies": {
     "@knuckleswtf/pastel": "^0.2.0",
-    "commander": "^5.1.0",
     "cross-spawn": "^7.0.2",
     "docblock-parser": "^1.0.0",
     "dotenv": "^8.2.0",
@@ -33,22 +31,19 @@
     "handlebars": "^4.7.6",
     "handlebars-helpers": "^0.10.0",
     "inquirer": "^7.3.3",
-    "lodash.findlastindex": "^4.6.0",
     "lodash.groupby": "^4.6.0",
     "lodash.keyby": "^4.6.0",
     "lodash.trim": "^4.5.1",
     "matcher": "^3.0.0",
     "randexp": "^0.5.3",
-    "require-in-the-middle": "^5.0.3",
     "slugify": "^1.4.0",
     "striptags": "^3.1.1",
-    "typescript": "^3.9.3",
     "uuid": "^8.3.0"
   },
   "devDependencies": {
     "@types/node": "^14.0.5",
     "@types/postman-collection": "^3.5.5",
-    "express": "^4.17.1",
-    "jest": "^26.1.0"
+    "jest": "^26.1.0",
+    "typescript": "^3.9.3"
   }
 }

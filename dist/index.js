@@ -1,39 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-module.exports = generate;
+module.exports = { generate };
 const spawn = require("cross-spawn");
 const matcher = require("matcher");
 const path = require("path");
 const d = require("./utils/docblocks");
 const log = require('debug')('lib:scribe');
 const utils = require("./utils/parameters");
-function generate(configFile, appFile, serverFile, shouldOverwriteMarkdownFiles = false) {
+function generate(endpoints, config, serverFile, shouldOverwriteMarkdownFiles = false) {
     if (!serverFile) {
         console.log("WARNING: You didn't specify a server file. This means that either your app is started by your app file, or you forgot.");
         console.log("If you forgot, you'll need to specify a server file for response calls to work.");
     }
-    const config = require(configFile);
-    if (!config.router) {
-        let router;
-        const pkgJson = require(path.resolve('package.json'));
-        if ('express' in pkgJson.dependencies) {
-            router = 'express';
-        }
-        config.router = router;
-        log(`Detected router: ${router}`);
-    }
-    const app = require(appFile);
-    if (!app._router) {
-        console.error("Couldn't find an export from your app file. Did you remember to export your `app` object?");
-        process.exit(1);
-    }
-    if (!app._decoratedByScribe) {
-        console.error("Something's not right. Did you remember to add `require('@knuckleswtf/scribe')(app)` before registering your Express routes?");
-        process.exit(1);
-    }
     config.routes.forEach(async (routeGroup) => {
-        const getEndpoints = require(`./1_get_routes/${config.router}`);
-        const endpoints = getEndpoints(app);
         let endpointsToDocument = [];
         for (let e of endpoints) {
             if (routeGroup.exclude.length) {
@@ -51,30 +30,30 @@ function generate(configFile, appFile, serverFile, shouldOverwriteMarkdownFiles 
         }
         const strategies = config.strategies || {
             metadata: [
-                require('./2_extract_info/1_metadata/docblocks'),
+                require('./1_extract_info/1_metadata/docblocks'),
             ],
             headers: [
-                require('./2_extract_info/2_headers/routegroup_apply'),
-                require('./2_extract_info/2_headers/header_tag'),
+                require('./1_extract_info/2_headers/routegroup_apply'),
+                require('./1_extract_info/2_headers/header_tag'),
             ],
             urlParameters: [
-                require('./2_extract_info/3_url_parameters/express_route_api'),
-                require('./2_extract_info/3_url_parameters/url_param_tag'),
+                require('./1_extract_info/3_url_parameters/express_route_api'),
+                require('./1_extract_info/3_url_parameters/url_param_tag'),
             ],
             queryParameters: [
-                require('./2_extract_info/4_query_parameters/query_param_tag'),
+                require('./1_extract_info/4_query_parameters/query_param_tag'),
             ],
             bodyParameters: [
-                require('./2_extract_info/5_body_parameters/read_source_code'),
-                require('./2_extract_info/5_body_parameters/body_param_tag'),
+                require('./1_extract_info/5_body_parameters/read_source_code'),
+                require('./1_extract_info/5_body_parameters/body_param_tag'),
             ],
             responses: [
-                require('./2_extract_info/6_responses/response_tag'),
-                require('./2_extract_info/6_responses/responsefile_tag'),
-                require('./2_extract_info/6_responses/response_call'),
+                require('./1_extract_info/6_responses/response_tag'),
+                require('./1_extract_info/6_responses/responsefile_tag'),
+                require('./1_extract_info/6_responses/response_call'),
             ],
             responseFields: [
-                require('./2_extract_info/7_response_fields/response_field_tag'),
+                require('./1_extract_info/7_response_fields/response_field_tag'),
             ],
         };
         for (let endpoint of endpointsToDocument) {
@@ -147,28 +126,19 @@ function generate(configFile, appFile, serverFile, shouldOverwriteMarkdownFiles 
         }
         const groupBy = require('lodash.groupby');
         const groupedEndpoints = groupBy(endpointsToDocument, 'metadata.groupName');
-        const markdown = require("./3_write_output/markdown")(config);
+        const markdown = require("./2_write_output/markdown")(config);
         const sourceOutputPath = path.resolve('docs');
         markdown.writeDocs(groupedEndpoints, sourceOutputPath, shouldOverwriteMarkdownFiles);
         const pastel = require('@knuckleswtf/pastel');
         await pastel.generate(sourceOutputPath + '/index.md', path.resolve(config.outputPath));
         if (config.postman.enabled) {
             console.log(`Writing postman collection to ${path.resolve(config.outputPath)}...`);
-            const postman = require("./3_write_output/postman")(config);
+            const postman = require("./2_write_output/postman")(config);
             postman.writePostmanCollectionFile(groupedEndpoints, path.resolve(config.outputPath));
             console.log("Postman collection generated,");
         }
     });
 }
-// Possible (Express, exported app):
-// 1. get endpoint
-// 2. get url of endpoint
-// 3. response calls
-// 4. URL Parameters
-// 5. Query/body - Scan code for req.body.X, { X } = req.body
-// NB - handle sub-apps
-// Potential (framework-specific)
-// 1. Parameter names and types (from validation)
 function shouldUseWithRouter(strategy, currentRouter) {
     if (strategy.routers == null || strategy.routers.length == 0) {
         return true;
