@@ -4,9 +4,11 @@ module.exports = { generate };
 const spawn = require("cross-spawn");
 const matcher = require("matcher");
 const path = require("path");
+const url = require("url");
 const d = require("./utils/docblocks");
+const p = require("./utils/parameters");
+const { isPortTaken } = require('./utils/response_calls');
 const log = require('debug')('lib:scribe');
-const utils = require("./utils/parameters");
 function generate(endpoints, config, router, serverFile, shouldOverwriteMarkdownFiles = false) {
     if (router == 'express' && !serverFile) {
         console.log("WARNING: You didn't specify a server file. This means that either your app is started by your app file, or you forgot.");
@@ -58,6 +60,7 @@ function generate(endpoints, config, router, serverFile, shouldOverwriteMarkdown
                 require('./1_extract_info/7_response_fields/response_field_tag'),
             ],
         };
+        let appProcess;
         for (let endpoint of endpointsToDocument) {
             endpoint.metadata = {};
             for (let metadataStrategy of strategies.metadata) {
@@ -98,7 +101,7 @@ function generate(endpoints, config, router, serverFile, shouldOverwriteMarkdown
                         = Object.assign({}, endpoint.queryParameters, await queryParametersStrategy.run(endpoint, config, routeGroup));
                 }
             }
-            endpoint.cleanQueryParameters = utils.removeEmptyOptionalParametersAndTransformToKeyValue(endpoint.queryParameters);
+            endpoint.cleanQueryParameters = p.removeEmptyOptionalParametersAndTransformToKeyValue(endpoint.queryParameters);
             endpoint.bodyParameters = {};
             for (let bodyParametersStrategy of strategies.bodyParameters) {
                 if (shouldUseWithRouter(bodyParametersStrategy, router)) {
@@ -106,16 +109,23 @@ function generate(endpoints, config, router, serverFile, shouldOverwriteMarkdown
                         = Object.assign({}, endpoint.bodyParameters, await bodyParametersStrategy.run(endpoint, config, routeGroup));
                 }
             }
-            endpoint.cleanBodyParameters = utils.removeEmptyOptionalParametersAndTransformToKeyValue(endpoint.bodyParameters);
+            endpoint.cleanBodyParameters = p.removeEmptyOptionalParametersAndTransformToKeyValue(endpoint.bodyParameters);
             addAuthField(endpoint, config);
-            let appProcess;
-            if (serverFile) {
+            if (serverFile && !appProcess) {
                 // Using a single global app process here to avoid premature kills
-                try {
-                    appProcess = spawn('node', [serverFile], { stdio: 'inherit' });
-                }
-                catch (e) {
-                    // do nothing; app is probably running already
+                const taken = await isPortTaken(url.parse(routeGroup.apply.responseCalls.baseUrl).port);
+                if (!taken) {
+                    try {
+                        console.log("Starting app server for response calls...");
+                        appProcess = spawn('node', [serverFile], { stdio: 'ignore' });
+                        await new Promise(res => {
+                            // Assuming it takes at most 2 seconds to start
+                            setTimeout(res, 2000);
+                        });
+                    }
+                    catch (e) {
+                        // do nothing; app is probably running already
+                    }
                 }
             }
             endpoint.responses = [];
@@ -125,7 +135,6 @@ function generate(endpoints, config, router, serverFile, shouldOverwriteMarkdown
                     endpoint.responses = endpoint.responses.concat(responses);
                 }
             }
-            appProcess && appProcess.kill();
             endpoint.responseFields = {};
             for (let responseFieldsStrategy of strategies.responseFields) {
                 if (shouldUseWithRouter(responseFieldsStrategy, router)) {
@@ -134,6 +143,12 @@ function generate(endpoints, config, router, serverFile, shouldOverwriteMarkdown
                 }
             }
         }
+        setTimeout(() => {
+            if (appProcess) {
+                console.log("Stopping app server...");
+                appProcess.kill();
+            }
+        }, 3000);
         const groupBy = require('lodash.groupby');
         const groupedEndpoints = groupBy(endpointsToDocument, 'metadata.groupName');
         const markdown = require("./2_write_output/markdown")(config);

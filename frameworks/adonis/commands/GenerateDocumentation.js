@@ -20,7 +20,11 @@ class GenerateDocumentation extends Command {
 
         const configFilePath = path.resolve('.scribe.config.js')
         if (!fs.existsSync(configFilePath)) {
-            tools.generateConfigFile(configFilePath, {baseUrl: Env.APP_URL, localPort: Env.PORT}, {silent: true})
+            tools.generateConfigFile(
+                configFilePath,
+                {baseUrl: Env.get('APP_URL'), localPort: Env.get('PORT')},
+                {silent: true}
+                );
 
             this.info("We've generated a config file with some default settings for you.");
             this.info("Check it out later to see what you can tweak for better docs.");
@@ -61,7 +65,7 @@ class GenerateDocumentation extends Command {
                 endpoint.handler = r.handler;
                 endpoint.declaredAt = [];
 
-                // Get declaredAt from decoration site
+                // Get declaredAt from already-decorated decoration site
                 if ((r._scribe || {}).declaredAt) {
                     endpoint.declaredAt = r._scribe.declaredAt;
                 }
@@ -73,7 +77,7 @@ class GenerateDocumentation extends Command {
         // Make sure app is started for response calls
 
         const { generate } = require('@knuckleswtf/scribe');
-        await generate(endpoints, config, 'adonis');
+        await generate(endpoints, config, 'adonis', path.resolve('server.js'));
     }
 }
 

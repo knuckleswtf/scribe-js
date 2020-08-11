@@ -1,15 +1,18 @@
-module.exports = { generate };
+module.exports = {generate};
 
 import {scribe} from "../typedefs/core";
 
 import spawn = require('cross-spawn');
 import matcher = require('matcher');
 import path = require('path');
+import url = require('url');
+
 import d = require("./utils/docblocks");
+import p = require('./utils/parameters');
+
+const {isPortTaken} = require('./utils/response_calls');
 
 const log = require('debug')('lib:scribe');
-
-import utils = require('./utils/parameters');
 
 function generate(
     endpoints: scribe.Endpoint[],
@@ -75,6 +78,7 @@ function generate(
             ],
         };
 
+        let appProcess;
         for (let endpoint of endpointsToDocument) {
             endpoint.metadata = {};
             for (let metadataStrategy of strategies.metadata) {
@@ -119,7 +123,7 @@ function generate(
                         = Object.assign({}, endpoint.queryParameters, await queryParametersStrategy.run(endpoint, config, routeGroup));
                 }
             }
-            endpoint.cleanQueryParameters = utils.removeEmptyOptionalParametersAndTransformToKeyValue(endpoint.queryParameters);
+            endpoint.cleanQueryParameters = p.removeEmptyOptionalParametersAndTransformToKeyValue(endpoint.queryParameters);
 
             endpoint.bodyParameters = {};
             for (let bodyParametersStrategy of strategies.bodyParameters) {
@@ -128,17 +132,24 @@ function generate(
                         = Object.assign({}, endpoint.bodyParameters, await bodyParametersStrategy.run(endpoint, config, routeGroup));
                 }
             }
-            endpoint.cleanBodyParameters = utils.removeEmptyOptionalParametersAndTransformToKeyValue(endpoint.bodyParameters);
+            endpoint.cleanBodyParameters = p.removeEmptyOptionalParametersAndTransformToKeyValue(endpoint.bodyParameters);
 
             addAuthField(endpoint, config);
 
-            let appProcess;
-            if (serverFile) {
+            if (serverFile && !appProcess) {
                 // Using a single global app process here to avoid premature kills
-                try {
-                    appProcess = spawn('node', [serverFile], {stdio: 'inherit'});
-                } catch (e) {
-                    // do nothing; app is probably running already
+                const taken = await isPortTaken(url.parse(routeGroup.apply.responseCalls.baseUrl).port);
+                if (!taken) {
+                    try {
+                        console.log("Starting app server for response calls...");
+                        appProcess = spawn('node', [serverFile], {stdio: 'ignore'});
+                        await new Promise(res => {
+                            // Assuming it takes at most 2 seconds to start
+                            setTimeout(res, 2000);
+                        });
+                    } catch (e) {
+                        // do nothing; app is probably running already
+                    }
                 }
             }
 
@@ -147,10 +158,9 @@ function generate(
                 if (shouldUseWithRouter(responsesStrategy, router)) {
 
                     const responses = await responsesStrategy.run(endpoint, config, routeGroup)
-                    endpoint.responses = endpoint.responses.concat(responses)
+                    endpoint.responses = endpoint.responses.concat(responses);
                 }
             }
-            appProcess && appProcess.kill();
 
             endpoint.responseFields = {};
             for (let responseFieldsStrategy of strategies.responseFields) {
@@ -160,6 +170,14 @@ function generate(
                 }
             }
         }
+
+
+        setTimeout(() => {
+            if (appProcess) {
+                console.log("Stopping app server...");
+                appProcess.kill();
+            }
+        }, 3000);
 
         const groupBy = require('lodash.groupby');
         const groupedEndpoints: { [groupName: string]: scribe.Endpoint[] } = groupBy(endpointsToDocument, 'metadata.groupName');

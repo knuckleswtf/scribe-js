@@ -9,7 +9,7 @@ function shouldMakeResponseCall(config, endpoint, routeGroup) {
     }
     const allowedMethods = routeGroup.apply.responseCalls.methods;
     // @ts-ignore
-    if (allowedMethods.includes('*') || allowedMethods.includes(Object.keys(endpoint.methods)[0].toUpperCase())) {
+    if (allowedMethods.includes('*') || allowedMethods.includes(endpoint.methods[0].toUpperCase())) {
         return true;
     }
     return false;
@@ -29,28 +29,31 @@ function makeResponseCall(responseCallRules, endpoint) {
     console.log("Hitting " + endpoint.uri);
     const http = require('http');
     let responseContent;
+    const requestOptions = {
+        method: endpoint.methods[0],
+        headers: Object.assign({ 'user-agent': 'curl/7.22.0' }, endpoint.headers),
+        path: endpoint.boundUri + (Object.keys(queryParameters).length ? `?` + qs.stringify(queryParameters) : ''),
+    };
     const promise = new Promise((resolve, reject) => {
-        const req = http.request(responseCallRules.baseUrl, {
-            method: Object.keys(endpoint.methods)[0],
-            headers: endpoint.headers,
-            path: endpoint.boundUri + (queryParameters ? `?` + qs.stringify(queryParameters) : ''),
-        }, (resp) => {
+        const req = http.request(responseCallRules.baseUrl, requestOptions, (res) => {
+            res.setEncoding('utf8');
             let data = '';
-            resp.on('data', (chunk) => {
+            res.on('data', (chunk) => {
                 data += chunk;
             });
-            resp.on('end', () => {
+            res.on('end', () => {
                 responseContent = data;
                 resolve({
-                    status: resp.statusCode,
+                    status: res.statusCode,
                     content: responseContent
                 });
             });
-        }).on("error", (err) => {
-            console.log("Error: " + err.message);
+        })
+            .on("error", (err) => {
             reject(err);
-        });
-        if (bodyParameters) {
+        })
+            .setTimeout(5000);
+        if (Object.keys(bodyParameters).length) {
             req.write(JSON.stringify(bodyParameters));
         }
         req.end();
@@ -58,7 +61,7 @@ function makeResponseCall(responseCallRules, endpoint) {
     return promise.then(response => {
         return [response];
     }).catch((err) => {
-        console.log(err);
+        console.log("Error during response call: " + err.message);
         return [];
     });
 }
