@@ -16,11 +16,16 @@ Node.js 10 or higher is required.
 
 Supported frameworks:
 - Express
+- Adonis.js
 
 More coming soon!
 
 ```bash
-npm i @knuckleswtf/scribe
+# For Express
+npm i @knuckleswtf/scribe-express
+
+# For Adonis.js
+npm i @knuckleswtf/scribe-adonis
 ```
 ## Documentation
 View the docs at [scribe-js.rtfd.io](https://scribe-js.rtfd.io/);
