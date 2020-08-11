@@ -15,8 +15,6 @@ class GenerateDocumentation extends Command {
     }
 
     async handle (args, options) {
-        // Generate config file with Env.APP_URL, and folder name
-
         const tools = require("@knuckleswtf/scribe/dist/tools");
         const Env = use('Env');
 
@@ -27,14 +25,19 @@ class GenerateDocumentation extends Command {
             this.info("We've generated a config file with some default settings for you.");
             this.info("Check it out later to see what you can tweak for better docs.");
         }
+
+        console.log();
+        this.info("Generating docs...");
+        console.log();
+
         const config = require(configFilePath);
 
         const Route = use('Route');
         const endpoints = await Promise.all(Route.list().map(async r => {
             let methods = r.verbs;
-            const indexOfHEAD = r.verbs.indexOf('HEAD');
-            if (indexOfHEAD) {
-                methods = methods.splice(indexOfHEAD, 1);
+            const indexOfHEAD = methods.indexOf('HEAD');
+            if ((indexOfHEAD > -1) && (methods.length > 1)) {
+                methods.splice(indexOfHEAD, 1);
             }
 
             const endpoint = {
@@ -57,6 +60,11 @@ class GenerateDocumentation extends Command {
             } else {// inline function was used
                 endpoint.handler = r.handler;
                 endpoint.declaredAt = [];
+
+                // Get declaredAt from decoration site
+                if ((r._scribe || {}).declaredAt) {
+                    endpoint.declaredAt = r._scribe.declaredAt;
+                }
             }
 
             return endpoint;
@@ -69,4 +77,4 @@ class GenerateDocumentation extends Command {
     }
 }
 
-module.exports = GenerateDocumentation
+module.exports = GenerateDocumentation;

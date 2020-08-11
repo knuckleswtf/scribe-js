@@ -18,7 +18,7 @@ function generate(
     serverFile?: string,
     shouldOverwriteMarkdownFiles: boolean = false
 ) {
-    if (!serverFile) {
+    if (router == 'express' && !serverFile) {
         console.log("WARNING: You didn't specify a server file. This means that either your app is started by your app file, or you forgot.");
         console.log("If you forgot, you'll need to specify a server file for response calls to work.");
     }
