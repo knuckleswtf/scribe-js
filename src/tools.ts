@@ -1,5 +1,6 @@
 import fs = require("fs");
 import path = require("path");
+import readline = require('readline');
 
 
 function generateConfigFile(configFilePath, values, options = {silent: false}) {
@@ -30,6 +31,30 @@ function generateConfigFile(configFilePath, values, options = {silent: false}) {
     }
 }
 
+/**
+ * Find first line where a string or regex occurs in a file, without reading the entire file
+ * @param filePath
+ * @param content
+ */
+async function searchFileLazily(filePath, content) {
+    const fileStream = fs.createReadStream(filePath);
+    const rl = readline.createInterface({
+        input: fileStream,
+        crlfDelay: Infinity
+    });
+
+    let lineNumber = 0;
+    for await (const line of rl) {
+        lineNumber++;
+        if (line.match(content)) {
+            return lineNumber;
+        }
+    }
+
+    return false;
+}
+
 module.exports = {
     generateConfigFile,
+    searchFileLazily
 };

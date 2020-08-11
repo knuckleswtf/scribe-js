@@ -1,5 +1,3 @@
-import {express} from "../frameworks/express/express";
-import exp from "constants";
 import {RequestAuthDefinition} from "postman-collection";
 
 export declare namespace scribe {
@@ -72,13 +70,14 @@ export declare namespace scribe {
         fileParameters?: Record<string, any>
         responses?: Response[]
         responseFields?: ResponseFields
-        route: express.Route,
         handler: Function,
         docblock?: DocBlock,
         auth?: string,
+        _adonis?: any,
+        _express?: any,
     }
 
-    export type SupportedRouters = 'express';
+    export type SupportedRouters = 'express' | 'adonis';
 
     export type Stage = 'metadata' |
         'headers' |
@@ -105,7 +104,6 @@ export declare namespace scribe {
         title: string,
         logo: false | string,
         outputPath: string,
-        router?: SupportedRouters,
         auth: {
             enabled: boolean,
             in: 'query' | 'body' | 'bearer' | 'basic' | 'header',

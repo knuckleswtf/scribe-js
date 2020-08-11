@@ -62,7 +62,7 @@ program
         const endpoints = require('./get_routes.js')(appObject);
 
         const {generate} = require('@knuckleswtf/scribe');
-        await generate(endpoints, configObject, serverFile, force);
+        await generate(endpoints, configObject, 'express', serverFile, force);
     });
 
 

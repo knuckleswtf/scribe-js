@@ -1,5 +1,8 @@
 'use strict'
 
+const path = require("path");
+const fs = require("fs");
+
 const { Command } = require.main.require('@adonisjs/ace')
 
 class GenerateDocumentation extends Command {
@@ -13,33 +16,56 @@ class GenerateDocumentation extends Command {
 
     async handle (args, options) {
         // Generate config file with Env.APP_URL, and folder name
-        //const tools = require("@knuckleswtf/scribe/tools");
+
+        const tools = require("@knuckleswtf/scribe/dist/tools");
         const Env = use('Env');
-        console.log(Env.get('APP_URL')); process.exit();
+
         const configFilePath = path.resolve('.scribe.config.js')
         if (!fs.existsSync(configFilePath)) {
-            tools.generateConfigFile(configFilePath, {baseUrl: Env.APP_URL, localPort: Env.PORT})
-            console.log("We've generated a config file with some settings for yu. Check it out later to see what you can tweak for better docs.");
+            tools.generateConfigFile(configFilePath, {baseUrl: Env.APP_URL, localPort: Env.PORT}, {silent: true})
+
+            this.info("We've generated a config file with some default settings for you.");
+            this.info("Check it out later to see what you can tweak for better docs.");
         }
+        const config = require(configFilePath);
 
         const Route = use('Route');
-        let routes = Route.list();
-        routes = routes.map(r => {
-            const [controller, method] = r.handler.split('.');
-            // get file path
-            const controllerFile = path.resolve('app/Controllers/Http/' + controller);
-            // load all docblocks
-            tools.hydrateDocblocksForFile(controllerFile);
-            // locate line where method is declared
-            route.declaredAt = [controllerFile, line]
-            return route;
-        });
+        const endpoints = await Promise.all(Route.list().map(async r => {
+            let methods = r.verbs;
+            const indexOfHEAD = r.verbs.indexOf('HEAD');
+            if (indexOfHEAD) {
+                methods = methods.splice(indexOfHEAD, 1);
+            }
 
-        // dispatch Scribe generation with Adonis routes
-        require("@knuckleswtf/scribe/generation").generate(routes);
+            const endpoint = {
+                uri: r._route,
+                methods,
+                handler: null,
+                _adonis: r,
+            };
+
+            if (typeof r.handler == 'string') {
+                const [controller, method] = r.handler.split('.');
+                const fullControllerName = 'app/Controllers/Http/' + controller;
+                const controllerFile = path.resolve(fullControllerName + '.js');
+
+                const lineNumber = await tools.searchFileLazily(controllerFile, new RegExp(`(async\\s*)?${method}\\s*\\(`));
+                endpoint.declaredAt = lineNumber ? [controllerFile, lineNumber] : [];
+
+                const controllerInstance = use(controllerFile);
+                endpoint.handler = (new controllerInstance)[method];
+            } else {// inline function was used
+                endpoint.handler = r.handler;
+                endpoint.declaredAt = [];
+            }
+
+            return endpoint;
+        }));
+
         // Make sure app is started for response calls
 
-        this.info('Dummy implementation for generate command')
+        const { generate } = require('@knuckleswtf/scribe');
+        await generate(endpoints, config, 'adonis');
     }
 }
 

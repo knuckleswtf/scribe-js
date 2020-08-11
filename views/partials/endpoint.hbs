@@ -1,4 +1,4 @@
-## {{ defaultValue endpoint.metadata.title endpoint.uri}}
+## {{ defaultValue endpoint.metadata.title (append endpoint.methods.[0] (append " " endpoint.uri)) }}
 
 {{> components.badges.auth authenticated=endpoint.metadata.authenticated }}
 

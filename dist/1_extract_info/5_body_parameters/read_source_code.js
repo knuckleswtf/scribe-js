@@ -2,7 +2,10 @@
 const utils = require("../../utils/parameters");
 const { getParameterExample } = utils;
 function run(endpoint) {
-    const handler = endpoint.route.stack[0].handle;
+    const handler = endpoint.handler;
+    if (typeof handler != 'function') {
+        return {};
+    }
     const functionSourceCode = handler.toString();
     const bodyParamAccesses = functionSourceCode.match(/req\.body\.\w+/g);
     if (!bodyParamAccesses) {

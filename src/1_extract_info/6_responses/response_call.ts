@@ -11,7 +11,7 @@ function shouldMakeResponseCall(config: scribe.Config, endpoint: scribe.Endpoint
 
     const allowedMethods = routeGroup.apply.responseCalls.methods;
     // @ts-ignore
-    if (allowedMethods.includes('*') || allowedMethods.includes(Object.keys(endpoint.route.methods)[0].toUpperCase())) {
+    if (allowedMethods.includes('*') || allowedMethods.includes(Object.keys(endpoint.methods)[0].toUpperCase())) {
         return true;
     }
 
@@ -48,7 +48,7 @@ function makeResponseCall(responseCallRules: scribe.ResponseCallRules, endpoint:
     const promise = new Promise<scribe.Response>((resolve, reject) => {
         const req = http.request(responseCallRules.baseUrl,
             {
-                method: Object.keys(endpoint.route.methods)[0],
+                method: Object.keys(endpoint.methods)[0],
                 headers: endpoint.headers,
                 path: endpoint.boundUri + (queryParameters ? `?` + qs.stringify(queryParameters) : ''),
             },

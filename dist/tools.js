@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
 const path = require("path");
+const readline = require("readline");
 function generateConfigFile(configFilePath, values, options = { silent: false }) {
     // Basically ucwords (folderName)
     const inferApiName = () => path.basename(path.resolve('./')).split(/[-_\s]+/)
@@ -26,7 +27,28 @@ function generateConfigFile(configFilePath, values, options = { silent: false })
         process.exit(1);
     }
 }
+/**
+ * Find first line where a string or regex occurs in a file, without reading the entire file
+ * @param filePath
+ * @param content
+ */
+async function searchFileLazily(filePath, content) {
+    const fileStream = fs.createReadStream(filePath);
+    const rl = readline.createInterface({
+        input: fileStream,
+        crlfDelay: Infinity
+    });
+    let lineNumber = 0;
+    for await (const line of rl) {
+        lineNumber++;
+        if (line.match(content)) {
+            return lineNumber;
+        }
+    }
+    return false;
+}
 module.exports = {
     generateConfigFile,
+    searchFileLazily
 };
 //# sourceMappingURL=tools.js.map

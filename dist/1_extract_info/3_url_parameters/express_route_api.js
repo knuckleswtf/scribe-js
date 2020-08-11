@@ -39,7 +39,7 @@ function run(endpoint, config) {
     return keyBy(urlParameters, 'name');
 }
 module.exports = {
-    routers: [],
+    routers: ['express'],
     run
 };
 //# sourceMappingURL=express_route_api.js.map

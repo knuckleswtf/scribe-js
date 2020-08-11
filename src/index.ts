@@ -11,7 +11,13 @@ const log = require('debug')('lib:scribe');
 
 import utils = require('./utils/parameters');
 
-function generate(endpoints: scribe.Endpoint[], config: scribe.Config, serverFile?: string, shouldOverwriteMarkdownFiles: boolean = false) {
+function generate(
+    endpoints: scribe.Endpoint[],
+    config: scribe.Config,
+    router: scribe.SupportedRouters,
+    serverFile?: string,
+    shouldOverwriteMarkdownFiles: boolean = false
+) {
     if (!serverFile) {
         console.log("WARNING: You didn't specify a server file. This means that either your app is started by your app file, or you forgot.");
         console.log("If you forgot, you'll need to specify a server file for response calls to work.");
@@ -31,9 +37,12 @@ function generate(endpoints: scribe.Endpoint[], config: scribe.Config, serverFil
 
             // Done in here to prevent docblock parsing for endpoints which have already been excluded
             e.docblock = await d.getDocBlockForEndpoint(e) || {} as scribe.DocBlock;
-            if (e.docblock.hideFromApiDocs == false) {
-                endpointsToDocument.push(e);
+
+            if (e.docblock.hideFromApiDocs === true) {
+                continue;
             }
+
+            endpointsToDocument.push(e);
         }
 
         const strategies = config.strategies || {
@@ -46,6 +55,7 @@ function generate(endpoints: scribe.Endpoint[], config: scribe.Config, serverFil
             ],
             urlParameters: [
                 require('./1_extract_info/3_url_parameters/express_route_api') as scribe.UrlParametersStrategy,
+                require('./1_extract_info/3_url_parameters/adonis_route_api') as scribe.UrlParametersStrategy,
                 require('./1_extract_info/3_url_parameters/url_param_tag') as scribe.UrlParametersStrategy,
             ],
             queryParameters: [
@@ -66,48 +76,54 @@ function generate(endpoints: scribe.Endpoint[], config: scribe.Config, serverFil
         };
 
         for (let endpoint of endpointsToDocument) {
+            endpoint.metadata = {};
             for (let metadataStrategy of strategies.metadata) {
-                if (shouldUseWithRouter(metadataStrategy, config.router)) {
+                if (shouldUseWithRouter(metadataStrategy, router)) {
                     endpoint.metadata = Object.assign({}, endpoint.metadata, await metadataStrategy.run(endpoint, config, routeGroup));
                 }
             }
 
+            endpoint.headers = {};
             for (let headersStrategy of strategies.headers) {
-                if (shouldUseWithRouter(headersStrategy, config.router)) {
+                if (shouldUseWithRouter(headersStrategy, router)) {
                     endpoint.headers = Object.assign({}, endpoint.headers, await headersStrategy.run(endpoint, config, routeGroup));
                 }
             }
 
+            endpoint.urlParameters = {};
             for (let urlParametersStrategy of strategies.urlParameters) {
-                if (shouldUseWithRouter(urlParametersStrategy, config.router)) {
+                if (shouldUseWithRouter(urlParametersStrategy, router)) {
                     endpoint.urlParameters
                         = Object.assign({}, endpoint.urlParameters, await urlParametersStrategy.run(endpoint, config, routeGroup));
                 }
-
-                // Replace parameters in URL
-                endpoint.boundUri = Object.values(endpoint.urlParameters)
-                    .reduce((uri, p) => {
-                        // Optional parameters with no value won't get substituted
-                        return uri.replace(p.match, p.value == null ? '' : p.value);
-                    }, endpoint.uri);
-                // Replace parameters in URL
-                endpoint.uri = Object.values(endpoint.urlParameters)
-                    .reduce((uri, p) => {
-                        return p.placeholder ? uri.replace(p.match, p.placeholder) : uri;
-                    }, endpoint.uri);
-
             }
 
+            // Replace parameters in URL
+            // match = string to match in URL string
+            // placeholder = what to replace it with for docs
+            // value = what to replace it with for examples
+            endpoint.boundUri = Object.values(endpoint.urlParameters)
+                .reduce((uri, p) => {
+                    // Optional parameters with no value won't get substituted
+                    return uri.replace(p.match, p.value == null ? '' : p.value);
+                }, endpoint.uri);
+            endpoint.uri = Object.values(endpoint.urlParameters)
+                .reduce((uri, p) => {
+                    return p.placeholder ? uri.replace(p.match, p.placeholder) : uri;
+                }, endpoint.uri);
+
+            endpoint.queryParameters = {};
             for (let queryParametersStrategy of strategies.queryParameters) {
-                if (shouldUseWithRouter(queryParametersStrategy, config.router)) {
+                if (shouldUseWithRouter(queryParametersStrategy, router)) {
                     endpoint.queryParameters
                         = Object.assign({}, endpoint.queryParameters, await queryParametersStrategy.run(endpoint, config, routeGroup));
                 }
             }
             endpoint.cleanQueryParameters = utils.removeEmptyOptionalParametersAndTransformToKeyValue(endpoint.queryParameters);
 
+            endpoint.bodyParameters = {};
             for (let bodyParametersStrategy of strategies.bodyParameters) {
-                if (shouldUseWithRouter(bodyParametersStrategy, config.router)) {
+                if (shouldUseWithRouter(bodyParametersStrategy, router)) {
                     endpoint.bodyParameters
                         = Object.assign({}, endpoint.bodyParameters, await bodyParametersStrategy.run(endpoint, config, routeGroup));
                 }
@@ -128,7 +144,7 @@ function generate(endpoints: scribe.Endpoint[], config: scribe.Config, serverFil
 
             endpoint.responses = [];
             for (let responsesStrategy of strategies.responses) {
-                if (shouldUseWithRouter(responsesStrategy, config.router)) {
+                if (shouldUseWithRouter(responsesStrategy, router)) {
 
                     const responses = await responsesStrategy.run(endpoint, config, routeGroup)
                     endpoint.responses = endpoint.responses.concat(responses)
@@ -136,8 +152,9 @@ function generate(endpoints: scribe.Endpoint[], config: scribe.Config, serverFil
             }
             appProcess && appProcess.kill();
 
+            endpoint.responseFields = {};
             for (let responseFieldsStrategy of strategies.responseFields) {
-                if (shouldUseWithRouter(responseFieldsStrategy, config.router)) {
+                if (shouldUseWithRouter(responseFieldsStrategy, router)) {
                     endpoint.responseFields
                         = Object.assign({}, endpoint.responseFields, await responseFieldsStrategy.run(endpoint, config, routeGroup));
                 }

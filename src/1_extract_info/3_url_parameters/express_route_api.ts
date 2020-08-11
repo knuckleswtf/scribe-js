@@ -47,6 +47,6 @@ function run(endpoint: scribe.Endpoint, config): scribe.UrlParameters {
 }
 
 export = {
-    routers: [],
+    routers: ['express'],
     run
 };

@@ -9,7 +9,7 @@ function shouldMakeResponseCall(config, endpoint, routeGroup) {
     }
     const allowedMethods = routeGroup.apply.responseCalls.methods;
     // @ts-ignore
-    if (allowedMethods.includes('*') || allowedMethods.includes(Object.keys(endpoint.route.methods)[0].toUpperCase())) {
+    if (allowedMethods.includes('*') || allowedMethods.includes(Object.keys(endpoint.methods)[0].toUpperCase())) {
         return true;
     }
     return false;
@@ -31,7 +31,7 @@ function makeResponseCall(responseCallRules, endpoint) {
     let responseContent;
     const promise = new Promise((resolve, reject) => {
         const req = http.request(responseCallRules.baseUrl, {
-            method: Object.keys(endpoint.route.methods)[0],
+            method: Object.keys(endpoint.methods)[0],
             headers: endpoint.headers,
             path: endpoint.boundUri + (queryParameters ? `?` + qs.stringify(queryParameters) : ''),
         }, (resp) => {
