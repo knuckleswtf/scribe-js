@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "Node",
+    "target": "ES2018",
+    "sourceMap": true,
+    "declaration": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "declarationDir": "types",
+    "allowSyntheticDefaultImports": true,
+    "lib": ["es2020"]
+  },
+  "exclude": [
+    "node_modules",
+    "spec",
+    "demos",
+    "test"
+  ],
+  "include": [
+    "src"
+  ],
+  "types": [
+    "node"
+  ]
+}

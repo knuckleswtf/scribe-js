@@ -1,44 +1,37 @@
-import {express} from "../../typedefs/express";
-import {scribe} from "../../typedefs/core";
-
+"use strict";
 const findLastIndex = require('lodash.findlastindex');
-
-function getRoutesFromRouter(router: express.DecoratedRouter, basePath = ''): scribe.Endpoint[] {
-    const endpoints = router.stack.map(function mapRouteToEndpointObject(layer): scribe.Endpoint|scribe.Endpoint[] {
+function getRoutesFromRouter(router, basePath = '') {
+    const endpoints = router.stack.map(function mapRouteToEndpointObject(layer) {
+        var _a;
         if (layer.route && typeof layer.route.path === 'string') {
             return {
                 uri: basePath + layer.route.path,
                 handler: layer.route.stack[0].handle,
                 route: layer.route,
                 methods: Object.keys(layer.route.methods).map(method => method.toUpperCase()),
-                declaredAt: router._scribe.handlers[layer.route.path] ?? [],
+                declaredAt: (_a = router._scribe.handlers[layer.route.path]) !== null && _a !== void 0 ? _a : [],
             };
         }
-
-        if (layer.name === 'router') {// Nested routers
+        if (layer.name === 'router') { // Nested routers
             const basePath = expressRegexpToPath(layer.regexp);
             return getRoutesFromRouter(layer.handle, basePath);
         }
-
     })
         .filter(route => route)
-        .reduce<scribe.Endpoint[]>((allRoutes, endpoint) => (allRoutes).concat(endpoint), [])
+        .reduce((allRoutes, endpoint) => (allRoutes).concat(endpoint), [])
         .filter(function removeMiddleware(routeHandler, thisIndex, allRoutes) {
-            const lastHandlerFunction = findLastIndex(
-                allRoutes,
-                (e: scribe.Endpoint) => {
-                    return (e.route.stack[0].method == routeHandler.route.stack[0].method) && (e.uri === routeHandler.uri);
-                });
-            return lastHandlerFunction === thisIndex;
+        const lastHandlerFunction = findLastIndex(allRoutes, (e) => {
+            return (e.route.stack[0].method == routeHandler.route.stack[0].method) && (e.uri === routeHandler.uri);
         });
-
+        return lastHandlerFunction === thisIndex;
+    });
     return endpoints;
 }
-
-function expressRegexpToPath(regex: express.PathRegExp): string {
+function expressRegexpToPath(regex) {
     if (regex.fast_slash) {
         return '';
-    } else {
+    }
+    else {
         const match = regex.toString()
             .replace('\\/?', '')
             .replace('(?=\\/|$)', '$')
@@ -46,9 +39,7 @@ function expressRegexpToPath(regex: express.PathRegExp): string {
         return match[1].replace(/\\(.)/g, '$1');
     }
 }
-
-
-export = (app) => {
-    // console.log(app);
+module.exports = (app) => {
     return getRoutesFromRouter(app._router);
 };
+//# sourceMappingURL=get_routes.js.map

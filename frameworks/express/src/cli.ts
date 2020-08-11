@@ -1,9 +1,12 @@
 #!/usr/bin/env node
 import fs = require("fs");
 import path = require("path");
-
-const VERSION = require('../package.json').version;
 import program = require('commander');
+
+import {scribe} from "../../../typedefs/core";
+
+const log = require('debug')('lib:scribe:express');
+const VERSION = require('../package.json').version;
 
 program
     .name('Scribe')
@@ -16,7 +19,7 @@ program
     )
     .option(
         '-a, --app <file>',
-        'The file where you create your application (Express/). This file should export your app/router object.',
+        'The file where you create your Express application. This file should export your app/router object.',
         'index.js',
     )
     .option(
@@ -42,8 +45,24 @@ program
             return;
         }
 
-        const generate = require('./index');
-        await generate(configFile, appFile, serverFile, force);
+        const configObject: scribe.Config = require(configFile);
+
+        const appObject = require(appFile);
+
+        if (!appObject._router) {
+            console.error("Couldn't find an export from your app file. Did you remember to export your `app` object?");
+            process.exit(1);
+        }
+
+        if (!appObject._decoratedByScribe) {
+            console.error("Something's not right. Did you remember to add `require('@knuckleswtf/scribe')(app)` before registering your Express routes?");
+            process.exit(1);
+        }
+
+        const endpoints = require('./get_routes.js')(appObject);
+
+        const { generate } = require('@knuckleswtf/scribe');
+        await generate(endpoints, configObject, serverFile, force);
     });
 
 program
@@ -55,7 +74,7 @@ program.parse(process.argv);
 
 async function createConfigFile() {
     const fileName = '.scribe.config.js';
-    const config = require('../config.js');
+    const config = require('@knuckleswtf/scribe/config.js');
 
     console.log(`Hi! We'll ask a few questions to help set up your config file. All questions are optional and you can set the values yourself later.`);
     console.log('Hit Enter to skip a question.');
@@ -96,7 +115,7 @@ async function createConfigFile() {
         let responseCallsBaseUrl = "http://localhost:" + responses.localPort;
 
         // Doing a string find + replace rather than JSON.stringify because we want to preserve comments
-        let fileContents = fs.readFileSync(path.join(__dirname, '../config.js'), 'utf8');
+        let fileContents = fs.readFileSync(path.resolve( 'node_modules/@knuckleswtf/scribe/config.js'), 'utf8');
         fileContents = fileContents.replace(/title: "(.+)"/, `title: "${title}"`);
         let occurrence = 0;
         fileContents = fileContents.replace(/baseUrl: "(.+)"/g, () => {
