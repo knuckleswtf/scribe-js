@@ -83,11 +83,22 @@ function parseDocBlockString(docBlock: string): DocBlock {
         text: docblockParser.multilineTilEmptyLineOrTag
     }).parse(docBlock);
 
-    const [title = null, description = null] = parsed.text ? parsed.text : [null, null];
+    let title = null, description = null;
+    if (Array.isArray(parsed.text)) {
+        // If the user left a blank line between title and description, we'll get an array
+        [title = null, ...description] = parsed.text;
+        if (description.length) {
+            description = description.join('\n');
+        }
+    } else if (typeof parsed.text == 'string') {
+        // Otherwise, we'll get a single string
+        [title = null, description = null] = parsed.text.split("\n", 2);
+    }
+
     const result = Object.assign({}, defaultTagValues, parsed.tags);
 
-    result.title = title ? title.replace(/^\/\*\*\s*/, '') : null;
-    result.description = description;
+    result.title = title ? title.trim().replace(/^\/\*\*\s*/, '') : null;
+    result.description = description ? description.trim().replace(/\/$/, '') : null; // Sometimes the last slash of the docblock is included
 
     result.urlParam = transformFieldListToObject(result.urlParam);
     result.queryParam = transformFieldListToObject(result.queryParam);
