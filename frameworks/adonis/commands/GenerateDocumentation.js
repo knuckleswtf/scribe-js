@@ -7,7 +7,7 @@ const { Command } = require.main.require('@adonisjs/ace')
 
 class GenerateDocumentation extends Command {
     static get signature () {
-        return 'scribe:generate {--force : Discard any changes you\'ve made to the Markdown files}'
+        return "scribe:generate {--force : Discard any changes you've made to the Markdown files}"
     }
 
     static get description () {
@@ -53,13 +53,13 @@ class GenerateDocumentation extends Command {
 
             if (typeof r.handler == 'string') {
                 const [controller, method] = r.handler.split('.');
-                const fullControllerName = 'app/Controllers/Http/' + controller;
-                const controllerFile = path.resolve(fullControllerName + '.js');
+                const controllerFile = path.resolve( `app/Controllers/Http/${controller}.js`);
 
                 const lineNumber = await tools.searchFileLazily(controllerFile, new RegExp(`(async\\s*)?${method}\\s*\\(`));
                 endpoint.declaredAt = lineNumber ? [controllerFile, lineNumber] : [];
 
-                const controllerInstance = use(controllerFile);
+                const controllerNamespacedName = `App/Controllers/Http/${controller}`;
+                const controllerInstance = use(controllerNamespacedName);
                 endpoint.handler = (new controllerInstance)[method];
             } else {// inline function was used
                 endpoint.handler = r.handler;
