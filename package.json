@@ -46,5 +46,8 @@
     "@types/postman-collection": "^3.5.5",
     "jest": "^26.1.0",
     "typescript": "^3.9.3"
+  },
+  "engines": {
+    "node": ">=12.4.0"
   }
 }

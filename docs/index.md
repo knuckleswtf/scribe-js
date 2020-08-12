@@ -25,7 +25,7 @@ Generate API documentation for humans from your Node.js codebase. [Here's what t
 For now, only Express 4+ and Adonis.js 4 are supported.
 
 ## Usage
-Node.js 10 or higher is required.
+Node.js 12.4.0 or higher is required.
 
 ### Express
 Install with:
@@ -45,6 +45,8 @@ To generate your docs, run:
 ```sh
 npx scribe generate -a <your-app-file>.js
 ```
+
+See the [Getting Started Guide](./guide-getting-started/express.html) for more
 
 ## Adonis.js
 
@@ -67,4 +69,6 @@ To generate your docs, run the Ace command `scribe:generate`:
 
 ```bash
 node ace scribe:generate
-````
+```
+
+See the [Getting Started Guide](./guide-getting-started/adonis.html) for more

@@ -12,7 +12,9 @@ Automatically generate API documentation for humans from your Node.js codebase. 
  
 
 ## Installation
-Node.js 10 or higher is required.
+> Note: Scribe for JS is still in beta, but we're on our way to stabilizing things. Things may break or change between releases (0.x). Thanks for trying it, and feel free to send in any feedback!
+
+Node.js 12.4.0 or higher is required.
 
 Supported frameworks:
 - Express
@@ -27,6 +29,7 @@ npm i @knuckleswtf/scribe-express
 # For Adonis.js
 npm i @knuckleswtf/scribe-adonis
 ```
+
 ## Documentation
 View the docs at [scribe-js.rtfd.io](https://scribe-js.rtfd.io/);
 

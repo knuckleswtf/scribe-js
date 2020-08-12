@@ -29,5 +29,8 @@
     "@adonisjs/ace": "^5.0.8",
     "@adonisjs/core": "^2.10.4",
     "@adonisjs/fold": "^4.0.9"
+  },
+  "engines": {
+    "node": ">=12.4.0"
   }
 }
