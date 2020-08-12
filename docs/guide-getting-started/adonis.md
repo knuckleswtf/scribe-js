@@ -7,6 +7,15 @@ First, install the package:
 npm i @knuckleswtf/scribe-adonis
 ```
 
+Then add the service provider to the `aceProviders` array in your `start/app.js`:
+
+```js
+const aceProviders = [
+  '@adonisjs/lucid/providers/MigrationsProvider',
+  '@knuckleswtf/scribe-adonis/providers/ScribeProvider',
+]
+```
+
 Next, create your config file:
 
 ```bash
@@ -22,7 +31,11 @@ Now let's do a test run. Run the command to generate your docs.
  node ace scribe:generate
 ```
 
-Visit your newly generated docs. Find the `docs/index.html` file in your `public/` folder and open it in your browser.
+Visit your newly generated docs. Find the `docs/index.html` file in your `public/` folder and open it in your browser. 
+
+```eval_rst
+.. Tip:: To access your docs via your Adonis app, you'll need to uncomment or add :code:`Adonis/Middleware/Static`, to the :code:`serverMiddleware` array in `start/kernel.js`.ti
+```
 
 There's also a Postman collection generated for you. You can get it by visiting `public/docs/collection.json`.
 

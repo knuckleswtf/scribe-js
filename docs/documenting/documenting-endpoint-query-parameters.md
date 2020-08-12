@@ -18,10 +18,6 @@ app.get('posts', (req, res) => {
 });
 ```
 
-```eval_rst
-.. Important:: Remember to add the docblock on the route declaration, not the function declaration (:code:`createPost` in this case).
-```
-
 The query parameters will be included in the generated documentation text and example requests:
 
 ![](../images/endpoint-queryparams-1.png)

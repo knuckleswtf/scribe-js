@@ -36,10 +36,6 @@ function createPost(req, res, next) {
 app.post('/posts', createPost)
 ```
 
-```eval_rst
-.. Important:: Remember to add the docblock on the route declaration, not the function declaration (:code:`createPost` in this case).
-```
-
 The body parameters will be included in the generated documentation text and example requests:
 
 ![](../images/endpoint-bodyparams-1.png)

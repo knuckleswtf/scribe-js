@@ -98,7 +98,7 @@ The following Blade files are present in the `partials` directory:
    - the `$settings` array that contains `logo`, `languages` and `title`.
 
 ```eval_rst
-.. Important::  These Blade files are all configured for generating Markdown which is then turned into static HTML (by Pastel). Therefore, hardcoded and relative links are used (eg :code:`<a href="./collection.json">`). For users using :code:`laravel` type documentation, these links are afterwards replaced in the generated HTML file with the correct Blade helpers (eg :code:`<a href="{{ url('docs.json') }}" >`).
+.. Important:: These Blade files are all configured for generating Markdown which is then turned into static HTML (by Pastel). Therefore, hardcoded and relative links are used (eg :code:`<a href="./collection.json">`). For users using :code:`laravel` type documentation, these links are afterwards replaced in the generated HTML file with the correct Blade helpers (eg :code:`<a href="{{ url('docs.json') }}" >`).
 ```
 
 - `group.blade.php`: This is the template for a group of endpoints. For each group of endpoints, this file is rendered, and gets transformed into the corresponding group file (for instance, endpoints with group "User Management" are passed through this template to create the file `groups/user-management.md`). It has access to the following variables:
