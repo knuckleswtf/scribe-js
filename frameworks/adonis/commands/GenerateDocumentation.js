@@ -26,7 +26,7 @@ class GenerateDocumentation extends Command {
                 {silent: true}
                 );
 
-            tools.info("We've generated a config file with some default settings for you.");
+            tools.info(`We've generated a config file (${path.resolve('.scribe.config.js')}) with some default settings for you.`);
             tools.info("Check it out later to see what you can tweak for better docs.");
         }
 
