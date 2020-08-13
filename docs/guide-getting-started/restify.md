@@ -67,7 +67,8 @@ If you'd like to exclude some routes, there are two ways:
 ```eval_rst
 .. Note:: For Restify routes, the docblock needs to be on the route declaration, not the function declaration. For instance:
 
-  .. code:: javascript 
+  .. code:: javascript
+
      class UserController {
        /**
         * This won't work.

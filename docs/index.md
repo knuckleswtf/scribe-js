@@ -6,7 +6,7 @@ Generate API documentation for humans from your Node.js codebase. [Here's what t
 ```eval_rst
 .. admonition:: Wondering where to get started?
    
-   Check out our getting started guide for your framework: `Express <guide-getting-started/express.html>`_,  `Adonis.js <guide-getting-started/adonis.html>`_.
+   Check out our getting started guide for your framework: `Adonis.js <guide-getting-started/adonis.html>`_, `Express <guide-getting-started/express.html>`_, and `Restify <guide-getting-started/restify.html>`_,.
 ```
 
 ## Contents
