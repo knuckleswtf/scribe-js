@@ -1,10 +1,10 @@
-# Getting Started with Scribe for Express
+# Getting Started with Scribe for Restify
 
 ## Install and configure
 First, install the package:
 
 ```bash
-npm i @knuckleswtf/scribe-express
+npm i @knuckleswtf/scribe-restify
 ```
 
 Next, create your config file:
@@ -19,32 +19,27 @@ This will ask you a few questions and create a `.scribe.config.js` file in your 
 Almost ready!
 
 Two things you need to know:
-- **Your "app file"** is the file where you create your Express app and attach routes. Usually an `index.js` or `app.js`.
-- **Your server file** is the file where you actually start your server (usually by calling `app.listen()`). Sometimes it's the same as your app file, sometimes it's a different file (like `bin/www`).
+- **Your "server file"** is the file where you set up and start your Restify server. Usually an `index.js`.
 
 Got that? Cool. Here are the key things to do:
 
-- Make sure to export the `app` object from the app file.
+- Make sure to export the `server` object from the server file.
 
 ```js
-module.exports = app;
+module.exports = server;
 ```
 
-- Add this line in your app file. Make sure it's placed before your routes are registered:
+- Add this line in your server file. Make sure it's placed before your routes are registered:
 
 ```js
-require('@knuckleswtf/scribe-express')(app)
+require('@knuckleswtf/scribe-restify')(server)
 ```
 
 ## Do a test run
 Now let's do a test run. Run the command to generate your docs.
 
 ```bash
-npx scribe generate -a <your-app-file>.js -s <your-server-file>
-```
-
-```eval_rst
-   .. Note:: Scribe needs your app file to extract information about your routes. It needs your server file to try to start your app for `response calls <documenting-endpoint-responses.html#generating-responses-automatically-via-response-calls>`_  (if it isn't already running). If your app file is the same as your server file (your app file also starts your HTTP server), you can omit the :code:`-s <your-server-file>`
+npx scribe generate -s <your-server-file>
 ```
 
 Visit your newly generated docs. Find the `docs/index.html` file in your `public/` folder and open it in your browser.
@@ -67,10 +62,10 @@ You might also want to decide what routes you want to document. By default, Scri
 
 If you'd like to exclude some routes, there are two ways:
 
-- In the docblock for the endpoint, add this tag: `@hideFromApiDocs`.
+- In the docblock for the route declaration, add this tag: `@hideFromApiDocs`.
 
 ```eval_rst
-.. Note:: For Express routes, the docblock needs to be on the route declaration, not the function declaration. For instance:
+.. Note:: For Restify routes, the docblock needs to be on the route declaration, not the function declaration. For instance:
 
   .. code:: javascript 
      class UserController {
@@ -86,7 +81,7 @@ If you'd like to exclude some routes, there are two ways:
       * This will work.
       * @hideFromApiDocs
       */
-     app.post('/users', UserController.create)
+     server.post('/users', UserController.create)
 
 ```
 

@@ -66,6 +66,10 @@ program
 
         const {generate} = require('@knuckleswtf/scribe');
         await generate(endpoints, configObject, 'express', serverFile, force);
+
+        // Make sure to end process, in case server is still running
+        // Wrapping in a timeout because it seems sometimes ncp/pastel fails to copy over all assets in time
+        setTimeout(() => process.exit(0), 2200);
     });
 
 

@@ -22,31 +22,10 @@ Generate API documentation for humans from your Node.js codebase. [Here's what t
 ```
 
 ## Supported frameworks
-For now, only Express 4+ and Adonis.js 4 are supported.
+Currently, only Adonis.js 4+, Express 4+ and Restify 8+ are supported.
 
 ## Usage
 Node.js 12.4.0 or higher is required.
-
-### Express
-Install with:
-
-```sh
-npm i @knuckleswtf/scribe-express
-```
-
-To generate your docs, you'll need to locate your "app file". Your app file is the file where you create your Express app. Make sure to export the `app` object from the file. Also, add this line in that file before registering your routes:
-
-```js
-require('@knuckleswtf/scribe')(app)
-```
-
-To generate your docs, run:
-
-```sh
-npx scribe generate -a <your-app-file>.js
-```
-
-See the [Getting Started Guide](./guide-getting-started/express.html) for more.
 
 ## Adonis.js
 
@@ -72,3 +51,45 @@ node ace scribe:generate
 ```
 
 See the [Getting Started Guide](./guide-getting-started/adonis.html) for more.
+
+### Express
+Install with:
+
+```sh
+npm i @knuckleswtf/scribe-express
+```
+
+To generate your docs, you'll need to locate your "app file". Your app file is the file where you create your Express app. Make sure to export the `app` object from the file. Also, add this line in that file before registering your routes:
+
+```js
+require('@knuckleswtf/scribe-express')(app)
+```
+
+To generate your docs, run:
+
+```sh
+npx scribe generate -a <your-app-file>.js
+```
+
+See the [Getting Started Guide](./guide-getting-started/express.html) for more.
+
+### Restify
+Install with:
+
+```sh
+npm i @knuckleswtf/scribe-restify
+```
+
+To generate your docs, you'll need to locate your "server file". Your server file is the file where you set up and start your Restify server. Make sure to export the `server` object from the file. Also, add this line in that file before registering your routes:
+
+```js
+require('@knuckleswtf/scribe-restify')(server)
+```
+
+To generate your docs, run:
+
+```sh
+npx scribe generate -s <your-server-file>.js
+```
+
+See the [Getting Started Guide](./guide-getting-started/restify.html) for more.

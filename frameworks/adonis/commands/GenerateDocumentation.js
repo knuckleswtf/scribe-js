@@ -42,6 +42,9 @@ class GenerateDocumentation extends Command {
 
         const { generate } = require('@knuckleswtf/scribe');
         await generate(endpoints, config, 'adonis', path.resolve('server.js'), options.force || false);
+
+        // Make sure to end process, in case server is still running
+        setTimeout(() => process.exit(0), 2200);
     }
 
     async getEndpoints(tools) {

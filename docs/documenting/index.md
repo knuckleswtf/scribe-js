@@ -3,7 +3,7 @@ Scribe tries to infer information about your API from your code, but you can enr
 
 
 ```eval_rst
-.. Important:: For Express routes, the docblock needs to be on the route declaration, not the function declaration. For instance:
+.. Important:: For Express and Restify routes, the docblock needs to be on the route declaration, not the function declaration. For instance:
 
   .. code:: javascript 
      class UserController {

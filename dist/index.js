@@ -11,13 +11,13 @@ const p = require("./utils/parameters");
 const tools = require("./tools");
 const { isPortTaken } = require('./utils/response_calls');
 const log = require('debug')('lib:scribe');
-function generate(endpoints, config, router, serverFile, shouldOverwriteMarkdownFiles = false) {
+async function generate(endpoints, config, router, serverFile, shouldOverwriteMarkdownFiles = false) {
     if (router == 'express' && !serverFile) {
         tools.warn("You didn't specify a server file. This means that either your app is started by your app file, or you forgot.");
         tools.warn("If you forgot, you'll need to specify a server file for response calls to work.");
     }
     const strategies = getStrategies(config);
-    config.routes.forEach(async (routeGroup) => {
+    const parsedEndpoints = (await Promise.all(config.routes.map(async (routeGroup) => {
         let endpointsToDocument = [];
         for (let e of endpoints) {
             if (routeGroup.exclude.length) {
@@ -130,20 +130,21 @@ function generate(endpoints, config, router, serverFile, shouldOverwriteMarkdown
                 appProcess.kill();
             }
         }, 3000);
-        const groupBy = require('lodash.groupby');
-        const groupedEndpoints = groupBy(endpointsToDocument, 'metadata.groupName');
-        const markdown = require("./2_write_output/markdown")(config);
-        const sourceOutputPath = path.resolve('docs');
-        markdown.writeDocs(groupedEndpoints, sourceOutputPath, shouldOverwriteMarkdownFiles);
-        const pastel = require('@knuckleswtf/pastel');
-        await pastel.generate(sourceOutputPath + '/index.md', path.resolve(config.outputPath));
-        if (config.postman.enabled) {
-            tools.info(`Writing postman collection to ${path.resolve(config.outputPath)}...`);
-            const postman = require("./2_write_output/postman")(config);
-            postman.writePostmanCollectionFile(groupedEndpoints, path.resolve(config.outputPath));
-            tools.success("Postman collection generated,");
-        }
-    });
+        return endpointsToDocument;
+    }))).flat();
+    const groupBy = require('lodash.groupby');
+    const groupedEndpoints = groupBy(parsedEndpoints, 'metadata.groupName');
+    const markdown = require("./2_write_output/markdown")(config);
+    const sourceOutputPath = path.resolve('docs');
+    markdown.writeDocs(groupedEndpoints, sourceOutputPath, shouldOverwriteMarkdownFiles);
+    const pastel = require('@knuckleswtf/pastel');
+    await pastel.generate(sourceOutputPath + '/index.md', path.resolve(config.outputPath));
+    if (config.postman.enabled) {
+        tools.info(`Writing postman collection to ${path.resolve(config.outputPath)}...`);
+        const postman = require("./2_write_output/postman")(config);
+        postman.writePostmanCollectionFile(groupedEndpoints, path.resolve(config.outputPath));
+        tools.success("Postman collection generated,");
+    }
 }
 function getStrategies(config) {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p;

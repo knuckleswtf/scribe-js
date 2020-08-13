@@ -17,17 +17,21 @@ Automatically generate API documentation for humans from your Node.js codebase. 
 Node.js 12.4.0 or higher is required.
 
 Supported frameworks:
-- Express
 - Adonis.js
+- Express
+- Restify
 
 More coming soon!
 
 ```bash
+# For Adonis.js
+npm i @knuckleswtf/scribe-adonis
+
 # For Express
 npm i @knuckleswtf/scribe-express
 
-# For Adonis.js
-npm i @knuckleswtf/scribe-adonis
+# For Restify
+npm i @knuckleswtf/scribe-restify
 ```
 
 ## Documentation

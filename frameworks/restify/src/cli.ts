@@ -60,6 +60,9 @@ program
         const endpoints = require('./get_routes')(serverObject);
         const {generate} = require('@knuckleswtf/scribe');
         await generate(endpoints, configObject, 'restify', null, force);
+
+        // Make sure to end process, in case server is still running
+        setTimeout(() => process.exit(0), 2200);
     });
 
 
