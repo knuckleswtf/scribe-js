@@ -41,7 +41,7 @@ function makeResponseCall(responseCallRules: scribe.ResponseCallRules, endpoint:
 
     // todo file params
 
-    console.log("Hitting " + endpoint.uri);
+    console.log("Hitting " + endpoint.methods[0] + " " + endpoint.uri);
 
     const http = require('http');
     let responseContent: string;
@@ -75,7 +75,10 @@ function makeResponseCall(responseCallRules: scribe.ResponseCallRules, endpoint:
             .on("error", (err) => {
                 reject(err);
             })
-            .setTimeout(5000);
+            .on("timeout", () => {
+                reject(new Error("Request timed out"));
+            })
+            .setTimeout(3000);
 
         if (Object.keys(bodyParameters).length) {
             req.write(JSON.stringify(bodyParameters));

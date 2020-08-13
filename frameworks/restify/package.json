@@ -1,0 +1,41 @@
+{
+  "name": "@knuckleswtf/scribe-restify",
+  "version": "0.0.8",
+  "description": "Generate API documentation for humans from your Restify codebase.",
+  "main": "dist/decorator.js",
+  "bin": {
+    "scribe": "dist/cli.js"
+  },
+  "scripts": {
+    "test": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/knuckleswtf/scribe-js.git"
+  },
+  "keywords": [
+    "documentation",
+    "API",
+    "REST API",
+    "generate"
+  ],
+  "author": "Shalvah <shalvah.adebayo@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/knuckleswtf/scribe-js/issues"
+  },
+  "homepage": "https://github.com/knuckleswtf/scribe-js#readme",
+  "dependencies": {
+    "@knuckleswtf/scribe": "0.0.8",
+    "commander": "^5.1.0",
+    "lodash.findlastindex": "^4.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^14.0.5",
+    "express": "^4.17.1",
+    "typescript": "^3.9.3"
+  },
+  "engines": {
+    "node": ">=12.4.0"
+  }
+}

@@ -26,12 +26,12 @@ function makeResponseCall(responseCallRules, endpoint) {
     const bodyParameters = Object.assign({}, endpoint.cleanBodyParameters || {}, responseCallRules.bodyParams || {});
     const queryParameters = Object.assign({}, endpoint.cleanQueryParameters || {}, responseCallRules.queryParams || {});
     // todo file params
-    console.log("Hitting " + endpoint.uri);
+    console.log("Hitting " + endpoint.methods[0] + " " + endpoint.uri);
     const http = require('http');
     let responseContent;
     const requestOptions = {
         method: endpoint.methods[0],
-        headers: Object.assign({ 'user-agent': 'curl/7.22.0' }, endpoint.headers),
+        headers: Object.assign({ 'user-agent': 'curl/7.22.0', 'accept-version': '~2' }, endpoint.headers),
         path: endpoint.boundUri + (Object.keys(queryParameters).length ? `?` + qs.stringify(queryParameters) : ''),
     };
     const promise = new Promise((resolve, reject) => {
@@ -52,7 +52,10 @@ function makeResponseCall(responseCallRules, endpoint) {
             .on("error", (err) => {
             reject(err);
         })
-            .setTimeout(5000);
+            .on("timeout", () => {
+            reject(new Error("Request timed out"));
+        })
+            .setTimeout(3000);
         if (Object.keys(bodyParameters).length) {
             req.write(JSON.stringify(bodyParameters));
         }

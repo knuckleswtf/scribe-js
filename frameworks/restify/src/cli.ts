@@ -5,7 +5,7 @@ import program = require('commander');
 
 import {scribe} from "../../../typedefs/core";
 
-const log = require('debug')('lib:scribe:express');
+const log = require('debug')('lib:scribe:restify');
 const VERSION = require('../package.json').version;
 
 program
@@ -19,24 +19,18 @@ program
     )
     .option(
         '-a, --app <file>',
-        'The file where you create your Express application. Make sure it exports your app/router object.',
+        'The file where you create your Restify application. Make sure it exports your server object.',
         'index.js',
-    )
-    .option(
-        '-s, --server <file>',
-        'Server file of your API. This is the file that is executed by Node to start your server. ' +
-        'You can omit this if your app file also starts your server.',
     )
     .option(
         '-f, --force',
         "Discard any changes you've made to the source Markdown files",
         false,
     )
-    .description("Generate API documentation from your Express routes.")
-    .action(async ({config, app, server, force}) => {
+    .description("Generate API documentation from your Restify routes.")
+    .action(async ({config, app, force}) => {
         const configFile = path.resolve(config);
         const appFile = path.resolve(app);
-        const serverFile = server ? path.resolve(server) : null;
 
         if (!fs.existsSync(configFile)) {
             console.log(`⚠ Config file ${configFile} does not exist. Initialising with a default config file...`);
@@ -47,22 +41,22 @@ program
 
         const configObject: scribe.Config = require(configFile);
 
-        const appObject = require(appFile);
+        let appObject = require(appFile);
 
-        if (!appObject._router) {
-            console.error("Couldn't find an export from your app file. Did you remember to export your `app` object?");
+        if (appObject.name != 'restify') {
+            console.error("Couldn't find an export from your app file. Did you remember to export your `server` object?");
             process.exit(1);
         }
-
+/*
         if (!appObject._decoratedByScribe) {
             console.error("Something's not right. Did you remember to add `require('@knuckleswtf/scribe')(app)` before registering your Express routes?");
             process.exit(1);
-        }
+        }*/
 
-        const endpoints = require('./get_routes.js')(appObject);
+        const endpoints = require('./get_routes')(appObject);
 
         const {generate} = require('@knuckleswtf/scribe');
-        await generate(endpoints, configObject, 'express', serverFile, force);
+        await generate(endpoints, configObject, 'restify', null, force);
     });
 
 
