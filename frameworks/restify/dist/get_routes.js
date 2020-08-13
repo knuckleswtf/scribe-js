@@ -1,6 +1,5 @@
 "use strict";
 function getRoutesFromRouter(router, basePath = '') {
-    console.log(router._scribe.handlers);
     return Object.entries(router._registry._routes).map(function mapRouteToEndpointObject([name, details]) {
         var _a;
         return {

@@ -40,8 +40,6 @@ program
             return;
         }
 
-        const configObject: scribe.Config = require(configFile);
-
         let serverObject = require(serverFile);
 
         if (!(serverObject instanceof EventEmitter)) {
@@ -54,8 +52,12 @@ program
             process.exit(1);
         }
 
-        const endpoints = require('./get_routes')(serverObject);
+        const configObject: scribe.Config = require(configFile);
+        // @ts-ignore
+        configObject.strategies = configObject.strategies || {};
+        configObject.strategies.urlParameters = (configObject.strategies.urlParameters || []).concat(path.join(__dirname, './strategies/url_parameters/restify_route_api'));
 
+        const endpoints = require('./get_routes')(serverObject);
         const {generate} = require('@knuckleswtf/scribe');
         await generate(endpoints, configObject, 'restify', null, force);
     });

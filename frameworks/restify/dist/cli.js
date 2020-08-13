@@ -24,16 +24,19 @@ program
         await createConfigFile();
         return;
     }
-    const configObject = require(configFile);
     let serverObject = require(serverFile);
     if (!(serverObject instanceof EventEmitter)) {
-        console.error("Couldn't find an export from your server file. Did you remember to export your `server` object?");
+        console.error("Couldn't find an export from your server file. Did you remember to export your Restify `server` object?");
         process.exit(1);
     }
     if (!serverObject._decoratedByScribe) {
         console.error("Something's not right. Did you remember to add `require('@knuckleswtf/scribe-restify')(server)` before registering your Restify routes?");
         process.exit(1);
     }
+    const configObject = require(configFile);
+    // @ts-ignore
+    configObject.strategies = configObject.strategies || {};
+    configObject.strategies.urlParameters = (configObject.strategies.urlParameters || []).concat(path.join(__dirname, './strategies/url_parameters/restify_route_api'));
     const endpoints = require('./get_routes')(serverObject);
     const { generate } = require('@knuckleswtf/scribe');
     await generate(endpoints, configObject, 'restify', null, force);

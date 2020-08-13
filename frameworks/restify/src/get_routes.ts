@@ -2,7 +2,6 @@ import {restify} from "../restify";
 import {scribe} from "@knuckleswtf/scribe";
 
 function getRoutesFromRouter(router: restify.DecoratedRouter, basePath = ''): scribe.Endpoint[] {
-    console.log(router._scribe.handlers);
     return Object.entries(router._registry._routes).map(function mapRouteToEndpointObject([name, details]): scribe.Endpoint {
         return {
             uri: details.path,
