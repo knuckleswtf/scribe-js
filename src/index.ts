@@ -174,8 +174,11 @@ async function generate(
         tools.info(`Writing postman collection to ${path.resolve(config.outputPath)}...`);
         const postman = require("./2_write_output/postman")(config);
         postman.writePostmanCollectionFile(groupedEndpoints, path.resolve(config.outputPath));
-        tools.success("Postman collection generated,");
+        tools.success("Postman collection generated.");
     }
+
+    console.log();
+    tools.info(`You can view your docs locally by opening file:///${path.resolve(config.outputPath, 'index.html').replace(/\\/g, '/')} in your browser`)
 }
 
 
