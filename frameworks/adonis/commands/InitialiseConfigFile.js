@@ -23,8 +23,7 @@ class InitialiseConfigFile extends Command {
         tools.info('Hit Enter to skip a question.');
         console.log();
 
-        const inferredApiName = path.basename(path.resolve('./')).split(/[-_\s]+/)
-            .map(word => word[0].toUpperCase() + word.slice(1)).join(' ');
+        const inferredApiName = tools.inferApiName();
 
         const name = await this.ask("What's the name of your API? :", inferredApiName);
         const baseUrl = await this.ask("What base URL do you want to show up in your API docs? :",  Env.get('APP_URL'));

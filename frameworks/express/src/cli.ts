@@ -83,9 +83,7 @@ async function createConfigFile() {
 
     const inquirer = require('inquirer');
 
-    // Basically ucwords (folderName)
-    const inferredApiName = path.basename(path.resolve('./')).split(/[-_\s]+/)
-        .map(word => word[0].toUpperCase() + word.slice(1)).join(' ');
+    const inferredApiName = tools.inferApiName();
 
     const responses = await inquirer
         .prompt([

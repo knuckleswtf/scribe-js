@@ -2,12 +2,14 @@ import fs = require("fs");
 import path = require("path");
 import readline = require('readline');
 
+const inferApiName = () => {
+    // Basically ucwords (folderName)
+    return path.basename(path.resolve('./')).split(/[-_\s]+/)
+        .map(word => word[0].toUpperCase() + word.slice(1)).join(' ')
+        .replace(/\bApi\b/, 'API');
+}
 
 function generateConfigFile(configFilePath, values, options = {silent: false}) {
-    // Basically ucwords (folderName)
-    const inferApiName = () => path.basename(path.resolve('./')).split(/[-_\s]+/)
-        .map(word => word[0].toUpperCase() + word.slice(1)).join(' ');
-
     try {
         let title = (values.name || inferApiName()) + ' Documentation';
         let baseUrl = values.baseUrl || 'http://localhost:3000';
@@ -97,4 +99,5 @@ export = {
     warn,
     success,
     error,
+    inferApiName,
 };

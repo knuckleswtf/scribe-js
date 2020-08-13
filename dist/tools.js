@@ -2,10 +2,13 @@
 const fs = require("fs");
 const path = require("path");
 const readline = require("readline");
-function generateConfigFile(configFilePath, values, options = { silent: false }) {
+const inferApiName = () => {
     // Basically ucwords (folderName)
-    const inferApiName = () => path.basename(path.resolve('./')).split(/[-_\s]+/)
-        .map(word => word[0].toUpperCase() + word.slice(1)).join(' ');
+    return path.basename(path.resolve('./')).split(/[-_\s]+/)
+        .map(word => word[0].toUpperCase() + word.slice(1)).join(' ')
+        .replace(/\bApi\b/, 'API');
+};
+function generateConfigFile(configFilePath, values, options = { silent: false }) {
     try {
         let title = (values.name || inferApiName()) + ' Documentation';
         let baseUrl = values.baseUrl || 'http://localhost:3000';
@@ -82,5 +85,6 @@ module.exports = {
     warn,
     success,
     error,
+    inferApiName,
 };
 //# sourceMappingURL=tools.js.map

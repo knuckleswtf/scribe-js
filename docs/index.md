@@ -46,7 +46,7 @@ To generate your docs, run:
 npx scribe generate -a <your-app-file>.js
 ```
 
-See the [Getting Started Guide](./guide-getting-started/express.html) for more
+See the [Getting Started Guide](./guide-getting-started/express.html) for more.
 
 ## Adonis.js
 
@@ -71,4 +71,4 @@ To generate your docs, run the Ace command `scribe:generate`:
 node ace scribe:generate
 ```
 
-See the [Getting Started Guide](./guide-getting-started/adonis.html) for more
+See the [Getting Started Guide](./guide-getting-started/adonis.html) for more.

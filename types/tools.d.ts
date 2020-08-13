@@ -18,5 +18,6 @@ declare const _default: {
     warn: typeof warn;
     success: typeof success;
     error: typeof error;
+    inferApiName: () => string;
 };
 export = _default;
