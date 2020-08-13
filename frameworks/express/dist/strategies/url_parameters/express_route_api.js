@@ -1,6 +1,5 @@
 "use strict";
-const utils = require("@knuckleswtf/scribe/dist/utils/parameters");
-const { getParameterExample } = utils;
+const { getParameterExample } = require("@knuckleswtf/scribe/dist/utils/parameters");
 const trim = require('lodash.trim');
 const keyBy = require('lodash.keyby');
 function run(endpoint, config) {
