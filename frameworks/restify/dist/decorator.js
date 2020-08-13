@@ -20,6 +20,7 @@ function decorateRestifyRouter(server) {
             if (!server.router._scribe) {
                 server.router._scribe = { handlers: {} };
             }
+            // Restify routes can be defined with an object with path and version
             const path = typeof args[0] == "object" ? args[0].path : args[0];
             server.router._scribe.handlers[method + " " + path] = [filePath, lineNumber];
             return returned;

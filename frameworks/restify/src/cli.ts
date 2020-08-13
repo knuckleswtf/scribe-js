@@ -2,6 +2,7 @@
 import fs = require("fs");
 import path = require("path");
 import program = require('commander');
+const EventEmitter = require("events").EventEmitter;
 
 import {scribe} from "../../../typedefs/core";
 
@@ -43,8 +44,8 @@ program
 
         let serverObject = require(serverFile);
 
-        if (serverObject.name != 'restify') {
-            console.error("Couldn't find an export from your server file. Did you remember to export your `server` object?");
+        if (!(serverObject instanceof EventEmitter)) {
+            console.error("Couldn't find an export from your server file. Did you remember to export your Restify `server` object?");
             process.exit(1);
         }
 

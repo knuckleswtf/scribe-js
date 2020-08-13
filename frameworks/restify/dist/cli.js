@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
 const path = require("path");
 const program = require("commander");
+const EventEmitter = require("events").EventEmitter;
 const log = require('debug')('lib:scribe:restify');
 const VERSION = require('../package.json').version;
 program
@@ -11,12 +12,12 @@ program
     .version(VERSION)
     .command('generate')
     .option('-c, --config <file>', 'Scribe config file', '.scribe.config.js')
-    .option('-a, --app <file>', 'The file where you create your Restify server. Make sure it exports your server object.', 'index.js')
+    .option('-s, --server <file>', 'The file where you set up and start your Restify server. Make sure it exports your server object.', 'index.js')
     .option('-f, --force', "Discard any changes you've made to the source Markdown files", false)
     .description("Generate API documentation from your Restify routes.")
-    .action(async ({ config, app, force }) => {
+    .action(async ({ config, server, force }) => {
     const configFile = path.resolve(config);
-    const appFile = path.resolve(app);
+    const serverFile = path.resolve(server);
     if (!fs.existsSync(configFile)) {
         console.log(`⚠ Config file ${configFile} does not exist. Initialising with a default config file...`);
         console.log();
@@ -24,9 +25,9 @@ program
         return;
     }
     const configObject = require(configFile);
-    let serverObject = require(appFile);
-    if (serverObject.name != 'restify') {
-        console.error("Couldn't find an export from your app file. Did you remember to export your `server` object?");
+    let serverObject = require(serverFile);
+    if (!(serverObject instanceof EventEmitter)) {
+        console.error("Couldn't find an export from your server file. Did you remember to export your `server` object?");
         process.exit(1);
     }
     if (!serverObject._decoratedByScribe) {
