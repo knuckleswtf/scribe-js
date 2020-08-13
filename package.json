@@ -4,7 +4,12 @@
   "description": "Generate API documentation for humans from your Node.js codebase.",
   "main": "dist/index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "publish:all": "npm run publish:core && npm run publish:adonis && npm run publish:express && npm run publish:restify",
+    "publish:core": "npm publish --access public",
+    "publish:adonis": "cd ./frameworks/adonis && npm publish --access public",
+    "publish:express": "cd ./frameworks/express && npm publish --access public",
+    "publish:restify": "cd ./frameworks/restify && npm publish --access public"
   },
   "repository": {
     "type": "git",
@@ -46,6 +51,7 @@
     "@types/node": "^14.0.5",
     "@types/postman-collection": "^3.5.5",
     "jest": "^26.1.0",
+    "shx": "^0.3.2",
     "typescript": "^3.9.3"
   },
   "engines": {
