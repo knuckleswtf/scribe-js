@@ -131,7 +131,7 @@ export declare namespace scribe {
         defaultGroup: string,
         introText: string,
         strategies: {
-            [stage in Stage]: Strategy[]
+            [stage in Stage]: string[]
         }
     }
 

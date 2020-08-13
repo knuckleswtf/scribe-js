@@ -45,8 +45,6 @@ program
             return;
         }
 
-        const configObject: scribe.Config = require(configFile);
-
         const appObject = require(appFile);
 
         if (!appObject._router) {
@@ -58,6 +56,11 @@ program
             console.error("Something's not right. Did you remember to add `require('@knuckleswtf/scribe-express')(app)` before registering your Express routes?");
             process.exit(1);
         }
+
+        const configObject: scribe.Config = require(configFile);
+        // @ts-ignore
+        configObject.strategies = configObject.strategies || {};
+        configObject.strategies.urlParameters = (configObject.strategies.urlParameters || []).concat(path.join(__dirname, './strategies/url_parameters/express_route_api'));
 
         const endpoints = require('./get_routes.js')(appObject);
 

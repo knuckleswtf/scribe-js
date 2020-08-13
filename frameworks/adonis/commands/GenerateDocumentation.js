@@ -34,8 +34,17 @@ class GenerateDocumentation extends Command {
         tools.info("Generating docs...");
         console.log();
 
-        const config = require(configFilePath);
+        const endpoints = await this.getEndpoints(tools);
 
+        const config = require(configFilePath);
+        config.strategies = config.strategies || {};
+        config.strategies.urlParameters = (config.strategies.urlParameters || []).concat(path.join(__dirname, '../strategies/url_parameters/adonis_route_api'));
+
+        const { generate } = require('@knuckleswtf/scribe');
+        await generate(endpoints, config, 'adonis', path.resolve('server.js'), options.force || false);
+    }
+
+    async getEndpoints(tools) {
         const Route = use('Route');
         const endpoints = await Promise.all(Route.list().map(async r => {
             let methods = r.verbs;
@@ -53,7 +62,7 @@ class GenerateDocumentation extends Command {
 
             if (typeof r.handler == 'string') {
                 const [controller, method] = r.handler.split('.');
-                const controllerFile = path.resolve( `app/Controllers/Http/${controller}.js`);
+                const controllerFile = path.resolve(`app/Controllers/Http/${controller}.js`);
 
                 const lineNumber = await tools.searchFileLazily(controllerFile, new RegExp(`(async\\s*)?${method}\\s*\\(`));
                 endpoint.declaredAt = lineNumber ? [controllerFile, lineNumber] : [];
@@ -73,11 +82,7 @@ class GenerateDocumentation extends Command {
 
             return endpoint;
         }));
-
-        // Make sure app is started for response calls
-
-        const { generate } = require('@knuckleswtf/scribe');
-        await generate(endpoints, config, 'adonis', path.resolve('server.js'), options.force || false);
+        return endpoints;
     }
 }
 

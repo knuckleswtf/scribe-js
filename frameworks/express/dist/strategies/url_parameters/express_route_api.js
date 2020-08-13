@@ -1,27 +1,22 @@
-import {scribe} from "../../../typedefs/core";
-import utils = require("../../utils/parameters");
+"use strict";
+const utils = require("@knuckleswtf/scribe/dist/utils/parameters");
 const { getParameterExample } = utils;
 const trim = require('lodash.trim');
 const keyBy = require('lodash.keyby');
-
-function run(endpoint: scribe.Endpoint, config): scribe.UrlParameters {
+function run(endpoint, config) {
     let uri = endpoint.uri;
     let matches = uri.match(/:\w+\??(\(.+?\))?/g);
     if (matches === null) {
         return {};
     }
-
-    const urlParameters = matches.map((match): scribe.UrlParameter => {
+    const urlParameters = matches.map((match) => {
         let parameter = trim(match, ':');
-
         const parameterRegexPattern = parameter.match(/\((.+)\)/);
         if (parameterRegexPattern) {
             parameter = parameter.replace(parameterRegexPattern[0], '');
         }
-
         const isOptional = parameter.endsWith('?');
         isOptional && (parameter = trim(parameter, '?'));
-
         if (!parameterRegexPattern) {
             // Simple parameter, no regex
             return {
@@ -32,7 +27,6 @@ function run(endpoint: scribe.Endpoint, config): scribe.UrlParameters {
                 match,
             };
         }
-
         return {
             name: parameter,
             value: isOptional ? null : getParameterExample('string', parameterRegexPattern[1]),
@@ -40,13 +34,12 @@ function run(endpoint: scribe.Endpoint, config): scribe.UrlParameters {
             description: '',
             match,
             placeholder: `:${parameter}${isOptional ? '?' : ''}`
-        }
+        };
     });
-
     return keyBy(urlParameters, 'name');
 }
-
-export = {
+module.exports = {
     routers: ['express'],
     run
 };
+//# sourceMappingURL=express_route_api.js.map

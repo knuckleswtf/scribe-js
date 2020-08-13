@@ -5,6 +5,7 @@ const spawn = require("cross-spawn");
 const matcher = require("matcher");
 const path = require("path");
 const url = require("url");
+const union = require("lodash.union");
 const d = require("./utils/docblocks");
 const p = require("./utils/parameters");
 const tools = require("./tools");
@@ -15,6 +16,7 @@ function generate(endpoints, config, router, serverFile, shouldOverwriteMarkdown
         tools.warn("You didn't specify a server file. This means that either your app is started by your app file, or you forgot.");
         tools.warn("If you forgot, you'll need to specify a server file for response calls to work.");
     }
+    const strategies = getStrategies(config);
     config.routes.forEach(async (routeGroup) => {
         let endpointsToDocument = [];
         for (let e of endpoints) {
@@ -32,51 +34,25 @@ function generate(endpoints, config, router, serverFile, shouldOverwriteMarkdown
             }
             endpointsToDocument.push(e);
         }
-        const strategies = config.strategies || {
-            metadata: [
-                require('./1_extract_info/1_metadata/docblocks'),
-            ],
-            headers: [
-                require('./1_extract_info/2_headers/routegroup_apply'),
-                require('./1_extract_info/2_headers/header_tag'),
-            ],
-            urlParameters: [
-                require('./1_extract_info/3_url_parameters/express_route_api'),
-                require('./1_extract_info/3_url_parameters/adonis_route_api'),
-                require('./1_extract_info/3_url_parameters/url_param_tag'),
-            ],
-            queryParameters: [
-                require('./1_extract_info/4_query_parameters/query_param_tag'),
-            ],
-            bodyParameters: [
-                require('./1_extract_info/5_body_parameters/read_source_code'),
-                require('./1_extract_info/5_body_parameters/body_param_tag'),
-            ],
-            responses: [
-                require('./1_extract_info/6_responses/response_tag'),
-                require('./1_extract_info/6_responses/responsefile_tag'),
-                require('./1_extract_info/6_responses/response_call'),
-            ],
-            responseFields: [
-                require('./1_extract_info/7_response_fields/response_field_tag'),
-            ],
-        };
         let appProcess;
         for (let endpoint of endpointsToDocument) {
             endpoint.metadata = {};
-            for (let metadataStrategy of strategies.metadata) {
+            for (let strategyName of strategies.metadata) {
+                const metadataStrategy = require(strategyName);
                 if (shouldUseWithRouter(metadataStrategy, router)) {
                     endpoint.metadata = Object.assign({}, endpoint.metadata, await metadataStrategy.run(endpoint, config, routeGroup));
                 }
             }
             endpoint.headers = {};
-            for (let headersStrategy of strategies.headers) {
+            for (let strategyName of strategies.headers) {
+                const headersStrategy = require(strategyName);
                 if (shouldUseWithRouter(headersStrategy, router)) {
                     endpoint.headers = Object.assign({}, endpoint.headers, await headersStrategy.run(endpoint, config, routeGroup));
                 }
             }
             endpoint.urlParameters = {};
-            for (let urlParametersStrategy of strategies.urlParameters) {
+            for (let strategyName of strategies.urlParameters) {
+                const urlParametersStrategy = require(strategyName);
                 if (shouldUseWithRouter(urlParametersStrategy, router)) {
                     endpoint.urlParameters
                         = Object.assign({}, endpoint.urlParameters, await urlParametersStrategy.run(endpoint, config, routeGroup));
@@ -96,7 +72,8 @@ function generate(endpoints, config, router, serverFile, shouldOverwriteMarkdown
                 return p.placeholder ? uri.replace(p.match, p.placeholder) : uri;
             }, endpoint.uri);
             endpoint.queryParameters = {};
-            for (let queryParametersStrategy of strategies.queryParameters) {
+            for (let strategyName of strategies.queryParameters) {
+                const queryParametersStrategy = require(strategyName);
                 if (shouldUseWithRouter(queryParametersStrategy, router)) {
                     endpoint.queryParameters
                         = Object.assign({}, endpoint.queryParameters, await queryParametersStrategy.run(endpoint, config, routeGroup));
@@ -104,7 +81,8 @@ function generate(endpoints, config, router, serverFile, shouldOverwriteMarkdown
             }
             endpoint.cleanQueryParameters = p.removeEmptyOptionalParametersAndTransformToKeyValue(endpoint.queryParameters);
             endpoint.bodyParameters = {};
-            for (let bodyParametersStrategy of strategies.bodyParameters) {
+            for (let strategyName of strategies.bodyParameters) {
+                const bodyParametersStrategy = require(strategyName);
                 if (shouldUseWithRouter(bodyParametersStrategy, router)) {
                     endpoint.bodyParameters
                         = Object.assign({}, endpoint.bodyParameters, await bodyParametersStrategy.run(endpoint, config, routeGroup));
@@ -130,14 +108,16 @@ function generate(endpoints, config, router, serverFile, shouldOverwriteMarkdown
                 }
             }
             endpoint.responses = [];
-            for (let responsesStrategy of strategies.responses) {
+            for (let strategyName of strategies.responses) {
+                const responsesStrategy = require(strategyName);
                 if (shouldUseWithRouter(responsesStrategy, router)) {
                     const responses = await responsesStrategy.run(endpoint, config, routeGroup);
                     endpoint.responses = endpoint.responses.concat(responses);
                 }
             }
             endpoint.responseFields = {};
-            for (let responseFieldsStrategy of strategies.responseFields) {
+            for (let strategyName of strategies.responseFields) {
+                const responseFieldsStrategy = require(strategyName);
                 if (shouldUseWithRouter(responseFieldsStrategy, router)) {
                     endpoint.responseFields
                         = Object.assign({}, endpoint.responseFields, await responseFieldsStrategy.run(endpoint, config, routeGroup));
@@ -164,6 +144,43 @@ function generate(endpoints, config, router, serverFile, shouldOverwriteMarkdown
             tools.success("Postman collection generated,");
         }
     });
+}
+function getStrategies(config) {
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p;
+    const metadata = union([
+        './1_extract_info/1_metadata/docblocks',
+    ], (_b = (_a = config === null || config === void 0 ? void 0 : config.strategies) === null || _a === void 0 ? void 0 : _a.metadata) !== null && _b !== void 0 ? _b : []);
+    const headers = union([
+        './1_extract_info/2_headers/routegroup_apply',
+        './1_extract_info/2_headers/header_tag',
+    ], (_d = (_c = config === null || config === void 0 ? void 0 : config.strategies) === null || _c === void 0 ? void 0 : _c.headers) !== null && _d !== void 0 ? _d : []);
+    const urlParameters = union([
+        './1_extract_info/3_url_parameters/url_param_tag',
+    ], (_f = (_e = config === null || config === void 0 ? void 0 : config.strategies) === null || _e === void 0 ? void 0 : _e.urlParameters) !== null && _f !== void 0 ? _f : []);
+    const queryParameters = union([
+        './1_extract_info/4_query_parameters/query_param_tag',
+    ], (_h = (_g = config === null || config === void 0 ? void 0 : config.strategies) === null || _g === void 0 ? void 0 : _g.queryParameters) !== null && _h !== void 0 ? _h : []);
+    const bodyParameters = union([
+        './1_extract_info/5_body_parameters/read_source_code',
+        './1_extract_info/5_body_parameters/body_param_tag',
+    ], (_k = (_j = config === null || config === void 0 ? void 0 : config.strategies) === null || _j === void 0 ? void 0 : _j.bodyParameters) !== null && _k !== void 0 ? _k : []);
+    const responses = union([
+        './1_extract_info/6_responses/response_tag',
+        './1_extract_info/6_responses/responsefile_tag',
+        './1_extract_info/6_responses/response_call',
+    ], (_m = (_l = config === null || config === void 0 ? void 0 : config.strategies) === null || _l === void 0 ? void 0 : _l.responses) !== null && _m !== void 0 ? _m : []);
+    const responseFields = union([
+        './1_extract_info/7_response_fields/response_field_tag'
+    ], (_p = (_o = config === null || config === void 0 ? void 0 : config.strategies) === null || _o === void 0 ? void 0 : _o.responseFields) !== null && _p !== void 0 ? _p : []);
+    return {
+        metadata,
+        headers,
+        urlParameters,
+        queryParameters,
+        bodyParameters,
+        responses,
+        responseFields
+    };
 }
 function shouldUseWithRouter(strategy, currentRouter) {
     if (strategy.routers == null || strategy.routers.length == 0) {

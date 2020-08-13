@@ -6,6 +6,7 @@ import spawn = require('cross-spawn');
 import matcher = require('matcher');
 import path = require('path');
 import url = require('url');
+import union = require('lodash.union');
 
 import d = require("./utils/docblocks");
 import p = require('./utils/parameters');
@@ -20,183 +21,200 @@ function generate(
     config: scribe.Config,
     router: scribe.SupportedRouters,
     serverFile?: string,
-    shouldOverwriteMarkdownFiles: boolean = false
+    shouldOverwriteMarkdownFiles: boolean = false,
 ) {
     if (router == 'express' && !serverFile) {
         tools.warn("You didn't specify a server file. This means that either your app is started by your app file, or you forgot.");
         tools.warn("If you forgot, you'll need to specify a server file for response calls to work.");
     }
 
+    const strategies = getStrategies(config);
     config.routes.forEach(async (routeGroup) => {
 
-        let endpointsToDocument: scribe.Endpoint[] = [];
+            let endpointsToDocument: scribe.Endpoint[] = [];
 
-        for (let e of endpoints) {
-            if (routeGroup.exclude.length) {
-                const shouldExclude = matcher.isMatch(e.uri, routeGroup.exclude);
-                if (shouldExclude) continue;
+            for (let e of endpoints) {
+                if (routeGroup.exclude.length) {
+                    const shouldExclude = matcher.isMatch(e.uri, routeGroup.exclude);
+                    if (shouldExclude) continue;
+                }
+
+                if (!(matcher.isMatch(e.uri, routeGroup.include))) continue;
+
+                // Done in here to prevent docblock parsing for endpoints which have already been excluded
+                e.docblock = await d.getDocBlockForEndpoint(e) || {} as scribe.DocBlock;
+
+                if (e.docblock.hideFromApiDocs === true) {
+                    continue;
+                }
+
+                endpointsToDocument.push(e);
             }
-
-            if (!(matcher.isMatch(e.uri, routeGroup.include))) continue;
-
-            // Done in here to prevent docblock parsing for endpoints which have already been excluded
-            e.docblock = await d.getDocBlockForEndpoint(e) || {} as scribe.DocBlock;
-
-            if (e.docblock.hideFromApiDocs === true) {
-                continue;
-            }
-
-            endpointsToDocument.push(e);
-        }
-
-        const strategies = config.strategies || {
-            metadata: [
-                require('./1_extract_info/1_metadata/docblocks') as scribe.MetadataStrategy,
-            ],
-            headers: [
-                require('./1_extract_info/2_headers/routegroup_apply') as scribe.HeadersStrategy,
-                require('./1_extract_info/2_headers/header_tag') as scribe.HeadersStrategy,
-            ],
-            urlParameters: [
-                require('./1_extract_info/3_url_parameters/express_route_api') as scribe.UrlParametersStrategy,
-                require('./1_extract_info/3_url_parameters/adonis_route_api') as scribe.UrlParametersStrategy,
-                require('./1_extract_info/3_url_parameters/url_param_tag') as scribe.UrlParametersStrategy,
-            ],
-            queryParameters: [
-                require('./1_extract_info/4_query_parameters/query_param_tag') as scribe.QueryParametersStrategy,
-            ],
-            bodyParameters: [
-                require('./1_extract_info/5_body_parameters/read_source_code') as scribe.BodyParametersStrategy,
-                require('./1_extract_info/5_body_parameters/body_param_tag') as scribe.BodyParametersStrategy,
-            ],
-            responses: [
-                require('./1_extract_info/6_responses/response_tag') as scribe.ResponsesStrategy,
-                require('./1_extract_info/6_responses/responsefile_tag') as scribe.ResponsesStrategy,
-                require('./1_extract_info/6_responses/response_call') as scribe.ResponsesStrategy,
-            ],
-            responseFields: [
-                require('./1_extract_info/7_response_fields/response_field_tag') as scribe.ResponseFieldsStrategy,
-            ],
-        };
 
         let appProcess;
-        for (let endpoint of endpointsToDocument) {
-            endpoint.metadata = {};
-            for (let metadataStrategy of strategies.metadata) {
-                if (shouldUseWithRouter(metadataStrategy, router)) {
-                    endpoint.metadata = Object.assign({}, endpoint.metadata, await metadataStrategy.run(endpoint, config, routeGroup));
+            for (let endpoint of endpointsToDocument) {
+                endpoint.metadata = {};
+                for (let strategyName of strategies.metadata) {
+                    const metadataStrategy = require(strategyName) as scribe.MetadataStrategy;
+                    if (shouldUseWithRouter(metadataStrategy, router)) {
+                        endpoint.metadata = Object.assign({}, endpoint.metadata, await metadataStrategy.run(endpoint, config, routeGroup));
+                    }
                 }
-            }
 
-            endpoint.headers = {};
-            for (let headersStrategy of strategies.headers) {
-                if (shouldUseWithRouter(headersStrategy, router)) {
-                    endpoint.headers = Object.assign({}, endpoint.headers, await headersStrategy.run(endpoint, config, routeGroup));
+                endpoint.headers = {};
+                for (let strategyName of strategies.headers) {
+                    const headersStrategy = require(strategyName) as scribe.HeadersStrategy;
+                    if (shouldUseWithRouter(headersStrategy, router)) {
+                        endpoint.headers = Object.assign({}, endpoint.headers, await headersStrategy.run(endpoint, config, routeGroup));
+                    }
                 }
-            }
 
-            endpoint.urlParameters = {};
-            for (let urlParametersStrategy of strategies.urlParameters) {
-                if (shouldUseWithRouter(urlParametersStrategy, router)) {
-                    endpoint.urlParameters
-                        = Object.assign({}, endpoint.urlParameters, await urlParametersStrategy.run(endpoint, config, routeGroup));
+                endpoint.urlParameters = {};
+                for (let strategyName of strategies.urlParameters) {
+                    const urlParametersStrategy = require(strategyName) as scribe.UrlParametersStrategy;
+                    if (shouldUseWithRouter(urlParametersStrategy, router)) {
+                        endpoint.urlParameters
+                            = Object.assign({}, endpoint.urlParameters, await urlParametersStrategy.run(endpoint, config, routeGroup));
+                    }
                 }
-            }
 
-            // Replace parameters in URL
-            // match = string to match in URL string
-            // placeholder = what to replace it with for docs
-            // value = what to replace it with for examples
-            endpoint.boundUri = Object.values(endpoint.urlParameters)
-                .reduce((uri, p) => {
-                    // Optional parameters with no value won't get substituted
-                    return uri.replace(p.match, p.value == null ? '' : p.value);
-                }, endpoint.uri);
-            endpoint.uri = Object.values(endpoint.urlParameters)
-                .reduce((uri, p) => {
-                    return p.placeholder ? uri.replace(p.match, p.placeholder) : uri;
-                }, endpoint.uri);
+                // Replace parameters in URL
+                // match = string to match in URL string
+                // placeholder = what to replace it with for docs
+                // value = what to replace it with for examples
+                endpoint.boundUri = Object.values(endpoint.urlParameters)
+                    .reduce((uri, p) => {
+                        // Optional parameters with no value won't get substituted
+                        return uri.replace(p.match, p.value == null ? '' : p.value);
+                    }, endpoint.uri);
+                endpoint.uri = Object.values(endpoint.urlParameters)
+                    .reduce((uri, p) => {
+                        return p.placeholder ? uri.replace(p.match, p.placeholder) : uri;
+                    }, endpoint.uri);
 
-            endpoint.queryParameters = {};
-            for (let queryParametersStrategy of strategies.queryParameters) {
-                if (shouldUseWithRouter(queryParametersStrategy, router)) {
-                    endpoint.queryParameters
-                        = Object.assign({}, endpoint.queryParameters, await queryParametersStrategy.run(endpoint, config, routeGroup));
+                endpoint.queryParameters = {};
+                for (let strategyName of strategies.queryParameters) {
+                    const queryParametersStrategy = require(strategyName) as scribe.QueryParametersStrategy;
+                    if (shouldUseWithRouter(queryParametersStrategy, router)) {
+                        endpoint.queryParameters
+                            = Object.assign({}, endpoint.queryParameters, await queryParametersStrategy.run(endpoint, config, routeGroup));
+                    }
                 }
-            }
-            endpoint.cleanQueryParameters = p.removeEmptyOptionalParametersAndTransformToKeyValue(endpoint.queryParameters);
+                endpoint.cleanQueryParameters = p.removeEmptyOptionalParametersAndTransformToKeyValue(endpoint.queryParameters);
 
-            endpoint.bodyParameters = {};
-            for (let bodyParametersStrategy of strategies.bodyParameters) {
-                if (shouldUseWithRouter(bodyParametersStrategy, router)) {
-                    endpoint.bodyParameters
-                        = Object.assign({}, endpoint.bodyParameters, await bodyParametersStrategy.run(endpoint, config, routeGroup));
+                endpoint.bodyParameters = {};
+                for (let strategyName of strategies.bodyParameters) {
+                    const bodyParametersStrategy = require(strategyName) as scribe.BodyParametersStrategy;
+                    if (shouldUseWithRouter(bodyParametersStrategy, router)) {
+                        endpoint.bodyParameters
+                            = Object.assign({}, endpoint.bodyParameters, await bodyParametersStrategy.run(endpoint, config, routeGroup));
+                    }
                 }
-            }
-            endpoint.cleanBodyParameters = p.removeEmptyOptionalParametersAndTransformToKeyValue(endpoint.bodyParameters);
+                endpoint.cleanBodyParameters = p.removeEmptyOptionalParametersAndTransformToKeyValue(endpoint.bodyParameters);
 
-            addAuthField(endpoint, config);
+                addAuthField(endpoint, config);
 
-            if (serverFile && !appProcess) {
-                // Using a single global app process here to avoid premature kills
-                const taken = await isPortTaken(url.parse(routeGroup.apply.responseCalls.baseUrl).port);
-                if (!taken) {
-                    try {
-                        console.log("Starting app server for response calls...");
-                        appProcess = spawn('node', [serverFile], {stdio: 'ignore'});
-                        await new Promise(res => {
-                            // Assuming it takes at most 2 seconds to start
-                            setTimeout(res, 2000);
-                        });
-                    } catch (e) {
-                        // do nothing; app is probably running already
+                if (serverFile && !appProcess) {
+                    // Using a single global app process here to avoid premature kills
+                    const taken = await isPortTaken(url.parse(routeGroup.apply.responseCalls.baseUrl).port);
+                    if (!taken) {
+                        try {
+                            console.log("Starting app server for response calls...");
+                            appProcess = spawn('node', [serverFile], {stdio: 'ignore'});
+                            await new Promise(res => {
+                                // Assuming it takes at most 2 seconds to start
+                                setTimeout(res, 2000);
+                            });
+                        } catch (e) {
+                            // do nothing; app is probably running already
+                        }
+                    }
+                }
+
+                endpoint.responses = [];
+                for (let strategyName of strategies.responses) {
+                    const responsesStrategy = require(strategyName) as scribe.ResponsesStrategy;
+                    if (shouldUseWithRouter(responsesStrategy, router)) {
+                        const responses = await responsesStrategy.run(endpoint, config, routeGroup)
+                        endpoint.responses = endpoint.responses.concat(responses);
+                    }
+                }
+
+                endpoint.responseFields = {};
+                for (let strategyName of strategies.responseFields) {
+                    const responseFieldsStrategy = require(strategyName) as scribe.ResponseFieldsStrategy;
+                    if (shouldUseWithRouter(responseFieldsStrategy, router)) {
+                        endpoint.responseFields
+                            = Object.assign({}, endpoint.responseFields, await responseFieldsStrategy.run(endpoint, config, routeGroup));
                     }
                 }
             }
 
-            endpoint.responses = [];
-            for (let responsesStrategy of strategies.responses) {
-                if (shouldUseWithRouter(responsesStrategy, router)) {
 
-                    const responses = await responsesStrategy.run(endpoint, config, routeGroup)
-                    endpoint.responses = endpoint.responses.concat(responses);
+            setTimeout(() => {
+                if (appProcess) {
+                    console.log("Stopping app server...");
+                    appProcess.kill();
                 }
-            }
+            }, 3000);
 
-            endpoint.responseFields = {};
-            for (let responseFieldsStrategy of strategies.responseFields) {
-                if (shouldUseWithRouter(responseFieldsStrategy, router)) {
-                    endpoint.responseFields
-                        = Object.assign({}, endpoint.responseFields, await responseFieldsStrategy.run(endpoint, config, routeGroup));
-                }
+            const groupBy = require('lodash.groupby');
+            const groupedEndpoints: { [groupName: string]: scribe.Endpoint[] } = groupBy(endpointsToDocument, 'metadata.groupName');
+
+            const markdown = require("./2_write_output/markdown")(config);
+            const sourceOutputPath = path.resolve('docs');
+            markdown.writeDocs(groupedEndpoints, sourceOutputPath, shouldOverwriteMarkdownFiles);
+
+            const pastel = require('@knuckleswtf/pastel');
+            await pastel.generate(sourceOutputPath + '/index.md', path.resolve(config.outputPath));
+
+            if (config.postman.enabled) {
+                tools.info(`Writing postman collection to ${path.resolve(config.outputPath)}...`);
+                const postman = require("./2_write_output/postman")(config);
+                postman.writePostmanCollectionFile(groupedEndpoints, path.resolve(config.outputPath));
+                tools.success("Postman collection generated,");
             }
         }
+    )
+    ;
+}
 
 
-        setTimeout(() => {
-            if (appProcess) {
-                console.log("Stopping app server...");
-                appProcess.kill();
-            }
-        }, 3000);
-
-        const groupBy = require('lodash.groupby');
-        const groupedEndpoints: { [groupName: string]: scribe.Endpoint[] } = groupBy(endpointsToDocument, 'metadata.groupName');
-
-        const markdown = require("./2_write_output/markdown")(config);
-        const sourceOutputPath = path.resolve('docs');
-        markdown.writeDocs(groupedEndpoints, sourceOutputPath, shouldOverwriteMarkdownFiles);
-
-        const pastel = require('@knuckleswtf/pastel');
-        await pastel.generate(sourceOutputPath + '/index.md', path.resolve(config.outputPath));
-
-        if (config.postman.enabled) {
-            tools.info(`Writing postman collection to ${path.resolve(config.outputPath)}...`);
-            const postman = require("./2_write_output/postman")(config);
-            postman.writePostmanCollectionFile(groupedEndpoints, path.resolve(config.outputPath));
-            tools.success("Postman collection generated,");
-        }
-    });
+function getStrategies(config: scribe.Config) {
+    const metadata = union([
+        './1_extract_info/1_metadata/docblocks',
+    ], config?.strategies?.metadata ?? []);
+    const headers = union([
+        './1_extract_info/2_headers/routegroup_apply',
+        './1_extract_info/2_headers/header_tag',
+    ], config?.strategies?.headers ?? []);
+    const urlParameters = union([
+        './1_extract_info/3_url_parameters/url_param_tag',
+    ], config?.strategies?.urlParameters ?? []);
+    const queryParameters = union([
+        './1_extract_info/4_query_parameters/query_param_tag',
+    ], config?.strategies?.queryParameters ?? []);
+    const bodyParameters = union([
+        './1_extract_info/5_body_parameters/read_source_code',
+        './1_extract_info/5_body_parameters/body_param_tag',
+    ], config?.strategies?.bodyParameters ?? []);
+    const responses = union([
+        './1_extract_info/6_responses/response_tag',
+        './1_extract_info/6_responses/responsefile_tag',
+        './1_extract_info/6_responses/response_call',
+    ], config?.strategies?.responses ?? []);
+    const responseFields = union([
+        './1_extract_info/7_response_fields/response_field_tag'
+    ], config?.strategies?.responseFields ?? []);
+    return {
+        metadata,
+        headers,
+        urlParameters,
+        queryParameters,
+        bodyParameters,
+        responses,
+        responseFields
+    };
 }
 
 function shouldUseWithRouter(strategy: scribe.Strategy, currentRouter: scribe.SupportedRouters): boolean {

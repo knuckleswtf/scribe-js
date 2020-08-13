@@ -35,6 +35,7 @@
     "lodash.groupby": "^4.6.0",
     "lodash.keyby": "^4.6.0",
     "lodash.trim": "^4.5.1",
+    "lodash.union": "^4.6.0",
     "matcher": "^3.0.0",
     "randexp": "^0.5.3",
     "slugify": "^1.4.0",

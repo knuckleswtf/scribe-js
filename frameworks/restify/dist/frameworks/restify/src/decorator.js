@@ -1,12 +1,12 @@
-const methods = ['get', 'post', 'put', 'patch', 'head', 'delete'];
-module.exports = function (app) {
-    app._decoratedByScribe = true;
-    decorateExpressRouter(app);
+const methods = ['get', 'post', 'put', 'patch', 'head', 'del'];
+module.exports = function (server) {
+    server._decoratedByScribe = true;
+    decorateRestifyRouter(server);
 };
-function decorateExpressRouter(app) {
+function decorateRestifyRouter(server) {
     methods.forEach(function decorateRouterMethodWithStackTraceCapturer(method) {
-        const original = app[method].bind(app);
-        app[method] = function (...args) {
+        const original = server[method].bind(server);
+        server[method] = function (...args) {
             const stackTrace = new Error().stack;
             const frames = stackTrace.split("\n");
             frames.shift();
@@ -17,10 +17,12 @@ function decorateExpressRouter(app) {
             frameAtCallSite = frames[1].replace(/.+\(|\)/g, '');
             const [filePath, lineNumber, characterNumber] = frameAtCallSite.split(/:(?=\d)/); // any colon followed by a number. This is important bc file paths may have colons
             const returned = original(...args);
-            if (!app._router._scribe) {
-                app._router._scribe = { handlers: {} };
+            if (!server.router._scribe) {
+                server.router._scribe = { handlers: {} };
             }
-            app._router._scribe.handlers[method + " " + args[0]] = [filePath, lineNumber];
+            // Restify routes can be defined with an object with path and version
+            const path = typeof args[0] == "object" ? args[0].path : args[0];
+            server.router._scribe.handlers[method + " " + path] = [filePath, lineNumber];
             return returned;
         };
     });

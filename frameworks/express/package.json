@@ -28,7 +28,8 @@
   "dependencies": {
     "@knuckleswtf/scribe": "0.0.8",
     "commander": "^5.1.0",
-    "lodash.findlastindex": "^4.6.0"
+    "lodash.findlastindex": "^4.6.0",
+    "lodash.keyby": "^4.6.0"
   },
   "devDependencies": {
     "@types/node": "^14.0.5",
