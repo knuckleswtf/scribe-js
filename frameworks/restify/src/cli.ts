@@ -18,8 +18,8 @@ program
         '.scribe.config.js'
     )
     .option(
-        '-a, --app <file>',
-        'The file where you create your Restify application. Make sure it exports your server object.',
+        '-s, --server <file>',
+        'The file where you set up and start your Restify server. Make sure it exports your server object.',
         'index.js',
     )
     .option(
@@ -28,9 +28,9 @@ program
         false,
     )
     .description("Generate API documentation from your Restify routes.")
-    .action(async ({config, app, force}) => {
+    .action(async ({config, server, force}) => {
         const configFile = path.resolve(config);
-        const appFile = path.resolve(app);
+        const serverFile = path.resolve(server);
 
         if (!fs.existsSync(configFile)) {
             console.log(`⚠ Config file ${configFile} does not exist. Initialising with a default config file...`);
@@ -41,19 +41,19 @@ program
 
         const configObject: scribe.Config = require(configFile);
 
-        let appObject = require(appFile);
+        let serverObject = require(serverFile);
 
-        if (appObject.name != 'restify') {
-            console.error("Couldn't find an export from your app file. Did you remember to export your `server` object?");
+        if (serverObject.name != 'restify') {
+            console.error("Couldn't find an export from your server file. Did you remember to export your `server` object?");
             process.exit(1);
         }
-/*
-        if (!appObject._decoratedByScribe) {
-            console.error("Something's not right. Did you remember to add `require('@knuckleswtf/scribe')(app)` before registering your Express routes?");
-            process.exit(1);
-        }*/
 
-        const endpoints = require('./get_routes')(appObject);
+        if (!serverObject._decoratedByScribe) {
+            console.error("Something's not right. Did you remember to add `require('@knuckleswtf/scribe-restify')(server)` before registering your Restify routes?");
+            process.exit(1);
+        }
+
+        const endpoints = require('./get_routes')(serverObject);
 
         const {generate} = require('@knuckleswtf/scribe');
         await generate(endpoints, configObject, 'restify', null, force);

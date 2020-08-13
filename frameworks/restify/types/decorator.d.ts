@@ -1,2 +1,2 @@
 declare const methods: string[];
-declare function decorateExpressRouter(app: any): void;
+declare function decorateRestifyRouter(server: any): void;

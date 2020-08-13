@@ -1,12 +1,13 @@
-import {express} from "../express";
+import {restify} from "../restify";
 import {scribe} from "@knuckleswtf/scribe";
 
-function getRoutesFromRouter(router: express.DecoratedRouter, basePath = ''): scribe.Endpoint[] {
-    return Object.entries(router._registry._routes).map(function mapRouteToEndpointObject([name, details]): scribe.Endpoint | scribe.Endpoint[] {
+function getRoutesFromRouter(router: restify.DecoratedRouter, basePath = ''): scribe.Endpoint[] {
+    console.log(router._scribe.handlers);
+    return Object.entries(router._registry._routes).map(function mapRouteToEndpointObject([name, details]): scribe.Endpoint {
         return {
             uri: details.path,
             methods: [details.method],
-            declaredAt: [],
+            declaredAt: router._scribe.handlers[details.method.toLowerCase() + " " + details.path] ?? [],
             handler: null,
             _restify: details,
         };
