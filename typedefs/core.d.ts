@@ -75,9 +75,10 @@ export declare namespace scribe {
         auth?: string,
         _adonis?: any,
         _express?: any,
+        _restify?: any,
     }
 
-    export type SupportedRouters = 'express' | 'adonis';
+    export type SupportedRouters = 'express' | 'adonis' | 'restify';
 
     export type Stage = 'metadata' |
         'headers' |

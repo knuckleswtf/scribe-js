@@ -1,5 +1,5 @@
 
-const methods = ['get', 'post', 'put', 'patch', 'head', 'delete', 'all'];
+const methods = ['get', 'post', 'put', 'patch', 'head', 'delete'];
 
 module.exports = function (app) {
     app._decoratedByScribe = true;
@@ -30,7 +30,7 @@ function decorateExpressRouter(app) {
             if (!app._router._scribe) {
                 app._router._scribe = {handlers: {}}
             }
-            app._router._scribe.handlers[args[0]] = [filePath, lineNumber];
+            app._router._scribe.handlers[method + " " + args[0]] = [filePath, lineNumber];
 
             return returned;
         };

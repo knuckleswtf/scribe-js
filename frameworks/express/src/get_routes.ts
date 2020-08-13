@@ -6,12 +6,13 @@ const findLastIndex = require('lodash.findlastindex');
 function getRoutesFromRouter(router: express.DecoratedRouter, basePath = ''): scribe.Endpoint[] {
     const endpoints = router.stack.map(function mapRouteToEndpointObject(layer): scribe.Endpoint|scribe.Endpoint[] {
         if (layer.route && typeof layer.route.path === 'string') {
+            const methods = Object.keys(layer.route.methods).map(method => method.toUpperCase());
             return {
                 uri: basePath + layer.route.path,
                 handler: layer.route.stack[0].handle,
                 _express: layer.route,
-                methods: Object.keys(layer.route.methods).map(method => method.toUpperCase()),
-                declaredAt: router._scribe.handlers[layer.route.path] ?? [],
+                methods,
+                declaredAt: router._scribe.handlers[methods[0].toLowerCase() + " " + layer.route.path] ?? [],
             };
         }
 

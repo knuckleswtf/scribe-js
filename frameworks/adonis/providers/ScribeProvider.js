@@ -15,7 +15,7 @@ class ScribeProvider extends ServiceProvider {
 
     decorateAdonisRouter() {
         const Route = use('Route');
-        const methods = ['get', 'post', 'put', 'patch', 'delete', 'any'];
+        const methods = ['get', 'post', 'put', 'patch', 'delete'];
 
         methods.forEach(function decorateRouterMethodWithStackTraceCapturer(method) {
             const original = Route[method].bind(Route);

@@ -55,7 +55,7 @@ program
         }
 
         if (!appObject._decoratedByScribe) {
-            console.error("Something's not right. Did you remember to add `require('@knuckleswtf/scribe')(app)` before registering your Express routes?");
+            console.error("Something's not right. Did you remember to add `require('@knuckleswtf/scribe-express')(app)` before registering your Express routes?");
             process.exit(1);
         }
 

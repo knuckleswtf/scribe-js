@@ -31,7 +31,7 @@ function makeResponseCall(responseCallRules, endpoint) {
     let responseContent;
     const requestOptions = {
         method: endpoint.methods[0],
-        headers: Object.assign({ 'user-agent': 'curl/7.22.0', 'accept-version': '~2' }, endpoint.headers),
+        headers: Object.assign({ 'user-agent': 'curl/7.22.0' }, endpoint.headers),
         path: endpoint.boundUri + (Object.keys(queryParameters).length ? `?` + qs.stringify(queryParameters) : ''),
     };
     const promise = new Promise((resolve, reject) => {
