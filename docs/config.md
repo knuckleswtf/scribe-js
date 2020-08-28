@@ -17,7 +17,7 @@ The base URL to be used in examples.
 The HTML `<title>` for the generated documentation, and the name of the generated Postman collection.
 
 ### `description`
-A description for the API. This will be used as the `info.description` field in the Postman collection and OpenAPI spec, and placed before the "Introduction" section in the doc webpage.
+A description for the API. This will be used as the `info.description` field in the Postman collection and OpenAPI spec, and placed as the first paragraph under the "Introduction" section in the doc webpage (before the `introText`.
 
 ### `introText`
 The text to place in the "Introduction" section. Markdown and HTML are supported.

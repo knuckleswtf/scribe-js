@@ -78,7 +78,8 @@ export = (config: scribe.Config) => {
         const template = Handlebars.compile(fs.readFileSync(path.resolve(__dirname, '../../views/index.hbs'), 'utf8'));
         const markdown = template({
             settings: config,
-            introText: config.introText
+            introText: config.introText,
+            description: config.description,
         });
         writeFile(indexMarkdownFile, markdown);
     }

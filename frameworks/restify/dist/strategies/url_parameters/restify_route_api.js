@@ -16,6 +16,7 @@ function run(endpoint, config) {
             name: parameter,
             value: isOptional ? null : getParameterExample(),
             required: !isOptional,
+            type: 'string',
             description: '',
             match,
         };
