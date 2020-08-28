@@ -1,6 +1,5 @@
 import {scribe} from "../../typedefs/core";
 
-import fs = require("fs");
 import {
     CollectionDefinition, HeaderDefinition,
     ItemDefinition, QueryParamDefinition,
@@ -11,6 +10,7 @@ import uuid = require('uuid');
 import striptags = require('striptags');
 import {URL} from "url";
 
+const VERSION = '2.1.0';
 export = (config: scribe.Config) => {
     const baseUrl = config.baseUrl;
     const parsedUrl = new URL(baseUrl);
@@ -21,7 +21,7 @@ export = (config: scribe.Config) => {
                 info: {
                     name: config.title,
                     description: config.description || '',
-                    schema: 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json',
+                    schema: `https://schema.getpostman.com/json/collection/v${VERSION}/collection.json`,
                     _postman_id: uuid.v4(),
                 },
                 item: Object.entries(groupedEndpoints).map(([groupName, endpoints]) => {
@@ -158,6 +158,7 @@ export = (config: scribe.Config) => {
     }
 
     return {
+        VERSION,
         makePostmanCollection,
     };
 

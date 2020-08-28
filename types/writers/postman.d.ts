@@ -1,6 +1,7 @@
 import { scribe } from "../../typedefs/core";
 import { CollectionDefinition } from "postman-collection";
 declare const _default: (config: scribe.Config) => {
+    VERSION: string;
     makePostmanCollection: (groupedEndpoints: {
         [groupName: string]: scribe.Endpoint[];
     }) => CollectionDefinition & {

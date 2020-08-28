@@ -109,9 +109,22 @@ function removeEmptyOptionalParametersAndTransformToKeyValue(parameters = {}) {
     }
     return cleanParameters;
 }
+function gettype(value) {
+    if (Array.isArray(value)) {
+        return 'array';
+    }
+    if (value === null) {
+        return 'null';
+    }
+    if (Number.isInteger(value)) {
+        return 'integer';
+    }
+    return typeof value;
+}
 module.exports = {
     getParameterExample,
     removeEmptyOptionalParametersAndTransformToKeyValue,
     castValueToType,
+    gettype,
 };
 //# sourceMappingURL=parameters.js.map

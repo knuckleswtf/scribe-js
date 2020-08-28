@@ -111,7 +111,20 @@ module.exports = {
      */
     postman: {
         enabled: true,
-        // Override specific fields in the generated Postman collection. Lodash set() notation is supported.
+        // Override specific fields in the generated collection. Lodash set() notation is supported.
+        overrides: {
+            // 'info.version': '2.0.0',
+        }
+    },
+
+    /*
+     * Generate an OpenAPI spec in addition to HTML docs.
+     * The spec file will be generated to {outputPath}/openapi.yaml.
+     * Specification schema: https://swagger.io/specification/
+     */
+    openapi: {
+        enabled: false,
+        // Override specific fields in the generated spec. Lodash set() notation is supported.
         overrides: {
             // 'info.version': '2.0.0',
         }

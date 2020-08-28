@@ -127,6 +127,10 @@ export declare namespace scribe {
             enabled: boolean,
             overrides: Record<string, any>,
         },
+        openapi: {
+            enabled: boolean,
+            overrides: Record<string, any>,
+        },
         exampleLanguages: string[],
         defaultGroup: string,
         introText: string,

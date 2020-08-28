@@ -29,6 +29,7 @@
   "homepage": "https://github.com/knuckleswtf/scribe-js#readme",
   "dependencies": {
     "@knuckleswtf/pastel": "^0.2.0",
+    "collect.js": "^4.28.2",
     "cross-spawn": "^7.0.2",
     "docblock-parser": "^1.0.0",
     "dotenv": "^8.2.0",
@@ -36,6 +37,7 @@
     "handlebars": "^4.7.6",
     "handlebars-helpers": "^0.10.0",
     "inquirer": "^7.3.3",
+    "js-yaml": "^3.14.0",
     "kleur": "^4.0.3",
     "lodash.groupby": "^4.6.0",
     "lodash.keyby": "^4.6.0",
@@ -52,6 +54,7 @@
     "@types/node": "^14.0.5",
     "@types/postman-collection": "^3.5.5",
     "jest": "^26.1.0",
+    "openapi3-ts": "^1.4.0",
     "shx": "^0.3.2",
     "typescript": "^3.9.3"
   },

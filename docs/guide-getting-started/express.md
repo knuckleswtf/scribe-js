@@ -49,7 +49,9 @@ npx scribe generate -a <your-app-file>.js -s <your-server-file>
 
 Visit your newly generated docs. Find the `docs/index.html` file in your `public/` folder and open it in your browser.
 
-There's also a Postman collection generated for you. You can get it by visiting `public/docs/collection.json`.
+There's also a Postman collection generated for you. You can get it by visiting `public/docs/collection.json`. The link will also be added to the sidebar of the webpage.
+
+If you'd like an OpenAPI (Swagger) spec, Scribe can do that too. Set `openapi.enabled` in your config to `true`, then run the `generate` command. You can get the generated spec by visiting `public/docs/openapi.yaml`. The link will also be added to the sidebar of the webpage.
 
 Great! You've seen what Scribe can do. Now, let's refine our docs to match what we want.
 

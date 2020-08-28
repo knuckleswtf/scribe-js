@@ -132,8 +132,25 @@ function removeEmptyOptionalParametersAndTransformToKeyValue(parameters: scribe.
     return cleanParameters;
 }
 
+function gettype(value: any) {
+    if (Array.isArray(value)) {
+        return 'array';
+    }
+
+    if (value === null) {
+        return 'null';
+    }
+
+    if (Number.isInteger(value)) {
+        return 'integer';
+    }
+
+    return typeof value;
+}
+
 export = {
     getParameterExample,
     removeEmptyOptionalParametersAndTransformToKeyValue,
     castValueToType,
+    gettype,
 };

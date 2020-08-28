@@ -167,9 +167,15 @@ async function generate(
     await writer.writeMarkdownAndHTMLDpcs(groupedEndpoints, config);
 
     if (config.postman.enabled) {
-        tools.info(`Writing postman collection to ${path.resolve(config.outputPath)}...`);
-        writer.writePostmanCollectionFile(groupedEndpoints, config);
+        tools.info(`Writing Postman collection to ${path.resolve(config.outputPath)}...`);
+        await writer.writePostmanCollectionFile(groupedEndpoints, config);
         tools.success("Postman collection generated.");
+    }
+
+    if (config.openapi.enabled) {
+        tools.info(`Writing OpenAPI spec to ${path.resolve(config.outputPath)}...`);
+        await writer.writeOpenAPISpecFile(groupedEndpoints, config);
+        tools.success("OpenAPI spec generated.");
     }
 
     console.log();

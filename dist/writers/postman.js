@@ -2,6 +2,7 @@
 const uuid = require("uuid");
 const striptags = require("striptags");
 const url_1 = require("url");
+const VERSION = '2.1.0';
 module.exports = (config) => {
     const baseUrl = config.baseUrl;
     const parsedUrl = new url_1.URL(baseUrl);
@@ -11,7 +12,7 @@ module.exports = (config) => {
             info: {
                 name: config.title,
                 description: config.description || '',
-                schema: 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json',
+                schema: `https://schema.getpostman.com/json/collection/v${VERSION}/collection.json`,
                 _postman_id: uuid.v4(),
             },
             item: Object.entries(groupedEndpoints).map(([groupName, endpoints]) => {
@@ -133,6 +134,7 @@ module.exports = (config) => {
         });
     }
     return {
+        VERSION,
         makePostmanCollection,
     };
 };
