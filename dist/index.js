@@ -9,6 +9,7 @@ const union = require("lodash.union");
 const d = require("./utils/docblocks");
 const p = require("./utils/parameters");
 const tools = require("./tools");
+const writer = require("./writer");
 const { isPortTaken } = require('./utils/response_calls');
 const log = require('debug')('lib:scribe');
 async function generate(endpoints, config, router, serverFile, shouldOverwriteMarkdownFiles = false) {
@@ -134,15 +135,10 @@ async function generate(endpoints, config, router, serverFile, shouldOverwriteMa
     }))).flat();
     const groupBy = require('lodash.groupby');
     const groupedEndpoints = groupBy(parsedEndpoints, 'metadata.groupName');
-    const markdown = require("./2_write_output/markdown")(config);
-    const sourceOutputPath = path.resolve('docs');
-    markdown.writeDocs(groupedEndpoints, sourceOutputPath, shouldOverwriteMarkdownFiles);
-    const pastel = require('@knuckleswtf/pastel');
-    await pastel.generate(sourceOutputPath + '/index.md', path.resolve(config.outputPath));
+    await writer.writeMarkdownAndHTMLDpcs(groupedEndpoints, config);
     if (config.postman.enabled) {
         tools.info(`Writing postman collection to ${path.resolve(config.outputPath)}...`);
-        const postman = require("./2_write_output/postman")(config);
-        postman.writePostmanCollectionFile(groupedEndpoints, path.resolve(config.outputPath));
+        writer.writePostmanCollectionFile(groupedEndpoints, config);
         tools.success("Postman collection generated.");
     }
     console.log();
@@ -151,29 +147,29 @@ async function generate(endpoints, config, router, serverFile, shouldOverwriteMa
 function getStrategies(config) {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p;
     const metadata = union([
-        './1_extract_info/1_metadata/docblocks',
+        './extractors/1_metadata/docblocks',
     ], (_b = (_a = config === null || config === void 0 ? void 0 : config.strategies) === null || _a === void 0 ? void 0 : _a.metadata) !== null && _b !== void 0 ? _b : []);
     const headers = union([
-        './1_extract_info/2_headers/routegroup_apply',
-        './1_extract_info/2_headers/header_tag',
+        './extractors/2_headers/routegroup_apply',
+        './extractors/2_headers/header_tag',
     ], (_d = (_c = config === null || config === void 0 ? void 0 : config.strategies) === null || _c === void 0 ? void 0 : _c.headers) !== null && _d !== void 0 ? _d : []);
     const urlParameters = union([
-        './1_extract_info/3_url_parameters/url_param_tag',
+        './extractors/3_url_parameters/url_param_tag',
     ], (_f = (_e = config === null || config === void 0 ? void 0 : config.strategies) === null || _e === void 0 ? void 0 : _e.urlParameters) !== null && _f !== void 0 ? _f : []);
     const queryParameters = union([
-        './1_extract_info/4_query_parameters/query_param_tag',
+        './extractors/4_query_parameters/query_param_tag',
     ], (_h = (_g = config === null || config === void 0 ? void 0 : config.strategies) === null || _g === void 0 ? void 0 : _g.queryParameters) !== null && _h !== void 0 ? _h : []);
     const bodyParameters = union([
-        './1_extract_info/5_body_parameters/read_source_code',
-        './1_extract_info/5_body_parameters/body_param_tag',
+        './extractors/5_body_parameters/read_source_code',
+        './extractors/5_body_parameters/body_param_tag',
     ], (_k = (_j = config === null || config === void 0 ? void 0 : config.strategies) === null || _j === void 0 ? void 0 : _j.bodyParameters) !== null && _k !== void 0 ? _k : []);
     const responses = union([
-        './1_extract_info/6_responses/response_tag',
-        './1_extract_info/6_responses/responsefile_tag',
-        './1_extract_info/6_responses/response_call',
+        './extractors/6_responses/response_tag',
+        './extractors/6_responses/responsefile_tag',
+        './extractors/6_responses/response_call',
     ], (_m = (_l = config === null || config === void 0 ? void 0 : config.strategies) === null || _l === void 0 ? void 0 : _l.responses) !== null && _m !== void 0 ? _m : []);
     const responseFields = union([
-        './1_extract_info/7_response_fields/response_field_tag'
+        './extractors/7_response_fields/response_field_tag'
     ], (_p = (_o = config === null || config === void 0 ? void 0 : config.strategies) === null || _o === void 0 ? void 0 : _o.responseFields) !== null && _p !== void 0 ? _p : []);
     return {
         metadata,

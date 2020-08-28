@@ -9,7 +9,7 @@ To describe body parameters for your endpoint, use the `@bodyParam` annotation *
 The `@bodyParam` annotation takes the type of the parameter, its name, an optional "required" label, and then its description. Valid types:
 - `int` / `integer`
 - `string`
-- `number` / `float`
+- `number`
 - `boolean`
 - `array`, `object` (see [Handling array and object parameters](#handling-array-and-object-parameters) below)
 - `file` (see [Documenting File Uploads](#documenting-file-uploads) below)

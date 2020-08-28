@@ -55,7 +55,7 @@ Here are some things you can customise with Scribe:
 - Languages for the example requests
 - A logo to show in your docs.
 
-For details, check out [Documenting API information](documenting-api-information.html).
+For details, check out [Documenting API information](documenting/documenting-api-information.html).
 
 ## Filter your routes
 You might also want to decide what routes you want to document. By default, Scribe will try to document all of your routes (except websocket routes), so if you're okay with that, you can leave it at that.
@@ -121,7 +121,7 @@ Scribe tries to figure out information about your routes, but it needs more help
 - Example responses
 - Fields in the response
 
-Check out how to do this in the guide on [Documenting your API](documenting.html).
+Check out how to do this in the guide on [Documenting your API](documenting/).
 
 ## Generate and publish
 After making changes as needed, you can run `scribe generate` as many times as you want.

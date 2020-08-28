@@ -59,7 +59,7 @@ function castValueToType(value, type = 'string') {
             return Number(value);
         case 'bool':
         case 'boolean':
-            return value == "false" ? false : true;
+            return value === "false" ? false : true;
         case 'object':
             return typeof value === 'string' ? JSON.parse(value) : value;
         default:

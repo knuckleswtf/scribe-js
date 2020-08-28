@@ -11,6 +11,7 @@ import union = require('lodash.union');
 import d = require("./utils/docblocks");
 import p = require('./utils/parameters');
 import tools = require('./tools');
+import writer = require("./writer");
 
 const {isPortTaken} = require('./utils/response_calls');
 
@@ -163,17 +164,11 @@ async function generate(
     const groupBy = require('lodash.groupby');
     const groupedEndpoints: { [groupName: string]: scribe.Endpoint[] } = groupBy(parsedEndpoints, 'metadata.groupName');
 
-    const markdown = require("./2_write_output/markdown")(config);
-    const sourceOutputPath = path.resolve('docs');
-    markdown.writeDocs(groupedEndpoints, sourceOutputPath, shouldOverwriteMarkdownFiles);
-
-    const pastel = require('@knuckleswtf/pastel');
-    await pastel.generate(sourceOutputPath + '/index.md', path.resolve(config.outputPath));
+    await writer.writeMarkdownAndHTMLDpcs(groupedEndpoints, config);
 
     if (config.postman.enabled) {
         tools.info(`Writing postman collection to ${path.resolve(config.outputPath)}...`);
-        const postman = require("./2_write_output/postman")(config);
-        postman.writePostmanCollectionFile(groupedEndpoints, path.resolve(config.outputPath));
+        writer.writePostmanCollectionFile(groupedEndpoints, config);
         tools.success("Postman collection generated.");
     }
 
@@ -184,29 +179,29 @@ async function generate(
 
 function getStrategies(config: scribe.Config) {
     const metadata = union([
-        './1_extract_info/1_metadata/docblocks',
+        './extractors/1_metadata/docblocks',
     ], config?.strategies?.metadata ?? []);
     const headers = union([
-        './1_extract_info/2_headers/routegroup_apply',
-        './1_extract_info/2_headers/header_tag',
+        './extractors/2_headers/routegroup_apply',
+        './extractors/2_headers/header_tag',
     ], config?.strategies?.headers ?? []);
     const urlParameters = union([
-        './1_extract_info/3_url_parameters/url_param_tag',
+        './extractors/3_url_parameters/url_param_tag',
     ], config?.strategies?.urlParameters ?? []);
     const queryParameters = union([
-        './1_extract_info/4_query_parameters/query_param_tag',
+        './extractors/4_query_parameters/query_param_tag',
     ], config?.strategies?.queryParameters ?? []);
     const bodyParameters = union([
-        './1_extract_info/5_body_parameters/read_source_code',
-        './1_extract_info/5_body_parameters/body_param_tag',
+        './extractors/5_body_parameters/read_source_code',
+        './extractors/5_body_parameters/body_param_tag',
     ], config?.strategies?.bodyParameters ?? []);
     const responses = union([
-        './1_extract_info/6_responses/response_tag',
-        './1_extract_info/6_responses/responsefile_tag',
-        './1_extract_info/6_responses/response_call',
+        './extractors/6_responses/response_tag',
+        './extractors/6_responses/responsefile_tag',
+        './extractors/6_responses/response_call',
     ], config?.strategies?.responses ?? []);
     const responseFields = union([
-        './1_extract_info/7_response_fields/response_field_tag'
+        './extractors/7_response_fields/response_field_tag'
     ], config?.strategies?.responseFields ?? []);
     return {
         metadata,

@@ -5,10 +5,10 @@ module.exports = {
     baseUrl: "http://yourApi.dev",
 
     /*
-     * The HTML <title> for the generated documentation, and the name of the generated Postman collection.
-     * If this is null, Scribe will infer it from config('app.name').
+     * The HTML <title> for the generated documentation, and the name of the generated Postman collection and OpenAPI spec.
      */
     title: "API Documentation",
+    description: '',
 
     /*
      * Custom logo path. This will be used as the value of the src attribute for the <img> tag,
@@ -112,11 +112,10 @@ module.exports = {
      */
     postman: {
         enabled: true,
-        description: '',
-        /*
-         * The "Auth" section that should appear in the collection. See the schema docs for more information.
-         */
-        auth: null,
+        // Override specific fields in the generated Postman collection. Lodash set() notation is supported.
+        overrides: {
+            // 'info.version': '2.0.0',
+        }
     },
 
     /*

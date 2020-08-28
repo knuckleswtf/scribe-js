@@ -103,6 +103,7 @@ export declare namespace scribe {
     export interface Config {
         baseUrl: string,
         title: string,
+        description: string,
         logo: false | string,
         outputPath: string,
         auth: {
@@ -124,8 +125,7 @@ export declare namespace scribe {
         ],
         postman: {
             enabled: boolean,
-            description: string,
-            auth?: RequestAuthDefinition,
+            overrides: Record<string, any>,
         },
         exampleLanguages: string[],
         defaultGroup: string,

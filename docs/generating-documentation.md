@@ -33,9 +33,8 @@ You can configure Postman collection generation in the `postman` section of your
 
 - To turn it off, set the `postman.enabled` config option to false.
 
-- The name of the Postman collection will be the value of the `title` key (in the root config, not the `postman` object).
 
-- You can add descriptions and auth information for the collection in the `postman.description` and `postman.auth` keys. 
+- To override some fields in the generated collection, set the `postman.overrides` config option to your changes. You can use dot notation to update specific nested fields. For instance, `{'info.version': '2.0.0'}` will override the 'version` key in the 'info` object whenever generating.
 
 ## Skipping the extraction phase [coming soon]
 If you've modified the generated Markdown, and you only want Scribe to transform it to the normal HTML output, you  can use the `--no-extraction` flag. Scribe will skip extracting data from your routes and go straight to the writing phase, where it converts your Markdown to HTML or Blade. See [Advanced Customization](customization.html).

@@ -13,11 +13,14 @@ Output folder. The HTML documentation, assets and Postman collection will be gen
 ### `baseUrl`
 The base URL to be used in examples.
 
-### `introText`
-The text to place in the "Introduction" section. Markdown and HTML are supported.
-
 ### `title`
 The HTML `<title>` for the generated documentation, and the name of the generated Postman collection.
+
+### `description`
+A description for the API. This will be used as the `info.description` field in the Postman collection and OpenAPI spec, and placed before the "Introduction" section in the doc webpage.
+
+### `introText`
+The text to place in the "Introduction" section. Markdown and HTML are supported.
 
 ### `logo`
 Path to an image file to use as your logo in the generated docs. This will be used as the value of the src attribute for the `<img>` tag, so make sure it points to a public URL or path accessible from your web server. For best results, the image width should be 230px. Set this to `false` if you're not using a logo. Default: `false`.
@@ -39,9 +42,7 @@ The collection will be created in `<outputPath>/collection.json`.
 
 - `enabled`: Whether to generate a Postman API collection. Default: `true`
 
-- `description`: The description for the generated Postman collection.
-
-- `auth`: The custom data to use for Postman's "auth" section. See the schema docs at [https://schema.getpostman.com/json/collection/v2.1.0/collection.json](https://schema.getpostman.com/json/collection/v2.1.0/collection.json).
+- `overrides`: List of fields to apply to the generated collection. Dot notation is supported. For instance, if you'd like to override the version (in the `info` object, you can set `overrides` to `['info.version' => '2.0.0']`.
 
 ## Extraction settings
 ### `auth`
