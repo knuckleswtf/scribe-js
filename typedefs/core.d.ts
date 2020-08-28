@@ -92,12 +92,22 @@ export declare namespace scribe {
         baseUrl: string,
         methods: Array<'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | '*'>,
         env: Record<string, any>,
+        auth: string | number | Function,
         bodyParams: {
 
         },
         queryParams: {
 
         },
+    }
+
+    export interface RouteGroup {
+        include: string[],
+        exclude: string[],
+        apply: {
+            headers: Record<string, any>,
+            responseCalls: ResponseCallRules
+        }
     }
 
     export interface Config {
@@ -110,19 +120,9 @@ export declare namespace scribe {
             enabled: boolean,
             in: 'query' | 'body' | 'bearer' | 'basic' | 'header',
             name: string,
-            useValue: any,
             extraInfo: string,
         },
-        routes: [
-            {
-                include: string[],
-                exclude: string[],
-                apply: {
-                    headers: Record<string, any>,
-                    responseCalls: ResponseCallRules
-                }
-            }
-        ],
+        routes: RouteGroup[],
         postman: {
             enabled: boolean,
             overrides: Record<string, any>,

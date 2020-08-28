@@ -128,7 +128,9 @@ The configuration for response calls is located in the `apply.responseCalls` sec
 
 - You can also modify the environment variables directly by adding a :code:`.env.docs` file or using the `env` key. Scribe will load these env variables after starting your server, but before beginning response calls.
 
-- By default, the package will generate dummy values for your documented query, body and file parameters and send in the request. If you specified example values using `@bodyParam` or `@queryParam`, those will be used instead. You can configure additional parameters or overwrite the existing ones for the request in the `responseCalls.queryParams`, `responseCalls.bodyParams`, and `responseCalls.fileParams` sections. For file parameters, each value should be a valid absolute path to a file on the machine. [coming soon]
+- If you have authenticated endpoints, you can use `responseCalls.auth` to authenticate your response calls. Set it to the value of the auth parameter (or a function that will be called before the response call to get the value). Scribe combines this with the information in your `auth` section to authenticate your requests. If this value is null or a function that returns null, Scribe will use a random value. 
+
+- By default, the package will generate dummy values for your documented URL, query, body and file parameters and send in the request. If you specified example values using `@bodyParam` or `@queryParam`, those will be used instead. You can configure additional parameters or overwrite the existing ones for the request in the `responseCalls.queryParams`, `responseCalls.bodyParams`, and `responseCalls.fileParams` sections. For file parameters, each value should be a valid absolute path to a file on the machine. [coming soon]
 
 ```eval_rst
 .. Note:: If you specified :code:`No-example` for a parameter earlier, it won't be included when making a response call.

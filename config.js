@@ -41,12 +41,6 @@ module.exports = {
          */
         name: 'token',
         /*
-         * The value of the parameter to be used by Scribe to authenticate response calls.
-         * This will NOT be included in the generated documentation.
-         * If this value is null, Scribe will use a random value.
-         */
-        useValue: () => process.env.SCRIBE_AUTH_KEY,
-        /*
          * Any extra authentication-related info for your users. For instance, you can describe how to find or generate their auth credentials.
          * Markdown and HTML are supported.
          */
@@ -99,7 +93,12 @@ module.exports = {
                      */
                     env: {
                         // NODE_ENV: 'docs'
-                    }
+                    },
+                    /*
+                     * The value of the auth parameter (in your auth section above) to be used by Scribe to authenticate response calls.
+                     * If this value is null, Scribe will use a random value. If you don't have authenticated endpoints, don't worry about this.
+                     */
+                    auth: () => process.env.SCRIBE_AUTH_KEY,
                 }
             }
         }

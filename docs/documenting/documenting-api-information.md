@@ -20,7 +20,6 @@ module.exports = {
         enabled: true,
         in: 'query',
         name: 'apiKey',
-        useValue: () => process.env.SCRIBE_API_KEY,
         extraInfo: 'You can retrieve your key by going to settings and clicking <b>Generate API key</b>.',
     },
     // ...
@@ -39,7 +38,6 @@ module.exports = {
         enabled: true,
         in: 'bearer',
         name: 'hahaha', // <--- This value is ignored for bearer and basic auth
-        useValue: () => process.env.SCRIBE_API_KEY,
         extraInfo: 'You can retrieve your token by visiting your dashboard and clicking <b>Generate API token</b>.',
     },
     // ...
@@ -57,7 +55,6 @@ module.exports = {
         enabled: true,
         in: 'header',
         name:  'Api-Key', // <--- The name of the header
-        useValue: () => process.env.SCRIBE_API_KEY,
         extraInfo: 'You can retrieve your token by visiting your dashboard and clicking <b>Generate API token</b>.',
     },
     // ...
@@ -66,9 +63,8 @@ module.exports = {
 
 You can set whatever you want as the `extraInfo`. A good idea would be to tell your users where to get their auth key.
 
-The `useValue` field is only used by Scribe for response calls. It won't be included in the generated output or examples. You can specify a hardcoded value or a function that will be called during the response call.
 
-For more information, see the [reference documentation on the auth section](config.html#auth).
+For more information, see the [reference documentation on the auth section](../config.html#auth).
 
 ## Introductory text
 The `introText` key in `.scribe.config.js` is where you can set the text shown to readers in the "Introduction" section. If your text is too long to be put in a config file, you can create a `prepend.md` containing the intro text and put it in the `resources/docs` folder.
