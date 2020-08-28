@@ -169,15 +169,15 @@ export declare namespace scribe {
         group?: string | null,
         groupDescription?: string | null,
         header: Record<string, string>,
-        urlParam: ParameterBag<BodyParameter>,
-        queryParam: ParameterBag<BodyParameter>,
-        bodyParam: ParameterBag<BodyParameter>,
+        urlParam: ParameterBag,
+        queryParam: ParameterBag,
+        bodyParam: ParameterBag,
         response: Response[],
         responseFile: Array<{
             status?: string,
             filePath?: string,
             extraJson?: string,
         }>,
-        responseField: ParameterBag<BodyParameter>,
+        responseField: ParameterBag,
     }
 }

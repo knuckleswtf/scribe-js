@@ -36,6 +36,15 @@ You can configure Postman collection generation in the `postman` section of your
 
 - To override some fields in the generated collection, set the `postman.overrides` config option to your changes. You can use dot notation to update specific nested fields. For instance, `{'info.version': '2.0.0'}` will override the 'version` key in the 'info` object whenever generating.
 
+## OpenAPI (Swagger) spec generation
+Scribe can also generate an OpenAPI spec file. This is disabled by default. You can configure this in the `openapi` section of your `scribe.config.js` file.
+
+- To enable it, set the `openapi.enabled` config option to `true`.
+
+- To override some fields in the generated spec, set the `openapi.overrides` config option to your changes. You can use dot notation to update specific nested fields. For instance, `{'info.version': '2.0.0'}` will override the 'version` key in the 'info` object whenever generating.
+
+You can view the generated spec by visiting `public/docs/openapi.yaml` for `static`. This link will also be added to the sidebar of your docs.
+
 ## Skipping the extraction phase [coming soon]
 If you've modified the generated Markdown, and you only want Scribe to transform it to the normal HTML output, you  can use the `--no-extraction` flag. Scribe will skip extracting data from your routes and go straight to the writing phase, where it converts your Markdown to HTML or Blade. See [Advanced Customization](customization.html).
 

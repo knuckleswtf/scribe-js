@@ -22,6 +22,7 @@ function run(endpoint, config) {
                 name: parameter,
                 value: isOptional ? null : getParameterExample(),
                 required: !isOptional,
+                type: 'string',
                 description: '',
                 match,
             };
@@ -31,6 +32,7 @@ function run(endpoint, config) {
             value: isOptional ? null : getParameterExample('string', parameterRegexPattern[1]),
             required: !isOptional,
             description: '',
+            type: 'string',
             match,
             placeholder: `:${parameter}${isOptional ? '?' : ''}`
         };

@@ -20,6 +20,7 @@ function run(endpoint, config) {
         return {
             name: p.name,
             value: p.optional ? null : getParameterExample(type, usePattern),
+            type,
             required: !p.optional,
             description: '',
             match: `:${p.name}${p.optional ? '?' : ''}`

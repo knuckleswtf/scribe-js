@@ -32,13 +32,13 @@
 {{#if (isNonEmptyObject endpoint.urlParameters) }}
 <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
 {{#each endpoint.urlParameters }}
-{{> components.field-details name=this.name type=null required=this.required description=this.description }}
+{{> components.field-details name=this.name type=this.type required=this.required description=this.description }}
 {{/each}}
 {{/if}}
 {{#if (isNonEmptyObject endpoint.queryParameters) }}
 <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
 {{#each endpoint.queryParameters }}
-{{> components.field-details name=this.name type=null required=this.required description=this.description }}
+{{> components.field-details name=this.name type=this.type required=this.required description=this.description }}
 {{/each}}
 {{/if}}
 {{#if (isNonEmptyObject endpoint.bodyParameters) }}

@@ -20,6 +20,7 @@ function run(endpoint: scribe.Endpoint, config): scribe.UrlParameters {
             name: parameter,
             value: isOptional ? null : getParameterExample(),
             required: !isOptional,
+            type: 'string',
             description: '',
             match,
         };
