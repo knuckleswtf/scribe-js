@@ -5,10 +5,11 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "jest",
+    "version:all": "lerna version",
     "publish:all": "npm run publish:core && npm run publish:adonis && npm run publish:express && npm run publish:restify",
     "publish:core": "npm publish --access public",
     "publish:adonis": "cd ./frameworks/adonis && npm publish --access public",
-    "publish:express": "cd ./frameworks/express && npm publish --access public",
+    "publish:express": "cd ./frameworks/express && ",
     "publish:restify": "cd ./frameworks/restify && npm publish --access public"
   },
   "repository": {
@@ -54,6 +55,7 @@
     "@types/node": "^14.0.5",
     "@types/postman-collection": "^3.5.5",
     "jest": "^26.1.0",
+    "lerna": "^3.22.1",
     "openapi3-ts": "^1.4.0",
     "shx": "^0.3.2",
     "typescript": "^3.9.3"
