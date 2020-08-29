@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "jest",
-    "version:all": "lerna version --no-push --force-publish=*",
+    "version:all": "lerna version --no-push --force-publish=* --exact",
     "publish:all": "npm run publish:core && npm run publish:adonis && npm run publish:express && npm run publish:restify",
     "publish:core": "npm publish --access public",
     "publish:adonis": "cd ./frameworks/adonis && npm publish --access public",
