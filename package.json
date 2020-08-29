@@ -1,11 +1,11 @@
 {
   "name": "@knuckleswtf/scribe",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Generate API documentation for humans from your Node.js codebase.",
   "main": "dist/index.js",
   "scripts": {
     "test": "jest",
-    "version:all": "lerna version",
+    "version:all": "lerna version --no-push --force-publish=*",
     "publish:all": "npm run publish:core && npm run publish:adonis && npm run publish:express && npm run publish:restify",
     "publish:core": "npm publish --access public",
     "publish:adonis": "cd ./frameworks/adonis && npm publish --access public",
