@@ -1,9 +1,7 @@
 #!/usr/bin/env node
-import fs = require("fs");
-import path = require("path");
-import program = require('commander');
-
-import {scribe} from "../../../typedefs/core";
+const fs = require("fs");
+const path = require("path");
+const program = require('commander');
 
 const log = require('debug')('lib:scribe:express');
 const VERSION = require('../package.json').version;
@@ -32,8 +30,13 @@ program
         "Discard any changes you've made to the source Markdown files",
         false,
     )
+    .option(
+        '--no-extraction',
+        "Skip extraction of route info and just transform the Markdown files",
+        false,
+    )
     .description("Generate API documentation from your Express routes.")
-    .action(async ({config, app, server, force}) => {
+    .action(async ({config, app, server, force, extraction}) => {
         const configFile = path.resolve(config);
         const appFile = path.resolve(app);
         const serverFile = server ? path.resolve(server) : null;
@@ -42,6 +45,16 @@ program
             console.log(`⚠ Config file ${configFile} does not exist. Initialising with a default config file...`);
             console.log();
             await createConfigFile();
+            return;
+        }
+
+        if (!extraction) {
+            const configObject = require(configFile);
+
+            const {generate} = require('@knuckleswtf/scribe');
+            await generate(null, configObject, 'restify', null, {
+                noExtraction: !extraction,
+            });
             return;
         }
 
@@ -57,7 +70,7 @@ program
             process.exit(1);
         }
 
-        const configObject: scribe.Config = require(configFile);
+        const configObject = require(configFile);
         // @ts-ignore
         configObject.strategies = configObject.strategies || {};
         configObject.strategies.urlParameters = (configObject.strategies.urlParameters || []).concat(path.join(__dirname, './strategies/url_parameters/express_route_api'));
@@ -65,11 +78,11 @@ program
         const endpoints = require('./get_routes.js')(appObject);
 
         const {generate} = require('@knuckleswtf/scribe');
-        await generate(endpoints, configObject, 'express', serverFile, force);
+        await generate(endpoints, configObject, 'express', serverFile, {overwriteMarkdownFiles: force});
 
         // Make sure to end process, in case server is still running
         // Wrapping in a timeout because it seems sometimes ncp/pastel fails to copy over all assets in time
-        setTimeout(() => process.exit(0), 2200);
+        setTimeout(() => process.exit(0), 2000);
     });
 
 

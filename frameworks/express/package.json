@@ -2,9 +2,9 @@
   "name": "@knuckleswtf/scribe-express",
   "version": "0.1.0",
   "description": "Generate API documentation for humans from your Express.js codebase.",
-  "main": "dist/decorator.js",
+  "main": "src/decorator.js",
   "bin": {
-    "scribe": "dist/cli.js"
+    "scribe": "src/cli.js"
   },
   "scripts": {
     "test": ""
@@ -32,9 +32,7 @@
     "lodash.keyby": "^4.6.0"
   },
   "devDependencies": {
-    "@types/node": "^14.0.5",
-    "express": "^4.17.1",
-    "typescript": "^3.9.3"
+    "express": "^4.17.1"
   },
   "engines": {
     "node": ">=12.4.0"

@@ -1,10 +1,8 @@
 #!/usr/bin/env node
-import fs = require("fs");
-import path = require("path");
-import program = require('commander');
+const fs = require("fs");
+const path = require("path");
+const program = require('commander');
 const EventEmitter = require("events").EventEmitter;
-
-import {scribe} from "../../../typedefs/core";
 
 const log = require('debug')('lib:scribe:restify');
 const VERSION = require('../package.json').version;
@@ -28,8 +26,13 @@ program
         "Discard any changes you've made to the source Markdown files",
         false,
     )
+    .option(
+        '--no-extraction',
+        "Skip extraction of route info and just transform the Markdown files",
+        false,
+    )
     .description("Generate API documentation from your Restify routes.")
-    .action(async ({config, server, force}) => {
+    .action(async ({config, server, force, extraction}) => {
         const configFile = path.resolve(config);
         const serverFile = path.resolve(server);
 
@@ -37,6 +40,16 @@ program
             console.log(`⚠ Config file ${configFile} does not exist. Initialising with a default config file...`);
             console.log();
             await createConfigFile();
+            return;
+        }
+
+        if (!extraction) {
+            const configObject = require(configFile);
+
+            const {generate} = require('@knuckleswtf/scribe');
+            await generate(null, configObject, 'restify', null, {
+                noExtraction: !extraction,
+            });
             return;
         }
 
@@ -52,17 +65,17 @@ program
             process.exit(1);
         }
 
-        const configObject: scribe.Config = require(configFile);
+        const configObject = require(configFile);
         // @ts-ignore
         configObject.strategies = configObject.strategies || {};
         configObject.strategies.urlParameters = (configObject.strategies.urlParameters || []).concat(path.join(__dirname, './strategies/url_parameters/restify_route_api'));
 
         const endpoints = require('./get_routes')(serverObject);
         const {generate} = require('@knuckleswtf/scribe');
-        await generate(endpoints, configObject, 'restify', null, force);
+        await generate(endpoints, configObject, 'restify', null, {overwriteMarkdownFiles: force});
 
         // Make sure to end process, in case server is still running
-        setTimeout(() => process.exit(0), 2200);
+        setTimeout(() => process.exit(0), 2000);
     });
 
 

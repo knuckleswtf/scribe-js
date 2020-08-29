@@ -7,7 +7,9 @@ const { Command } = require.main.require('@adonisjs/ace')
 
 class GenerateDocumentation extends Command {
     static get signature () {
-        return "scribe:generate {--force : Discard any changes you've made to the Markdown files}"
+        return `scribe:generate 
+            {--force : Discard any changes you've made to the Markdown files}
+            {--no-extraction : Skip extraction of route info and just transform the Markdown files}`
     }
 
     static get description () {
@@ -41,10 +43,13 @@ class GenerateDocumentation extends Command {
         config.strategies.urlParameters = (config.strategies.urlParameters || []).concat(path.join(__dirname, '../strategies/url_parameters/adonis_route_api'));
 
         const { generate } = require('@knuckleswtf/scribe');
-        await generate(endpoints, config, 'adonis', path.resolve('server.js'), options.force || false);
+        await generate(endpoints, config, 'adonis', path.resolve('server.js'), {
+            overwriteMarkdownFiles: options.force || false,
+            noExtraction: !options.extraction
+        });
 
         // Make sure to end process, in case server is still running
-        setTimeout(() => process.exit(0), 2200);
+        setTimeout(() => process.exit(0), 2000);
     }
 
     async getEndpoints(tools) {
