@@ -1,13 +1,13 @@
 import { scribe } from "../typedefs/core";
 declare const _default: {
-    writePostmanCollectionFile(groupedEndpoints: {
+    writePostmanCollectionFile(config: scribe.Config, groupedEndpoints: {
         [groupName: string]: scribe.Endpoint[];
-    }, config: scribe.Config): Promise<void>;
-    writeOpenAPISpecFile(groupedEndpoints: {
+    }): Promise<void>;
+    writeOpenAPISpecFile(config: scribe.Config, groupedEndpoints: {
         [groupName: string]: scribe.Endpoint[];
-    }, config: scribe.Config): Promise<void>;
-    writeMarkdownAndHTMLDpcs(groupedEndpoints: {
+    }): Promise<void>;
+    writeMarkdownAndHTMLDpcs(config: scribe.Config, groupedEndpoints?: {
         [groupName: string]: scribe.Endpoint[];
-    }, config: scribe.Config, shouldOverwriteMarkdownFiles?: boolean): Promise<void>;
+    }, shouldOverwriteMarkdownFiles?: boolean): Promise<void>;
 };
 export = _default;

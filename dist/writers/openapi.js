@@ -58,7 +58,7 @@ function generateEndpointParametersSpec(endpoint) {
                 example: details.value || null,
                 required: details.required || false,
                 schema: {
-                    type: details.type || 'string',
+                    type: p.normalizeTypeName(details.type) || 'string',
                 },
             };
             parameters.push(parameterData);
@@ -242,18 +242,18 @@ function generateEndpointRequestBodySpec(endpoint) {
             schema.required = (schema.required || []).concat(name);
         }
         let fieldData = {};
-        if (details['type'] === 'file') {
+        if (details.type === 'file') {
             // See https://swagger.io/docs/specification/describing-request-body/file-upload/
             hasFileParameter = true;
             fieldData = {
                 type: 'string',
                 format: 'binary',
-                description: (_a = details['description']) !== null && _a !== void 0 ? _a : '',
+                description: (_a = details.description) !== null && _a !== void 0 ? _a : '',
             };
         }
         else {
             fieldData = {
-                type: details.type,
+                type: p.normalizeTypeName(details.type),
                 description: (_b = details.description) !== null && _b !== void 0 ? _b : '',
                 example: (_c = details.value) !== null && _c !== void 0 ? _c : null,
             };
@@ -338,7 +338,7 @@ module.exports = (config) => {
                         // Currently, Swagger requires path parameters to be required
                         required: true,
                         schema: {
-                            type: details.type || 'string',
+                            type: p.normalizeTypeName(details.type) || 'string',
                         },
                     };
                     // Workaround for optional parameters

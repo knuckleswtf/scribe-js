@@ -1,6 +1,7 @@
 module.exports = {generate};
 
 import {scribe} from "../typedefs/core";
+export {scribe} from "../typedefs/core";
 
 import spawn = require('cross-spawn');
 import matcher = require('matcher');
@@ -17,13 +18,19 @@ const {isPortTaken} = require('./utils/response_calls');
 
 const log = require('debug')('lib:scribe');
 
+const defaultOptions = {overwriteMarkdownFiles: false, noExtraction: false};
+
 async function generate(
     endpoints: scribe.Endpoint[],
     config: scribe.Config,
     router: scribe.SupportedRouters,
     serverFile?: string,
-    shouldOverwriteMarkdownFiles: boolean = false,
+    {overwriteMarkdownFiles, noExtraction}: {overwriteMarkdownFiles?: boolean, noExtraction?: boolean} = defaultOptions,
 ) {
+    if (noExtraction) {
+        return writer.writeMarkdownAndHTMLDpcs(config);
+    }
+
     if (router == 'express' && !serverFile) {
         tools.warn("You didn't specify a server file. This means that either your app is started by your app file, or you forgot.");
         tools.warn("If you forgot, you'll need to specify a server file for response calls to work.");
@@ -164,18 +171,14 @@ async function generate(
     const groupBy = require('lodash.groupby');
     const groupedEndpoints: { [groupName: string]: scribe.Endpoint[] } = groupBy(parsedEndpoints, 'metadata.groupName');
 
-    await writer.writeMarkdownAndHTMLDpcs(groupedEndpoints, config);
+    await writer.writeMarkdownAndHTMLDpcs(config, groupedEndpoints, overwriteMarkdownFiles);
 
     if (config.postman.enabled) {
-        tools.info(`Writing Postman collection to ${path.resolve(config.outputPath)}...`);
-        await writer.writePostmanCollectionFile(groupedEndpoints, config);
-        tools.success("Postman collection generated.");
+        await writer.writePostmanCollectionFile(config, groupedEndpoints);
     }
 
     if (config.openapi.enabled) {
-        tools.info(`Writing OpenAPI spec to ${path.resolve(config.outputPath)}...`);
-        await writer.writeOpenAPISpecFile(groupedEndpoints, config);
-        tools.success("OpenAPI spec generated.");
+        await writer.writeOpenAPISpecFile(config, groupedEndpoints);
     }
 
     console.log();

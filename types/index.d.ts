@@ -1,1 +1,1 @@
-export {};
+export { scribe } from "../typedefs/core";

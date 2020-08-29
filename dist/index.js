@@ -12,7 +12,11 @@ const tools = require("./tools");
 const writer = require("./writer");
 const { isPortTaken } = require('./utils/response_calls');
 const log = require('debug')('lib:scribe');
-async function generate(endpoints, config, router, serverFile, shouldOverwriteMarkdownFiles = false) {
+const defaultOptions = { overwriteMarkdownFiles: false, noExtraction: false };
+async function generate(endpoints, config, router, serverFile, { overwriteMarkdownFiles, noExtraction } = defaultOptions) {
+    if (noExtraction) {
+        return writer.writeMarkdownAndHTMLDpcs(config);
+    }
     if (router == 'express' && !serverFile) {
         tools.warn("You didn't specify a server file. This means that either your app is started by your app file, or you forgot.");
         tools.warn("If you forgot, you'll need to specify a server file for response calls to work.");
@@ -135,16 +139,12 @@ async function generate(endpoints, config, router, serverFile, shouldOverwriteMa
     }))).flat();
     const groupBy = require('lodash.groupby');
     const groupedEndpoints = groupBy(parsedEndpoints, 'metadata.groupName');
-    await writer.writeMarkdownAndHTMLDpcs(groupedEndpoints, config);
+    await writer.writeMarkdownAndHTMLDpcs(config, groupedEndpoints, overwriteMarkdownFiles);
     if (config.postman.enabled) {
-        tools.info(`Writing Postman collection to ${path.resolve(config.outputPath)}...`);
-        await writer.writePostmanCollectionFile(groupedEndpoints, config);
-        tools.success("Postman collection generated.");
+        await writer.writePostmanCollectionFile(config, groupedEndpoints);
     }
     if (config.openapi.enabled) {
-        tools.info(`Writing OpenAPI spec to ${path.resolve(config.outputPath)}...`);
-        await writer.writeOpenAPISpecFile(groupedEndpoints, config);
-        tools.success("OpenAPI spec generated.");
+        await writer.writeOpenAPISpecFile(config, groupedEndpoints);
     }
     console.log();
     tools.info(`You can view your docs locally by opening file:///${path.resolve(config.outputPath, 'index.html').replace(/\\/g, '/')} in your browser`);

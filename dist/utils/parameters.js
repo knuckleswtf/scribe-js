@@ -121,10 +121,24 @@ function gettype(value) {
     }
     return typeof value;
 }
+function normalizeTypeName(typeName) {
+    switch (typeName) {
+        case 'int':
+            return 'integer';
+        case 'float':
+        case 'double':
+            return 'number';
+        case 'bool':
+            return 'boolean';
+        default:
+            return typeName.toLowerCase();
+    }
+}
 module.exports = {
     getParameterExample,
     removeEmptyOptionalParametersAndTransformToKeyValue,
     castValueToType,
     gettype,
+    normalizeTypeName,
 };
 //# sourceMappingURL=parameters.js.map

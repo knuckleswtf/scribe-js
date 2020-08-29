@@ -45,10 +45,10 @@ Scribe can also generate an OpenAPI spec file. This is disabled by default. You 
 
 You can view the generated spec by visiting `public/docs/openapi.yaml` for `static`. This link will also be added to the sidebar of your docs.
 
-## Skipping the extraction phase [coming soon]
+## Skipping the extraction phase
 If you've modified the generated Markdown, and you only want Scribe to transform it to the normal HTML output, you  can use the `--no-extraction` flag. Scribe will skip extracting data from your routes and go straight to the writing phase, where it converts your Markdown to HTML or Blade. See [Advanced Customization](customization.html).
 
-## Overwriting your changes to the Markdown [coming soon]
+## Overwriting your changes to the Markdown
 If you've modified the generated Markdown manually, but you'd like to discard your changes and re-generate based on the data Scribe extracts from your routes, you can pass the `--force` flag.
 
 ## Further customization  [coming soon]

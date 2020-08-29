@@ -2,8 +2,10 @@
 const path = require("path");
 const fs = require("fs");
 const set = require("lodash.set");
+const tools = require("./tools");
 module.exports = {
-    async writePostmanCollectionFile(groupedEndpoints, config) {
+    async writePostmanCollectionFile(config, groupedEndpoints) {
+        tools.info(`Writing Postman collection to ${path.resolve(config.outputPath)}...`);
         const postman = require("./writers/postman")(config);
         const collection = postman.makePostmanCollection(groupedEndpoints);
         const overrides = config.postman.overrides || {};
@@ -15,8 +17,10 @@ module.exports = {
         const content = JSON.stringify(collection, null, 4);
         const outputPath = path.resolve(config.outputPath);
         fs.writeFileSync(outputPath + '/collection.json', content);
+        tools.success("Postman collection generated.");
     },
-    async writeOpenAPISpecFile(groupedEndpoints, config) {
+    async writeOpenAPISpecFile(config, groupedEndpoints) {
+        tools.info(`Writing OpenAPI spec to ${path.resolve(config.outputPath)}...`);
         const openapi = require("./writers/openapi")(config);
         const spec = openapi.makeOpenAPISpec(groupedEndpoints);
         const overrides = config.openapi.overrides || {};
@@ -33,11 +37,14 @@ module.exports = {
         });
         const outputPath = path.resolve(config.outputPath);
         fs.writeFileSync(outputPath + '/openapi.yaml', content);
+        tools.success("OpenAPI spec generated.");
     },
-    async writeMarkdownAndHTMLDpcs(groupedEndpoints, config, shouldOverwriteMarkdownFiles = false) {
-        const markdown = require("./writers/markdown")(config);
+    async writeMarkdownAndHTMLDpcs(config, groupedEndpoints, shouldOverwriteMarkdownFiles = false) {
         const sourceOutputPath = path.resolve('docs');
-        markdown.writeDocs(groupedEndpoints, sourceOutputPath, shouldOverwriteMarkdownFiles);
+        if (groupedEndpoints) {
+            const markdown = require("./writers/markdown")(config);
+            markdown.writeDocs(groupedEndpoints, sourceOutputPath, shouldOverwriteMarkdownFiles);
+        }
         const pastel = require('@knuckleswtf/pastel');
         await pastel.generate(sourceOutputPath + '/index.md', path.resolve(config.outputPath));
     }

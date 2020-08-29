@@ -77,7 +77,7 @@ export = (config: scribe.Config) => {
                         // Currently, Swagger requires path parameters to be required
                         required: true,
                         schema: {
-                            type: details.type || 'string',
+                            type: p.normalizeTypeName(details.type) || 'string',
                         },
                     };
                     // Workaround for optional parameters
@@ -179,7 +179,7 @@ function generateEndpointParametersSpec(endpoint: scribe.Endpoint) {
                 example: details.value || null,
                 required: details.required || false,
                 schema: {
-                    type: details.type || 'string',
+                    type: p.normalizeTypeName(details.type) || 'string',
                 },
             };
             parameters.push(parameterData);
@@ -383,17 +383,17 @@ function generateEndpointRequestBodySpec(endpoint: scribe.Endpoint): RequestBody
         }
 
         let fieldData: SchemaObject = {};
-        if (details['type'] === 'file') {
+        if (details.type === 'file') {
             // See https://swagger.io/docs/specification/describing-request-body/file-upload/
             hasFileParameter = true;
             fieldData = {
                 type: 'string',
                 format: 'binary',
-                description: details['description'] ?? '',
+                description: details.description ?? '',
             };
         } else {
             fieldData = {
-                type: details.type,
+                type: p.normalizeTypeName(details.type),
                 description: details.description ?? '',
                 example: details.value ?? null,
             };

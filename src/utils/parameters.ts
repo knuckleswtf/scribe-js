@@ -147,10 +147,24 @@ function gettype(value: any) {
 
     return typeof value;
 }
+function normalizeTypeName(typeName: string) {
+    switch (typeName) {
+        case 'int':
+            return 'integer';
+        case 'float':
+        case 'double':
+            return 'number';
+        case 'bool':
+            return 'boolean';
+        default:
+            return typeName.toLowerCase();
+    }
+}
 
 export = {
     getParameterExample,
     removeEmptyOptionalParametersAndTransformToKeyValue,
     castValueToType,
     gettype,
+    normalizeTypeName,
 };
