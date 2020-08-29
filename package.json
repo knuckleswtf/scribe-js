@@ -9,7 +9,7 @@
     "publish:all": "npm run publish:core && npm run publish:adonis && npm run publish:express && npm run publish:restify",
     "publish:core": "npm publish --access public",
     "publish:adonis": "cd ./frameworks/adonis && npm publish --access public",
-    "publish:express": "cd ./frameworks/express && ",
+    "publish:express": "cd ./frameworks/express && npm publish --access public",
     "publish:restify": "cd ./frameworks/restify && npm publish --access public"
   },
   "repository": {
