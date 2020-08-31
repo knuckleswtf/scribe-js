@@ -79,9 +79,9 @@ function removeEmptyOptionalParametersAndTransformToKeyValue(parameters = {}) {
         if (parameter.value === null && !parameter.required) {
             continue;
         }
-        if (name.includes('.*.')) { // Likely a field from an array of objects
-            const [baseName, fieldName] = name.split('.*.', 2);
-            if (parameters[baseName] && parameters[baseName].type == 'object[]') {
+        if (name.includes('[].')) { // A field from an array of objects
+            const [baseName, fieldName] = name.split('[].', 2);
+            if (parameters[baseName] && parameters[baseName].type === 'object[]') {
                 if (!cleanParameters[baseName]) {
                     cleanParameters[baseName] = [{}];
                 }
@@ -94,7 +94,7 @@ function removeEmptyOptionalParametersAndTransformToKeyValue(parameters = {}) {
         }
         else if (name.includes('.')) { // Likely an object field
             const [baseName, fieldName] = name.split('.', 2);
-            if (parameters[baseName] && parameters[baseName].type == 'object') {
+            if (parameters[baseName] && parameters[baseName].type === 'object') {
                 if (!cleanParameters[baseName]) {
                     cleanParameters[baseName] = {};
                 }

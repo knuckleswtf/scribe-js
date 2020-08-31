@@ -45,7 +45,7 @@ The body parameters will be included in the generated documentation text and exa
 Sometimes you have body parameters that are arrays or objects. To handle them in `@bodyparam`, Scribe follows this convention:
 - For arrays: use a single field with type `<type of items>[]`
 - For objects: you need a parent field with type `object` and an entry for each field, named with the dot notation `<parent name>.<field>`.
-- For an array of objects, you need a parent field with type `object[]`, and an entry for each field, named with the dot notation `<parent name>.*.<field>`.
+- For an array of objects, you need a parent field with type `object[]`, and an entry for each field, named with the dot notation `<parent name>[].<field>`.
 
 
 For instance, if your request body is in this form:
@@ -75,8 +75,8 @@ you'd write:
  * @bodyParam {number} user.age required The user's age
  * @bodyParam {int[]} friend_ids List of the user's friends.
  * @bodyParam {object[]} cars List of cars
- * @bodyParam {int} cars.*.year The year the car was made. Example: 1997
- * @bodyParam {string} cars.*.make The make of the car. Example: Toyota
+ * @bodyParam {int} cars[].year The year the car was made. Example: 1997
+ * @bodyParam {string} cars[].make The make of the car. Example: Toyota
  */
 ```
 
