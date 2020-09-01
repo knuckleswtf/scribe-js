@@ -1,70 +1,105 @@
 import {scribe} from "../../typedefs/core";
 
 import {
-    CollectionDefinition, HeaderDefinition,
-    ItemDefinition, QueryParamDefinition,
-    RequestBodyDefinition, Url,
+    CollectionDefinition,
+    HeaderDefinition,
+    ItemDefinition,
+    QueryParamDefinition, RequestAuthDefinition,
+    RequestBodyDefinition,
+    Url,
     UrlDefinition
 } from "postman-collection";
+import {URL} from "url";
 import uuid = require('uuid');
 import striptags = require('striptags');
-import {URL} from "url";
 
 const VERSION = '2.1.0';
 export = (config: scribe.Config) => {
-    const baseUrl = config.baseUrl;
-    const parsedUrl = new URL(baseUrl);
 
     function makePostmanCollection(groupedEndpoints: { [groupName: string]: scribe.Endpoint[] }) {
         const collection: CollectionDefinition & { info: { description: string, schema: string, _postman_id: string } } = {
-                variable: [],
-                info: {
-                    name: config.title,
-                    description: config.description || '',
-                    schema: `https://schema.getpostman.com/json/collection/v${VERSION}/collection.json`,
-                    _postman_id: uuid.v4(),
-                },
-                item: Object.entries(groupedEndpoints).map(([groupName, endpoints]) => {
-                    return {
-                        name: groupName,
-                        description: endpoints.find(e => Boolean(e.metadata.groupDescription))?.metadata.groupDescription ?? '',
-                        item: endpoints.map(generateEndpointItem),
-                    };
-                })
-            }
-        ;
+            variable: [],
+            info: {
+                name: config.title,
+                description: config.description || '',
+                schema: `https://schema.getpostman.com/json/collection/v${VERSION}/collection.json`,
+                _postman_id: uuid.v4(),
+            },
+            item: Object.entries(groupedEndpoints).map(([groupName, endpoints]) => {
+                return {
+                    name: groupName,
+                    description: endpoints.find(e => e.metadata.groupDescription != null)
+                        ?.metadata.groupDescription ?? '',
+                    item: endpoints.map(generateEndpointItem),
+                };
+            }),
+            auth: generateAuthObject(),
+        };
 
         return collection;
     }
 
-    function generateEndpointItem(endpoint: scribe.Endpoint): ItemDefinition {
-        const method = endpoint.methods[0];
+    function generateAuthObject(): RequestAuthDefinition {
+        if (!config.auth.enabled) {
+            return {
+                type: 'noauth'
+            };
+        }
 
+        switch (config.auth.in) {
+            case "basic":
+                return {
+                    type: 'basic',
+                };
+            case "bearer":
+                return {
+                    type: 'bearer',
+                };
+            default:
+                return {
+                    type: 'apikey',
+                    apikey: [
+                        {
+                            key: 'in',
+                            value: config.auth.in,
+                            type: 'string',
+                        },
+                        {
+                            key: 'key',
+                            value: config.auth.name,
+                            type: 'string',
+                        }
+                    ],
+                };
+        }
+    }
+
+    function generateEndpointItem(endpoint: scribe.Endpoint): ItemDefinition {
         return {
             name: endpoint.metadata.title !== '' ? endpoint.metadata.title : endpoint.uri,
             request: {
-                url: generatePostmanUrlObject(endpoint) as Url, // not really, but the typedef is wrong
-                method: method,
+                url: generateUrlObject(endpoint) as Url, // not really, but the typedef is wrong
+                method: endpoint.methods[0],
                 header: resolveHeadersForEndpoint(endpoint),
-                body: getBodyData(endpoint),
+                body: (Object.entries(endpoint.bodyParameters).length === 0) ? null : getBodyData(endpoint),
                 description: endpoint.metadata.description || null,
+                auth: endpoint.metadata.authenticated ? undefined : {type: 'noauth'}
             },
             response: [],
         };
     }
 
-    function generatePostmanUrlObject(endpoint: scribe.Endpoint): UrlDefinition {
+    function generateUrlObject(endpoint: scribe.Endpoint): UrlDefinition {
         // URL Parameters are collected by the `UrlParameters` strategies, but only make sense if they're in the route
         // definition. Filter out any URL parameters that don't appear in the URL.
         const urlParams = Object.entries(endpoint.urlParameters).filter(([key, data]) => endpoint.uri.includes(`:${key}`));
 
-        const base: UrlDefinition & {raw?: string} = {
+        const parsedUrl = new URL(config.baseUrl);
+        const base: UrlDefinition & { raw?: string } = {
             protocol: parsedUrl.protocol.replace(/:$/, ''),
             host: parsedUrl.host,
             path: endpoint.uri.replace(/^\//, ''),
             query: Object.entries(endpoint.queryParameters).map(function ([key, parameterData]) {
-                // Replace object syntax}
-                key = key.replace(/\.\*$/, '');
                 return {
                     key: key,
                     value: encodeURIComponent(parameterData.value),
@@ -130,7 +165,6 @@ export = (config: scribe.Config) => {
                     body[inputMode].push({
                         key: key,
                         src: [],
-                        value: value,
                         type: 'file'
                     });
                 }

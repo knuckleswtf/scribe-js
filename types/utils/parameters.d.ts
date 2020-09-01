@@ -9,7 +9,7 @@ declare function castValueToType(value: any, type?: string): any;
  * @param parameters
  */
 declare function removeEmptyOptionalParametersAndTransformToKeyValue(parameters?: scribe.ParameterBag): {};
-declare function gettype(value: any): "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function" | "integer" | "array" | "null";
+declare function gettype(value: any): "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function" | "null" | "integer" | "array";
 declare function normalizeTypeName(typeName: string): string;
 declare function isArrayType(typeName: string): boolean;
 /**
