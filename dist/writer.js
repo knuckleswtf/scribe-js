@@ -48,6 +48,12 @@ module.exports = {
         const pastel = require('@knuckleswtf/pastel');
         await pastel.generate(sourceOutputPath + '/index.md', path.resolve(config.outputPath));
     },
+    /**
+     * Transform body parameters such that object fields have a `fields` property containing a list of all subfields
+     * Subfields will be removed from the main parameter map
+     *
+     * @param parameters
+     */
     nestArrayAndObjectFields(parameters = {}) {
         const finalParameters = {};
         for (let [name, parameter] of Object.entries(parameters)) {

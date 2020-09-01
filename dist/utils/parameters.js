@@ -134,11 +134,23 @@ function normalizeTypeName(typeName) {
             return typeName.toLowerCase();
     }
 }
+function isArrayType(typeName) {
+    return typeName.endsWith('[]');
+}
+/**
+ * Array type = int[], object[]
+ * @param typeName
+ */
+function getBaseTypeFromArrayType(typeName) {
+    return typeName.substr(0, typeName.length - 2);
+}
 module.exports = {
     getParameterExample,
     removeEmptyOptionalParametersAndTransformToKeyValue,
     castValueToType,
     gettype,
     normalizeTypeName,
+    isArrayType,
+    getBaseTypeFromArrayType,
 };
 //# sourceMappingURL=parameters.js.map

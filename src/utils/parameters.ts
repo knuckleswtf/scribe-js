@@ -147,6 +147,7 @@ function gettype(value: any) {
 
     return typeof value;
 }
+
 function normalizeTypeName(typeName: string) {
     switch (typeName) {
         case 'int':
@@ -161,10 +162,24 @@ function normalizeTypeName(typeName: string) {
     }
 }
 
+function isArrayType(typeName: string) {
+    return typeName.endsWith('[]');
+}
+
+/**
+ * Array type = int[], object[]
+ * @param typeName
+ */
+function getBaseTypeFromArrayType(typeName: string) {
+    return typeName.substr(0, typeName.length - 2);
+}
+
 export = {
     getParameterExample,
     removeEmptyOptionalParametersAndTransformToKeyValue,
     castValueToType,
     gettype,
     normalizeTypeName,
+    isArrayType,
+    getBaseTypeFromArrayType,
 };

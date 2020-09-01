@@ -57,9 +57,7 @@ function generateEndpointParametersSpec(endpoint) {
                 description: details.description || '',
                 example: details.value || null,
                 required: details.required || false,
-                schema: {
-                    type: p.normalizeTypeName(details.type) || 'string',
-                },
+                schema: generateFieldData(details),
             };
             parameters.push(parameterData);
         });
@@ -233,8 +231,7 @@ function generateEndpointRequestBodySpec(endpoint) {
     };
     let hasRequiredParameter = false;
     let hasFileParameter = false;
-    Object.entries(endpoint.bodyParameters).forEach(([name, details]) => {
-        var _a, _b, _c;
+    Object.entries(endpoint.nestedBodyParameters).forEach(([name, details]) => {
         if (details.required) {
             hasRequiredParameter = true;
             // Don't declare this earlier.
@@ -245,24 +242,8 @@ function generateEndpointRequestBodySpec(endpoint) {
         if (details.type === 'file') {
             // See https://swagger.io/docs/specification/describing-request-body/file-upload/
             hasFileParameter = true;
-            fieldData = {
-                type: 'string',
-                format: 'binary',
-                description: (_a = details.description) !== null && _a !== void 0 ? _a : '',
-            };
         }
-        else {
-            fieldData = {
-                type: p.normalizeTypeName(details.type),
-                description: (_b = details.description) !== null && _b !== void 0 ? _b : '',
-                example: (_c = details.value) !== null && _c !== void 0 ? _c : null,
-            };
-            if (fieldData.type === 'array') {
-                fieldData.items = {
-                    type: details.value.length ? p.gettype(details.value[0]) : 'object',
-                };
-            }
-        }
+        fieldData = generateFieldData(details);
         schema.properties[name] = fieldData;
     });
     body.required = hasRequiredParameter;
@@ -280,6 +261,51 @@ function generateEndpointRequestBodySpec(endpoint) {
     body.content[contentType] = { schema };
     // return object rather than empty array, so can get properly serialised as object
     return body;
+}
+function generateFieldData(field) {
+    var _a, _b, _c, _d, _e, _f, _g;
+    if (field.type === 'file') {
+        return {
+            type: 'string',
+            format: 'binary',
+            description: (_a = field.description) !== null && _a !== void 0 ? _a : '',
+        };
+    }
+    else if (p.isArrayType(field.type)) {
+        const baseType = p.getBaseTypeFromArrayType(field.type);
+        const fieldData = {
+            type: 'array',
+            description: (_b = field.description) !== null && _b !== void 0 ? _b : '',
+            example: (_c = field.value) !== null && _c !== void 0 ? _c : null,
+            items: {
+                type: p.normalizeTypeName(baseType),
+            },
+        };
+        if (baseType === 'object') {
+            // @ts-ignore
+            fieldData.items.properties = collect(field.fields).mapWithKeys((f) => {
+                return [f.name.replace(new RegExp(`^${field.name}\\[\]\\\.`), ''), generateFieldData(f)];
+            }).all();
+        }
+        return fieldData;
+    }
+    else if (field.type === 'object') {
+        return {
+            type: 'object',
+            description: (_d = field.description) !== null && _d !== void 0 ? _d : '',
+            example: (_e = field.value) !== null && _e !== void 0 ? _e : null,
+            properties: collect(field.fields).mapWithKeys((f) => {
+                return [f.name.replace(new RegExp(`^${field.name}\\\.`), ''), generateFieldData(f)];
+            }).all(),
+        };
+    }
+    else {
+        return {
+            type: p.normalizeTypeName(field.type),
+            description: (_f = field.description) !== null && _f !== void 0 ? _f : '',
+            example: (_g = field.value) !== null && _g !== void 0 ? _g : null,
+        };
+    }
 }
 module.exports = (config) => {
     function makeOpenAPISpec(groupedEndpoints) {

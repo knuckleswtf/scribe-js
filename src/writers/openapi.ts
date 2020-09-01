@@ -178,9 +178,7 @@ function generateEndpointParametersSpec(endpoint: scribe.Endpoint) {
                 description: details.description || '',
                 example: details.value || null,
                 required: details.required || false,
-                schema: {
-                    type: p.normalizeTypeName(details.type) || 'string',
-                },
+                schema: generateFieldData(details),
             };
             parameters.push(parameterData);
         });
@@ -374,7 +372,7 @@ function generateEndpointRequestBodySpec(endpoint: scribe.Endpoint): RequestBody
     let hasRequiredParameter = false;
     let hasFileParameter = false;
 
-    Object.entries(endpoint.bodyParameters).forEach(([name, details]) => {
+    Object.entries(endpoint.nestedBodyParameters).forEach(([name, details]) => {
         if (details.required) {
             hasRequiredParameter = true;
             // Don't declare this earlier.
@@ -386,23 +384,9 @@ function generateEndpointRequestBodySpec(endpoint: scribe.Endpoint): RequestBody
         if (details.type === 'file') {
             // See https://swagger.io/docs/specification/describing-request-body/file-upload/
             hasFileParameter = true;
-            fieldData = {
-                type: 'string',
-                format: 'binary',
-                description: details.description ?? '',
-            };
-        } else {
-            fieldData = {
-                type: p.normalizeTypeName(details.type),
-                description: details.description ?? '',
-                example: details.value ?? null,
-            };
-            if (fieldData.type === 'array') {
-                fieldData.items = {
-                    type: details.value.length ? p.gettype(details.value[0]) : 'object',
-                };
-            }
         }
+
+        fieldData = generateFieldData(details);
 
         schema.properties[name] = fieldData;
     });
@@ -423,4 +407,48 @@ function generateEndpointRequestBodySpec(endpoint: scribe.Endpoint): RequestBody
 
     // return object rather than empty array, so can get properly serialised as object
     return body as RequestBodyObject;
+}
+
+function generateFieldData(field: scribe.Parameter & {fields?: scribe.Parameter[]}): SchemaObject {
+    if (field.type === 'file') {
+        return {
+            type: 'string',
+            format: 'binary',
+            description: field.description ?? '',
+        };
+    } else if (p.isArrayType(field.type)) {
+        const baseType = p.getBaseTypeFromArrayType(field.type);
+        const fieldData: SchemaObject = {
+            type: 'array',
+            description: field.description ?? '',
+            example: field.value ?? null,
+            items: {
+                type: p.normalizeTypeName(baseType),
+            },
+        };
+
+        if (baseType === 'object') {
+            // @ts-ignore
+            fieldData.items.properties = collect(field.fields).mapWithKeys((f: scribe.Parameter) => {
+                return [f.name.replace(new RegExp(`^${field.name}\\[\]\\\.`), ''), generateFieldData(f)];
+            }).all();
+        }
+
+        return fieldData;
+    } else if (field.type === 'object') {
+        return {
+            type: 'object',
+            description: field.description ?? '',
+            example: field.value ?? null,
+            properties: collect(field.fields).mapWithKeys((f: scribe.Parameter) => {
+                return [f.name.replace(new RegExp(`^${field.name}\\\.`), ''), generateFieldData(f)];
+            }).all(),
+        };
+    } else {
+        return {
+            type: p.normalizeTypeName(field.type),
+            description: field.description ?? '',
+            example: field.value ?? null,
+        };
+    }
 }
