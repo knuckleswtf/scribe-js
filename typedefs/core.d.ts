@@ -65,6 +65,7 @@ export declare namespace scribe {
         urlParameters?: UrlParameters
         queryParameters?: QueryParameters
         bodyParameters?: BodyParameters
+        nestedBodyParameters?: ParameterBag<BodyParameter & {fields?: BodyParameter[]}>
         cleanQueryParameters?: Record<string, any>
         cleanBodyParameters?: Record<string, any>
         fileParameters?: Record<string, any>

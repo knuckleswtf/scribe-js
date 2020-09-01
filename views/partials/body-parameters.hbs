@@ -1,0 +1,26 @@
+
+{{#each bodyParameters }}
+{{#if this.fields }}
+<details>
+    <summary style="margin-right: 50%;
+    padding: 0 28px;
+    box-sizing: border-box;
+    text-shadow: 0 1px 0 #fff;">
+        {{> components.field-details name=this.name type=this.type required=this.required description=this.description }}
+    </summary>
+
+  {{#each this.fields }}
+  <p style="margin-right: 50%;
+    padding: 0 28px;
+    box-sizing: border-box;
+    text-shadow: 0 1px 0 #fff;">
+  {{> components.field-details name=this.name type=this.type required=this.required description=this.description }}
+  </p>
+  {{/each}}
+  </details>
+{{else}}
+<p>
+{{> components.field-details name=this.name type=this.type required=this.required description=this.description }}
+</p>
+{{/if}}
+{{/each}}

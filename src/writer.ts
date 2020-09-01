@@ -41,7 +41,7 @@ export = {
         const yaml = require('js-yaml');
         const content = await yaml.dump(spec, {
             schema: yaml.JSON_SCHEMA,
-            skipInvalid : true,
+            skipInvalid: true,
             noRefs: true,
         });
         const outputPath = path.resolve(config.outputPath);
@@ -59,5 +59,45 @@ export = {
 
         const pastel = require('@knuckleswtf/pastel');
         await pastel.generate(sourceOutputPath + '/index.md', path.resolve(config.outputPath));
+    },
+
+    /**
+     * Transform body parameters such that object fields have a `fields` property containing a list of all subfields
+     * Subfields will be removed from the main parameter map
+     *
+     * @param parameters
+     */
+    nestArrayAndObjectFields(parameters: scribe.ParameterBag = {}) {
+        const finalParameters: scribe.ParameterBag<scribe.Parameter & {fields?: scribe.Parameter[]}> = {};
+        for (let [name, parameter] of Object.entries(parameters)) {
+            if (name.includes('[].')) { // A field from an array of objects
+                const [baseName, fieldName] = name.split('[].', 2);
+                if (parameters[baseName] && parameters[baseName].type === 'object[]') {
+                    if (!finalParameters[baseName]) {
+                        finalParameters[baseName] = parameters[baseName];
+                    }
+                    if (!finalParameters[baseName].fields) {
+                        finalParameters[baseName].fields = [];
+                    }
+                    finalParameters[baseName].fields.push(parameter);
+                }
+            } else if (name.includes('.')) { // Likely an object field
+                const [baseName, fieldName] = name.split('.', 2);
+                if (parameters[baseName] && parameters[baseName].type === 'object') {
+                    if (!finalParameters[baseName]) {
+                        finalParameters[baseName] = parameters[baseName];
+                    }
+                    if (!finalParameters[baseName].fields) {
+                        finalParameters[baseName].fields = [];
+                    }
+                    finalParameters[baseName].fields.push(parameter);
+                }
+            } else { // A regular field
+                finalParameters[name] = parameter;
+            }
+
+        }
+
+        return finalParameters;
     }
 };

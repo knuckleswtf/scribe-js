@@ -32,25 +32,29 @@
 {{#if (isNonEmptyObject endpoint.urlParameters) }}
 <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
 {{#each endpoint.urlParameters }}
+<p>
 {{> components.field-details name=this.name type=this.type required=this.required description=this.description }}
+</p>
 {{/each}}
 {{/if}}
 {{#if (isNonEmptyObject endpoint.queryParameters) }}
 <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
 {{#each endpoint.queryParameters }}
+<p>
 {{> components.field-details name=this.name type=this.type required=this.required description=this.description }}
+</p>
 {{/each}}
 {{/if}}
-{{#if (isNonEmptyObject endpoint.bodyParameters) }}
+{{#if (isNonEmptyObject endpoint.nestedBodyParameters) }}
 <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
-{{#each endpoint.bodyParameters }}
-{{> components.field-details name=this.name type=this.type required=this.required description=this.description }}
-{{/each}}
+{{> partials.body-parameters bodyParameters=endpoint.nestedBodyParameters }}
 {{/if}}
 
 {{#if (isNonEmptyObject endpoint.responseFields) }}
 <h4 class="fancy-heading-panel"><b>Response Fields</b></h4>
 {{#each endpoint.responseFields }}
+<p>
 {{> components.field-details name=this.name type=this.type required=true description=this.description }}
+</p>
 {{/each}}
 {{/if}}

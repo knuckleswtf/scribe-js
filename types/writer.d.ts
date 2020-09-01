@@ -9,5 +9,6 @@ declare const _default: {
     writeMarkdownAndHTMLDpcs(config: scribe.Config, groupedEndpoints?: {
         [groupName: string]: scribe.Endpoint[];
     }, shouldOverwriteMarkdownFiles?: boolean): Promise<void>;
+    transformSubFields(parameters?: scribe.ParameterBag): {};
 };
 export = _default;

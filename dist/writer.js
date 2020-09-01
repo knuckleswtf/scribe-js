@@ -47,6 +47,39 @@ module.exports = {
         }
         const pastel = require('@knuckleswtf/pastel');
         await pastel.generate(sourceOutputPath + '/index.md', path.resolve(config.outputPath));
+    },
+    nestArrayAndObjectFields(parameters = {}) {
+        const finalParameters = {};
+        for (let [name, parameter] of Object.entries(parameters)) {
+            if (name.includes('[].')) { // A field from an array of objects
+                const [baseName, fieldName] = name.split('[].', 2);
+                if (parameters[baseName] && parameters[baseName].type === 'object[]') {
+                    if (!finalParameters[baseName]) {
+                        finalParameters[baseName] = parameters[baseName];
+                    }
+                    if (!finalParameters[baseName].fields) {
+                        finalParameters[baseName].fields = [];
+                    }
+                    finalParameters[baseName].fields.push(parameter);
+                }
+            }
+            else if (name.includes('.')) { // Likely an object field
+                const [baseName, fieldName] = name.split('.', 2);
+                if (parameters[baseName] && parameters[baseName].type === 'object') {
+                    if (!finalParameters[baseName]) {
+                        finalParameters[baseName] = parameters[baseName];
+                    }
+                    if (!finalParameters[baseName].fields) {
+                        finalParameters[baseName].fields = [];
+                    }
+                    finalParameters[baseName].fields.push(parameter);
+                }
+            }
+            else { // A regular field
+                finalParameters[name] = parameter;
+            }
+        }
+        return finalParameters;
     }
 };
 //# sourceMappingURL=writer.js.map

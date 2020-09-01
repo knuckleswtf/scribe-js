@@ -22,7 +22,7 @@ async function generate(endpoints, config, router, serverFile, { overwriteMarkdo
         tools.warn("If you forgot, you'll need to specify a server file for response calls to work.");
     }
     const strategies = getStrategies(config);
-    const parsedEndpoints = (await Promise.all(config.routes.map(async (routeGroup) => {
+    let parsedEndpoints = (await Promise.all(config.routes.map(async (routeGroup) => {
         let endpointsToDocument = [];
         for (let e of endpoints) {
             if (routeGroup.exclude.length) {
@@ -138,6 +138,10 @@ async function generate(endpoints, config, router, serverFile, { overwriteMarkdo
         return endpointsToDocument;
     }))).flat();
     const groupBy = require('lodash.groupby');
+    parsedEndpoints = parsedEndpoints.map(e => {
+        e.nestedBodyParameters = writer.nestArrayAndObjectFields(e.bodyParameters);
+        return e;
+    });
     const groupedEndpoints = groupBy(parsedEndpoints, 'metadata.groupName');
     await writer.writeMarkdownAndHTMLDpcs(config, groupedEndpoints, overwriteMarkdownFiles);
     if (config.postman.enabled) {

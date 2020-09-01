@@ -37,7 +37,7 @@ async function generate(
     }
 
     const strategies = getStrategies(config);
-    const parsedEndpoints = (await Promise.all(config.routes.map(async (routeGroup) => {
+    let parsedEndpoints = (await Promise.all(config.routes.map(async (routeGroup) => {
         let endpointsToDocument: scribe.Endpoint[] = [];
 
         for (let e of endpoints) {
@@ -169,6 +169,12 @@ async function generate(
     }))).flat();
 
     const groupBy = require('lodash.groupby');
+
+    parsedEndpoints = parsedEndpoints.map(e => {
+        e.nestedBodyParameters = writer.nestArrayAndObjectFields(e.bodyParameters);
+        return e;
+    });
+
     const groupedEndpoints: { [groupName: string]: scribe.Endpoint[] } = groupBy(parsedEndpoints, 'metadata.groupName');
 
     await writer.writeMarkdownAndHTMLDpcs(config, groupedEndpoints, overwriteMarkdownFiles);
