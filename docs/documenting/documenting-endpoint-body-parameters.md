@@ -42,7 +42,7 @@ The body parameters will be included in the generated documentation text and exa
 
 
 ### Handling array and object parameters
-Sometimes you have body parameters that are arrays or objects. To handle them in `@bodyparam`, Scribe follows this convention:
+Often you have body parameters that are arrays or objects, or a mix of both. To handle them in `@bodyParam`, Scribe follows this convention:
 - For arrays: use a single field with type `<type of items>[]`
 - For objects: you need a parent field with type `object` and an entry for each field, named with the dot notation `<parent name>.<field>`.
 - For an array of objects, you need a parent field with type `object[]`, and an entry for each field, named with the dot notation `<parent name>[].<field>`.

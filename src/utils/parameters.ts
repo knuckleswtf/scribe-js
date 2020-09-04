@@ -14,8 +14,22 @@ function getParameterExample(type = 'string', regex: string = null) {
 
     let value = null;
 
-    switch (baseType) {
+    switch (normalizeTypeName(baseType)) {
+        case 'number':
+        case 'integer':
+            value = faker.random.number();
+            break;
+
+        case 'boolean':
+            value = faker.random.boolean();
+            break;
+
+        case 'object':
+            value = {};
+            break;
+
         case 'string':
+        default:
             if (!regex) {
                 value = faker.lorem.word();
                 break;
@@ -25,29 +39,9 @@ function getParameterExample(type = 'string', regex: string = null) {
             randexp.max = 2;
             value = randexp.gen();
             break;
-
-        case 'number':
-        case 'int':
-        case 'integer':
-        case 'float':
-        case 'double':
-            value = faker.random.number();
-            break;
-
-        case 'bool':
-        case 'boolean':
-            value = faker.random.boolean();
-            break;
-
-        case 'object':
-            value = {};
-            break;
-
-        default:
-            value = faker.lorem.word();
-            break;
     }
 
+    // Return a two-array item for a list
     return isListType ? [value, getParameterExample(baseType)] : value;
 }
 
@@ -56,9 +50,8 @@ function castValueToType(value: any, type = 'string') {
         return value;
     }
 
-    let baseType = type;
     if (type.endsWith('[]')) {
-        baseType = type.substring(0, type.length - 2).toLowerCase();
+        let baseType = type.substring(0, type.length - 2).toLowerCase();
         return Array.isArray(value) ? value.map(v => castValueToType(v, baseType)) : JSON.parse(value);
     }
 
@@ -86,13 +79,20 @@ function castValueToType(value: any, type = 'string') {
 }
 
 /**
- * Generates the "cleanXParameters" object from XParameters by removing optional parameters without values
- * and flattening the object to {}parameter name: parameter example} format
- * Also combines object field parameters into one. For instance, if there's a `details` field with type "object",
+ * This method prepares and simplifies request parameters for use in example requests and response calls.
+ * It takes in an array with rich details about a parameter eg
+ *   {age: {
+ *     description: 'The age',
+ *     value: 12,
+ *     required: false,
+ *   }}
+ * And transforms them into key-example pairs : {age: 12}
+ * It also filters out parameters which have null values and have 'required' as false.
+ * It converts all file params that have string examples to actual files (instances of UploadedFile).
+ * It also generates a full example for object parameters (and array of objects) using the fields. For instance, if there's a `details` field with type "object",
  * and `details.name` and `details.age` fields, this will return {details: {name: <value>, age: <value>}}
- * @param parameters
  */
-function removeEmptyOptionalParametersAndTransformToKeyValue(parameters: scribe.ParameterBag = {}) {
+function removeEmptyOptionalParametersAndTransformToKeyExample(parameters: scribe.ParameterBag = {}) {
     const cleanParameters = {};
     for (let [name, parameter] of Object.entries(parameters)) {
         if (parameter.value === null && !parameter.required) {
@@ -102,6 +102,7 @@ function removeEmptyOptionalParametersAndTransformToKeyValue(parameters: scribe.
         if (name.includes('[].')){ // A field from an array of objects
             const [baseName, fieldName] = name.split('[].', 2);
             if (parameters[baseName] && parameters[baseName].type === 'object[]') {
+                // Build up the corresponding field in the parent object[] entry
                 if (!cleanParameters[baseName]) {
                     cleanParameters[baseName] = [{}];
                 }
@@ -115,6 +116,7 @@ function removeEmptyOptionalParametersAndTransformToKeyValue(parameters: scribe.
         } else if (name.includes('.')){ // Likely an object field
             const [baseName, fieldName] = name.split('.', 2);
             if (parameters[baseName] && parameters[baseName].type === 'object') {
+                // Build up the corresponding field in the parent object entry
                 if (!cleanParameters[baseName]) {
                     cleanParameters[baseName] = {};
                 }
@@ -176,7 +178,7 @@ function getBaseTypeFromArrayType(typeName: string) {
 
 export = {
     getParameterExample,
-    removeEmptyOptionalParametersAndTransformToKeyValue,
+    removeEmptyOptionalParametersAndTransformToKeyExample,
     castValueToType,
     gettype,
     normalizeTypeName,

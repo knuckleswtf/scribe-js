@@ -73,7 +73,7 @@ function castValueToType(value, type = 'string') {
  * and `details.name` and `details.age` fields, this will return {details: {name: <value>, age: <value>}}
  * @param parameters
  */
-function removeEmptyOptionalParametersAndTransformToKeyValue(parameters = {}) {
+function removeEmptyOptionalParametersAndTransformToKeyExample(parameters = {}) {
     const cleanParameters = {};
     for (let [name, parameter] of Object.entries(parameters)) {
         if (parameter.value === null && !parameter.required) {
@@ -146,7 +146,7 @@ function getBaseTypeFromArrayType(typeName) {
 }
 module.exports = {
     getParameterExample,
-    removeEmptyOptionalParametersAndTransformToKeyValue,
+    removeEmptyOptionalParametersAndTransformToKeyExample,
     castValueToType,
     gettype,
     normalizeTypeName,

@@ -107,7 +107,7 @@ async function generate(
                         = Object.assign({}, endpoint.queryParameters, await queryParametersStrategy.run(endpoint, config, routeGroup));
                 }
             }
-            endpoint.cleanQueryParameters = p.removeEmptyOptionalParametersAndTransformToKeyValue(endpoint.queryParameters);
+            endpoint.cleanQueryParameters = p.removeEmptyOptionalParametersAndTransformToKeyExample(endpoint.queryParameters);
 
             endpoint.bodyParameters = {};
             for (let strategyName of strategies.bodyParameters) {
@@ -117,7 +117,7 @@ async function generate(
                         = Object.assign({}, endpoint.bodyParameters, await bodyParametersStrategy.run(endpoint, config, routeGroup));
                 }
             }
-            endpoint.cleanBodyParameters = p.removeEmptyOptionalParametersAndTransformToKeyValue(endpoint.bodyParameters);
+            endpoint.cleanBodyParameters = p.removeEmptyOptionalParametersAndTransformToKeyExample(endpoint.bodyParameters);
 
             addAuthField(endpoint, config, routeGroup);
 

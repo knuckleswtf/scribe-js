@@ -84,7 +84,7 @@ async function generate(endpoints, config, router, serverFile, { overwriteMarkdo
                         = Object.assign({}, endpoint.queryParameters, await queryParametersStrategy.run(endpoint, config, routeGroup));
                 }
             }
-            endpoint.cleanQueryParameters = p.removeEmptyOptionalParametersAndTransformToKeyValue(endpoint.queryParameters);
+            endpoint.cleanQueryParameters = p.removeEmptyOptionalParametersAndTransformToKeyExample(endpoint.queryParameters);
             endpoint.bodyParameters = {};
             for (let strategyName of strategies.bodyParameters) {
                 const bodyParametersStrategy = require(strategyName);
@@ -93,7 +93,7 @@ async function generate(endpoints, config, router, serverFile, { overwriteMarkdo
                         = Object.assign({}, endpoint.bodyParameters, await bodyParametersStrategy.run(endpoint, config, routeGroup));
                 }
             }
-            endpoint.cleanBodyParameters = p.removeEmptyOptionalParametersAndTransformToKeyValue(endpoint.bodyParameters);
+            endpoint.cleanBodyParameters = p.removeEmptyOptionalParametersAndTransformToKeyExample(endpoint.bodyParameters);
             addAuthField(endpoint, config, routeGroup);
             if (serverFile && !appProcess) {
                 // Using a single global app process here to avoid premature kills

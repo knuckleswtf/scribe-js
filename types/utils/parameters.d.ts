@@ -8,7 +8,7 @@ declare function castValueToType(value: any, type?: string): any;
  * and `details.name` and `details.age` fields, this will return {details: {name: <value>, age: <value>}}
  * @param parameters
  */
-declare function removeEmptyOptionalParametersAndTransformToKeyValue(parameters?: scribe.ParameterBag): {};
+declare function removeEmptyOptionalParametersAndTransformToKeyExample(parameters?: scribe.ParameterBag): {};
 declare function gettype(value: any): "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function" | "null" | "integer" | "array";
 declare function normalizeTypeName(typeName: string): string;
 declare function isArrayType(typeName: string): boolean;
@@ -19,7 +19,7 @@ declare function isArrayType(typeName: string): boolean;
 declare function getBaseTypeFromArrayType(typeName: string): string;
 declare const _default: {
     getParameterExample: typeof getParameterExample;
-    removeEmptyOptionalParametersAndTransformToKeyValue: typeof removeEmptyOptionalParametersAndTransformToKeyValue;
+    removeEmptyOptionalParametersAndTransformToKeyExample: typeof removeEmptyOptionalParametersAndTransformToKeyExample;
     castValueToType: typeof castValueToType;
     gettype: typeof gettype;
     normalizeTypeName: typeof normalizeTypeName;
