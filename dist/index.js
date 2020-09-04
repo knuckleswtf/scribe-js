@@ -94,7 +94,7 @@ async function generate(endpoints, config, router, serverFile, { overwriteMarkdo
                 }
             }
             endpoint.cleanBodyParameters = p.removeEmptyOptionalParametersAndTransformToKeyExample(endpoint.bodyParameters);
-            addAuthField(endpoint, config, routeGroup);
+            addAuthField(endpoint, config);
             if (serverFile && !appProcess) {
                 // Using a single global app process here to avoid premature kills
                 const taken = await isPortTaken(url.parse(routeGroup.apply.responseCalls.baseUrl).port);
@@ -196,7 +196,7 @@ function shouldUseWithRouter(strategy, currentRouter) {
     }
     return strategy.routers.includes(currentRouter);
 }
-function addAuthField(endpoint, config, routeGroup) {
+function addAuthField(endpoint, config) {
     endpoint.auth = null;
     const isApiAuthed = config.auth.enabled;
     if (!isApiAuthed || !endpoint.metadata.authenticated) {
@@ -207,7 +207,7 @@ function addAuthField(endpoint, config, routeGroup) {
     const faker = require('faker');
     // todo use faker seed if present
     const token = faker.helpers.shuffle('abcdefghkvaZVDPE1864563'.split('')).join('');
-    let valueToUse = routeGroup.apply.responseCalls.auth;
+    let valueToUse = config.auth.useValue;
     if (typeof valueToUse == 'function') {
         valueToUse = valueToUse();
     }

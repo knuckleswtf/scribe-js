@@ -119,7 +119,7 @@ async function generate(
             }
             endpoint.cleanBodyParameters = p.removeEmptyOptionalParametersAndTransformToKeyExample(endpoint.bodyParameters);
 
-            addAuthField(endpoint, config, routeGroup);
+            addAuthField(endpoint, config);
 
             if (serverFile && !appProcess) {
                 // Using a single global app process here to avoid premature kills
@@ -238,7 +238,7 @@ function shouldUseWithRouter(strategy: scribe.Strategy, currentRouter: scribe.Su
 }
 
 
-function addAuthField(endpoint: scribe.Endpoint, config: scribe.Config, routeGroup: scribe.RouteGroup): void {
+function addAuthField(endpoint: scribe.Endpoint, config: scribe.Config): void {
     endpoint.auth = null;
     const isApiAuthed = config.auth.enabled;
     if (!isApiAuthed || !endpoint.metadata.authenticated) {
@@ -251,7 +251,7 @@ function addAuthField(endpoint: scribe.Endpoint, config: scribe.Config, routeGro
     const faker = require('faker');
     // todo use faker seed if present
     const token = faker.helpers.shuffle('abcdefghkvaZVDPE1864563'.split('')).join('');
-    let valueToUse = routeGroup.apply.responseCalls.auth;
+    let valueToUse = config.auth.useValue;
     if (typeof valueToUse == 'function') {
         valueToUse = valueToUse();
     }

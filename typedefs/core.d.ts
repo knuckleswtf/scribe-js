@@ -93,7 +93,6 @@ export declare namespace scribe {
         baseUrl: string,
         methods: Array<'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | '*'>,
         env: Record<string, any>,
-        auth: string | number | Function,
         bodyParams: {
 
         },
@@ -121,6 +120,7 @@ export declare namespace scribe {
             enabled: boolean,
             in: 'query' | 'body' | 'bearer' | 'basic' | 'header',
             name: string,
+            useValue: any,
             extraInfo: string,
         },
         routes: RouteGroup[],
