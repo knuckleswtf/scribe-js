@@ -2,7 +2,7 @@ import {scribe} from "../../typedefs/core";
 
 function getParameterExample(type = 'string', regex: string = null) {
     const RandExp = require('randexp');
-    const faker = require('faker');
+    const faker = require('./faker')();
 
     let baseType = type;
     let isListType = false;

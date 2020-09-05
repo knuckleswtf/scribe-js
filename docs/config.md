@@ -117,8 +117,8 @@ routes: {
 .. Tip:: By splitting your routes into groups, you can apply different settings to different routes.
 ```
 
-### `fakerSeed` [coming soon]
-When generating example requests, Scribe uses the `faker` package to generate random values. If you would like the package to generate the same example values for parameters on each run, set this to any number (eg. 1234).
+### `fakerSeed`
+When generating example requests, Scribe uses the [faker.js](https://github.com/marak/Faker.js/) package to generate random values. If you would like the package to generate the same example values for parameters on each run, set `fakerSeed` to any number (eg. 1234).
 
 ```eval_rst
 .. Tip:: Alternatively, you can set example values for parameters when `documenting them <documenting.html>`_.

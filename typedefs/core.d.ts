@@ -137,7 +137,8 @@ export declare namespace scribe {
         introText: string,
         strategies: {
             [stage in Stage]: string[]
-        }
+        },
+        fakerSeed: number | null;
     }
 
     export interface Strategy<T = any> {

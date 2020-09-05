@@ -36,6 +36,9 @@ async function generate(
         tools.warn("If you forgot, you'll need to specify a server file for response calls to work.");
     }
 
+    // Initialise faker with seed if present
+    require('./utils/faker')(config.fakerSeed);
+
     const strategies = getStrategies(config);
     let parsedEndpoints = (await Promise.all(config.routes.map(async (routeGroup) => {
         let endpointsToDocument: scribe.Endpoint[] = [];
@@ -248,8 +251,7 @@ function addAuthField(endpoint: scribe.Endpoint, config: scribe.Config): void {
     const strategy = config.auth.in;
     const parameterName = config.auth.name;
 
-    const faker = require('faker');
-    // todo use faker seed if present
+    const faker = require('./utils/faker')();
     const token = faker.helpers.shuffle('abcdefghkvaZVDPE1864563'.split('')).join('');
     let valueToUse = config.auth.useValue;
     if (typeof valueToUse == 'function') {

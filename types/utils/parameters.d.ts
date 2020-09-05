@@ -2,14 +2,21 @@ import { scribe } from "../../typedefs/core";
 declare function getParameterExample(type?: string, regex?: string): any;
 declare function castValueToType(value: any, type?: string): any;
 /**
- * Generates the "cleanXParameters" object from XParameters by removing optional parameters without values
- * and flattening the object to {}parameter name: parameter example} format
- * Also combines object field parameters into one. For instance, if there's a `details` field with type "object",
+ * This method prepares and simplifies request parameters for use in example requests and response calls.
+ * It takes in an array with rich details about a parameter eg
+ *   {age: {
+ *     description: 'The age',
+ *     value: 12,
+ *     required: false,
+ *   }}
+ * And transforms them into key-example pairs : {age: 12}
+ * It also filters out parameters which have null values and have 'required' as false.
+ * It converts all file params that have string examples to actual files (instances of UploadedFile).
+ * It also generates a full example for object parameters (and array of objects) using the fields. For instance, if there's a `details` field with type "object",
  * and `details.name` and `details.age` fields, this will return {details: {name: <value>, age: <value>}}
- * @param parameters
  */
 declare function removeEmptyOptionalParametersAndTransformToKeyExample(parameters?: scribe.ParameterBag): {};
-declare function gettype(value: any): "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function" | "null" | "integer" | "array";
+declare function gettype(value: any): "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function" | "integer" | "array" | "null";
 declare function normalizeTypeName(typeName: string): string;
 declare function isArrayType(typeName: string): boolean;
 /**

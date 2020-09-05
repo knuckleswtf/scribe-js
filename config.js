@@ -151,4 +151,10 @@ module.exports = {
 
 <aside>As you scroll, you'll see code examples for working with the API in different programming languages in the dark area to the right (or as part of the content on mobile), and you can switch the programming language of the examples with the tabs in the top right (or from the nav menu at the top left on mobile).</aside>`,
 
+
+    /*
+     * If you would like the package to generate the same example values for parameters on each run,
+     * set this to any number (eg. 1234)
+     */
+    fakerSeed: null,
 };

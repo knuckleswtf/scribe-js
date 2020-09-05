@@ -21,6 +21,8 @@ async function generate(endpoints, config, router, serverFile, { overwriteMarkdo
         tools.warn("You didn't specify a server file. This means that either your app is started by your app file, or you forgot.");
         tools.warn("If you forgot, you'll need to specify a server file for response calls to work.");
     }
+    // Initialise faker with seed if present
+    require('./utils/faker')(config.fakerSeed);
     const strategies = getStrategies(config);
     let parsedEndpoints = (await Promise.all(config.routes.map(async (routeGroup) => {
         let endpointsToDocument = [];
@@ -204,8 +206,7 @@ function addAuthField(endpoint, config) {
     }
     const strategy = config.auth.in;
     const parameterName = config.auth.name;
-    const faker = require('faker');
-    // todo use faker seed if present
+    const faker = require('./utils/faker')();
     const token = faker.helpers.shuffle('abcdefghkvaZVDPE1864563'.split('')).join('');
     let valueToUse = config.auth.useValue;
     if (typeof valueToUse == 'function') {
