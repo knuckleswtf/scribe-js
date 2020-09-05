@@ -19,7 +19,11 @@
 > Example response ({{defaultValue this.description this.status}}):
 
 ```json
+{{#startsWith "<<binary>>" (trimLeft this.content) }}
+<Binary data> -{{replaceFirst this.content "<<binary>>" ""}}
+{{else}}
 {{{ this.content }}}
+{{/startsWith}}
 ```
 {{/each}}
 {{/if}}

@@ -51,7 +51,7 @@ You can define multiple possible responses from the same endpoint using `@respon
 
 ![](../images/endpoint-responses-2.png)
 
-To indicate a binary response, use `<<binary>>` as the value of the response, followed by a description. [coming soon]
+To indicate a binary response, use `<<binary>>` as the value of the response, followed by a description.
 
 ```js
 /**
