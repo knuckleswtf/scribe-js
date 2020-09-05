@@ -3,11 +3,11 @@ const {getParameterExample, castValueToType} = require("../../utils/parameters")
 
 async function run(endpoint: scribe.Endpoint, config) {
     return Object.fromEntries(Object.values(endpoint.docblock.queryParam || {}).map(p => {
-        if (p.value == null) {
-            // Set values for only required parameters
-            p.value = p.required ? getParameterExample(p.type || 'string') : null;
+        if (p.value == null && !(p.description || '').includes(' No-example')) {
+            p.value = getParameterExample(p.type || 'string');
         }
         p.value = castValueToType(p.value, p.type);
+        p.description = (p.description || '').replace(/\s+No-example.?/, '');
 
         return [p.name, p];
     }));
