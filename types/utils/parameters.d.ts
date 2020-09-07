@@ -16,7 +16,7 @@ declare function castValueToType(value: any, type?: string): any;
  * and `details.name` and `details.age` fields, this will return {details: {name: <value>, age: <value>}}
  */
 declare function removeEmptyOptionalParametersAndTransformToKeyExample(parameters?: scribe.ParameterBag): {};
-declare function gettype(value: any): "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function" | "array" | "null" | "integer";
+declare function gettype(value: any): "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function" | "integer" | "array" | "null";
 declare function normalizeTypeName(typeName: string): string;
 declare function isArrayType(typeName: string): boolean;
 /**

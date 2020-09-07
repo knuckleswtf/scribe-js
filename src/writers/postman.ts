@@ -15,10 +15,19 @@ import striptags = require('striptags');
 
 const VERSION = '2.1.0';
 export = (config: scribe.Config) => {
+    const parsedUrl = new URL(config.baseUrl);
 
     function makePostmanCollection(groupedEndpoints: { [groupName: string]: scribe.Endpoint[] }) {
         const collection: CollectionDefinition & { info: { description: string, schema: string, _postman_id: string } } = {
-            variable: [],
+            variable: [
+                {
+                    id: 'baseUrl',
+                    key: 'baseUrl',
+                    type: 'string',
+                    name: 'string',
+                    value: parsedUrl.host,
+                }
+            ],
             info: {
                 name: config.title,
                 description: config.description || '',
@@ -94,10 +103,9 @@ export = (config: scribe.Config) => {
         // definition. Filter out any URL parameters that don't appear in the URL.
         const urlParams = Object.entries(endpoint.urlParameters).filter(([key, data]) => endpoint.uri.includes(`:${key}`));
 
-        const parsedUrl = new URL(config.baseUrl);
         const base: UrlDefinition & { raw?: string } = {
             protocol: parsedUrl.protocol.replace(/:$/, ''),
-            host: parsedUrl.host,
+            host: "{{baseUrl}}",
             path: endpoint.uri.replace(/^\//, ''),
             query: Object.entries(endpoint.queryParameters).map(function ([key, parameterData]) {
                 return {

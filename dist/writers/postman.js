@@ -4,9 +4,18 @@ const uuid = require("uuid");
 const striptags = require("striptags");
 const VERSION = '2.1.0';
 module.exports = (config) => {
+    const parsedUrl = new url_1.URL(config.baseUrl);
     function makePostmanCollection(groupedEndpoints) {
         const collection = {
-            variable: [],
+            variable: [
+                {
+                    id: 'baseUrl',
+                    key: 'baseUrl',
+                    type: 'string',
+                    name: 'string',
+                    value: parsedUrl.host,
+                }
+            ],
             info: {
                 name: config.title,
                 description: config.description || '',
@@ -76,10 +85,9 @@ module.exports = (config) => {
         // URL Parameters are collected by the `UrlParameters` strategies, but only make sense if they're in the route
         // definition. Filter out any URL parameters that don't appear in the URL.
         const urlParams = Object.entries(endpoint.urlParameters).filter(([key, data]) => endpoint.uri.includes(`:${key}`));
-        const parsedUrl = new url_1.URL(config.baseUrl);
         const base = {
             protocol: parsedUrl.protocol.replace(/:$/, ''),
-            host: parsedUrl.host,
+            host: "{{baseUrl}}",
             path: endpoint.uri.replace(/^\//, ''),
             query: Object.entries(endpoint.queryParameters).map(function ([key, parameterData]) {
                 return {
