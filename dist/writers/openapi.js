@@ -263,7 +263,7 @@ function generateEndpointRequestBodySpec(endpoint) {
     return body;
 }
 function generateFieldData(field) {
-    var _a, _b, _c, _d, _e, _f, _g;
+    var _a, _b, _c, _d, _e, _f, _g, _h;
     if (field.type === 'file') {
         return {
             type: 'string',
@@ -277,9 +277,11 @@ function generateFieldData(field) {
             type: 'array',
             description: (_b = field.description) !== null && _b !== void 0 ? _b : '',
             example: (_c = field.value) !== null && _c !== void 0 ? _c : null,
-            items: {
-                type: p.normalizeTypeName(baseType),
-            },
+            items: p.isArrayType(baseType)
+                ? generateFieldData({ name: '', type: baseType, value: ((_d = field.value) !== null && _d !== void 0 ? _d : [null])[0] })
+                : {
+                    type: baseType,
+                },
         };
         if (baseType === 'object') {
             // @ts-ignore
@@ -292,8 +294,8 @@ function generateFieldData(field) {
     else if (field.type === 'object') {
         return {
             type: 'object',
-            description: (_d = field.description) !== null && _d !== void 0 ? _d : '',
-            example: (_e = field.value) !== null && _e !== void 0 ? _e : null,
+            description: (_e = field.description) !== null && _e !== void 0 ? _e : '',
+            example: (_f = field.value) !== null && _f !== void 0 ? _f : null,
             properties: collect(field.fields).mapWithKeys((f) => {
                 return [f.name.replace(new RegExp(`^${field.name}\\\.`), ''), generateFieldData(f)];
             }).all(),
@@ -302,8 +304,8 @@ function generateFieldData(field) {
     else {
         return {
             type: p.normalizeTypeName(field.type),
-            description: (_f = field.description) !== null && _f !== void 0 ? _f : '',
-            example: (_g = field.value) !== null && _g !== void 0 ? _g : null,
+            description: (_g = field.description) !== null && _g !== void 0 ? _g : '',
+            example: (_h = field.value) !== null && _h !== void 0 ? _h : null,
         };
     }
 }

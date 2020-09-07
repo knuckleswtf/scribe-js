@@ -1,6 +1,7 @@
 import docblockParser = require('docblock-parser');
 import fs = require('fs');
 import readline = require('readline');
+const {normalizeTypeName} = require("./parameters");
 import {scribe} from "../../typedefs/core";
 import BodyParameter = scribe.BodyParameter;
 import DocBlock = scribe.DocBlock;
@@ -155,7 +156,7 @@ function parseParameterTagContent(tagContent: string): BodyParameter {
     return {
         name,
         // @ts-ignore
-        type,
+        type: normalizeTypeName(type),
         required: required ? required.includes('required') : false,
         description: description || null,
         value: value ? value.trim() : null,

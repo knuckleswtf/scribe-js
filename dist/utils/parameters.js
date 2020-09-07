@@ -1,4 +1,6 @@
 "use strict";
+const set = require('lodash.set');
+const get = require('lodash.get');
 function getParameterExample(type = 'string', regex = null) {
     const RandExp = require('randexp');
     const faker = require('./faker')();
@@ -8,35 +10,31 @@ function getParameterExample(type = 'string', regex = null) {
         baseType = type.substring(0, type.length - 2).toLowerCase();
         isListType = true;
     }
-    let value = null;
+    if (isListType) {
+        // Return a two-array item for a list
+        return [getParameterExample(baseType), getParameterExample(baseType)];
+    }
     switch (normalizeTypeName(baseType)) {
         case 'number':
         case 'integer':
-            value = faker.random.number();
-            break;
+            return faker.random.number();
         case 'boolean':
-            value = faker.random.boolean();
-            break;
+            return faker.random.boolean();
         case 'object':
-            value = {};
-            break;
+            return {};
         case 'string':
         default:
             if (!regex) {
-                value = faker.lorem.word();
-                break;
+                return faker.lorem.word();
             }
             const randexp = new RandExp(regex);
             randexp.max = 2;
-            value = randexp.gen();
-            break;
+            return randexp.gen();
     }
-    // Return a two-array item for a list
-    return isListType ? [value, getParameterExample(baseType)] : value;
 }
 function castValueToType(value, type = 'string') {
-    if (value === null) {
-        return value;
+    if (value === null || value === undefined) {
+        return null;
     }
     if (type.endsWith('[]')) {
         let baseType = type.substring(0, type.length - 2).toLowerCase();
@@ -80,35 +78,12 @@ function removeEmptyOptionalParametersAndTransformToKeyExample(parameters = {}) 
         if (parameter.value === null && !parameter.required) {
             continue;
         }
-        if (name.includes('[].')) { // A field from an array of objects
-            const [baseName, fieldName] = name.split('[].', 2);
-            if (parameters[baseName] && parameters[baseName].type === 'object[]') {
-                // Build up the corresponding field in the parent object[] entry
-                if (!cleanParameters[baseName]) {
-                    cleanParameters[baseName] = [{}];
-                }
-                cleanParameters[baseName][0][fieldName] = parameter.value;
-                // Backport the value so it doesn't get overwritten
-                // by the setter some lines below (in case the base object comes *after* the field)
-                parameters[baseName].value = cleanParameters[baseName];
-                continue;
-            }
+        if (name.includes('.')) { // Object field
+            setObject(cleanParameters, name, parameter.value, parameters);
         }
-        else if (name.includes('.')) { // Likely an object field
-            const [baseName, fieldName] = name.split('.', 2);
-            if (parameters[baseName] && parameters[baseName].type === 'object') {
-                // Build up the corresponding field in the parent object entry
-                if (!cleanParameters[baseName]) {
-                    cleanParameters[baseName] = {};
-                }
-                cleanParameters[baseName][fieldName] = parameter.value;
-                // Backport the value so it doesn't get overwritten
-                // by the setter some lines below (in case the base object comes *after* the field)
-                parameters[baseName].value = cleanParameters[baseName];
-                continue;
-            }
+        else {
+            cleanParameters[name] = parameter.value;
         }
-        cleanParameters[name] = parameter.value;
     }
     return cleanParameters;
 }
@@ -125,16 +100,17 @@ function gettype(value) {
     return typeof value;
 }
 function normalizeTypeName(typeName) {
-    switch (typeName) {
+    const base = typeName.toLowerCase().replace(/\[]/g, '');
+    switch (base) {
         case 'int':
-            return 'integer';
+            return typeName.replace(base, 'integer');
         case 'float':
         case 'double':
-            return 'number';
+            return typeName.replace(base, 'number');
         case 'bool':
-            return 'boolean';
+            return typeName.replace(base, 'boolean');
         default:
-            return typeName.toLowerCase();
+            return typeName;
     }
 }
 function isArrayType(typeName) {
@@ -146,6 +122,34 @@ function isArrayType(typeName) {
  */
 function getBaseTypeFromArrayType(typeName) {
     return typeName.substr(0, typeName.length - 2);
+}
+function setObject(results, path, value, source) {
+    if (path.includes('.')) {
+        const parts = path.split('.');
+        let [fieldName, ...parentPath] = parts.reverse();
+        const baseName = parentPath.reverse().join('.');
+        // The type should be indicated in the source object by now; we don't need it in the name
+        const normalisedBaseName = baseName.replace('[]', '');
+        const parentData = get(source, normalisedBaseName);
+        if (parentData) {
+            // Path we use for lodash set
+            const lodashPath = path.replace(/\[]/g, '.0');
+            if (parentData.type === 'object') {
+                if (get(results, lodashPath) === undefined) {
+                    set(results, lodashPath, value);
+                }
+            }
+            else if (parentData.type === 'object[]') {
+                if (get(results, lodashPath) === undefined) {
+                    set(results, lodashPath, value);
+                }
+                // If there's a second item in the array, set for that too.
+                if (get(results, baseName.replace('[]', '.1')) !== undefined) {
+                    set(results, lodashPath.replace('.0', '.1'), value);
+                }
+            }
+        }
+    }
 }
 module.exports = {
     getParameterExample,

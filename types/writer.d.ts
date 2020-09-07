@@ -15,8 +15,6 @@ declare const _default: {
      *
      * @param parameters
      */
-    nestArrayAndObjectFields(parameters?: scribe.ParameterBag): Record<string, scribe.Parameter & {
-        fields?: scribe.Parameter[];
-    }>;
+    nestArrayAndObjectFields(parameters?: scribe.ParameterBag): Record<string, scribe.Parameter>;
 };
 export = _default;

@@ -1,23 +1,24 @@
 
 {{#each bodyParameters }}
 {{#if this.fields }}
+<p>
 <details>
-    <summary style="margin-right: 50%;
-    padding: 0 28px;
-    box-sizing: border-box;
-    text-shadow: 0 1px 0 #fff;">
+    <summary>
         {{> components.field-details name=this.name type=this.type required=this.required description=this.description }}
     </summary>
+<br>
 
   {{#each this.fields }}
-  <p style="margin-right: 50%;
-    padding: 0 28px;
-    box-sizing: border-box;
-    text-shadow: 0 1px 0 #fff;">
+  {{#if this.fields }}
+  {{> partials.body-parameters bodyParameters=(objectWrap this.name this) }}
+  {{else}}
+  <p>
   {{> components.field-details name=this.name type=this.type required=this.required description=this.description }}
   </p>
+      {{/if}}
   {{/each}}
-  </details>
+</details>
+</p>
 {{else}}
 <p>
 {{> components.field-details name=this.name type=this.type required=this.required description=this.description }}

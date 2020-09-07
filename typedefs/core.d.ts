@@ -1,5 +1,3 @@
-import {RequestAuthDefinition} from "postman-collection";
-
 export declare namespace scribe {
 
     export interface ResponseField {
@@ -14,6 +12,7 @@ export declare namespace scribe {
         required?: boolean,
         value?: any,
         type?: string,
+        fields?: Record<string, scribe.Parameter>
     }
 
     export interface BodyParameter extends Parameter {
@@ -65,7 +64,7 @@ export declare namespace scribe {
         urlParameters?: UrlParameters
         queryParameters?: QueryParameters
         bodyParameters?: BodyParameters
-        nestedBodyParameters?: ParameterBag<BodyParameter & {fields?: BodyParameter[]}>
+        nestedBodyParameters?: ParameterBag<BodyParameter>
         cleanQueryParameters?: Record<string, any>
         cleanBodyParameters?: Record<string, any>
         fileParameters?: Record<string, any>

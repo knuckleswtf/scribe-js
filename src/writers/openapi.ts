@@ -409,7 +409,7 @@ function generateEndpointRequestBodySpec(endpoint: scribe.Endpoint): RequestBody
     return body as RequestBodyObject;
 }
 
-function generateFieldData(field: scribe.Parameter & {fields?: scribe.Parameter[]}): SchemaObject {
+function generateFieldData(field: scribe.Parameter): SchemaObject {
     if (field.type === 'file') {
         return {
             type: 'string',
@@ -422,9 +422,11 @@ function generateFieldData(field: scribe.Parameter & {fields?: scribe.Parameter[
             type: 'array',
             description: field.description ?? '',
             example: field.value ?? null,
-            items: {
-                type: p.normalizeTypeName(baseType),
-            },
+            items: p.isArrayType(baseType)
+                ? generateFieldData({name: '', type: baseType, value: (field.value ?? [null])[0]})
+                : {
+                    type: baseType,
+                },
         };
 
         if (baseType === 'object') {

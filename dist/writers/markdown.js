@@ -11,10 +11,8 @@ registerPartialsInDirectory(path.join(__dirname, '../../views/partials'));
 registerPartialsInDirectory(path.join(__dirname, '../../views/partials/example-requests'));
 registerPartialsInDirectory(path.join(__dirname, '../../views/components'));
 registerPartialsInDirectory(path.join(__dirname, '../../views/components/badges'));
-Handlebars.registerHelper('defaultValue', function (value, defaultValue) {
-    const out = value || defaultValue;
-    return new Handlebars.SafeString(out);
-});
+Handlebars.registerHelper('objectWrap', (key, value) => ({ [key]: value }));
+Handlebars.registerHelper('defaultValue', (value, defaultValue) => new Handlebars.SafeString(value || defaultValue));
 Handlebars.registerHelper('httpMethodToCssColour', function (method) {
     const colours = {
         GET: 'green',

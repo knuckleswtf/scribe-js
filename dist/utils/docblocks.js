@@ -2,6 +2,7 @@
 const docblockParser = require("docblock-parser");
 const fs = require("fs");
 const readline = require("readline");
+const { normalizeTypeName } = require("./parameters");
 const defaultTagValues = {
     hideFromApiDocs: false,
     authenticated: false,
@@ -122,7 +123,7 @@ function parseParameterTagContent(tagContent) {
     return {
         name,
         // @ts-ignore
-        type,
+        type: normalizeTypeName(type),
         required: required ? required.includes('required') : false,
         description: description || null,
         value: value ? value.trim() : null,

@@ -3,6 +3,7 @@ const path = require("path");
 const fs = require("fs");
 const set = require("lodash.set");
 const tools = require("./tools");
+const get = require('lodash.get');
 module.exports = {
     async writePostmanCollectionFile(config, groupedEndpoints) {
         tools.info(`Writing Postman collection to ${path.resolve(config.outputPath)}...`);
@@ -57,29 +58,15 @@ module.exports = {
     nestArrayAndObjectFields(parameters = {}) {
         const finalParameters = {};
         for (let [name, parameter] of Object.entries(parameters)) {
-            if (name.includes('[].')) { // A field from an array of objects
-                const [baseName, fieldName] = name.split('[].', 2);
-                if (parameters[baseName] && parameters[baseName].type === 'object[]') {
-                    if (!finalParameters[baseName]) {
-                        finalParameters[baseName] = parameters[baseName];
-                    }
-                    if (!finalParameters[baseName].fields) {
-                        finalParameters[baseName].fields = [];
-                    }
-                    finalParameters[baseName].fields.push(parameter);
-                }
-            }
-            else if (name.includes('.')) { // Likely an object field
-                const [baseName, fieldName] = name.split('.', 2);
-                if (parameters[baseName] && parameters[baseName].type === 'object') {
-                    if (!finalParameters[baseName]) {
-                        finalParameters[baseName] = parameters[baseName];
-                    }
-                    if (!finalParameters[baseName].fields) {
-                        finalParameters[baseName].fields = [];
-                    }
-                    finalParameters[baseName].fields.push(parameter);
-                }
+            if (name.includes('.')) { // Likely an object field
+                // Get the various pieces of the name
+                const parts = name.split('.');
+                let [fieldName, ...parentPath] = parts.reverse();
+                const baseName = parentPath.reverse().join('.fields.');
+                // The type should be indicated in the source object by now; we don't need it in the name
+                const normalisedBaseName = baseName.replace('[]', '.fields');
+                const lodashPath = normalisedBaseName.replace(/\.fields$/, '') + '.fields.' + fieldName;
+                set(finalParameters, lodashPath, parameter);
             }
             else { // A regular field
                 finalParameters[name] = parameter;
