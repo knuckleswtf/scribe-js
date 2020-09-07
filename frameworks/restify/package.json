@@ -1,6 +1,6 @@
 {
   "name": "@knuckleswtf/scribe-restify",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "description": "Generate API documentation for humans from your Restify codebase.",
   "main": "src/decorator.js",
   "bin": {
@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/knuckleswtf/scribe-js#readme",
   "dependencies": {
-    "@knuckleswtf/scribe": "0.1.3",
+    "@knuckleswtf/scribe": "0.2.0",
     "commander": "^5.1.0",
     "lodash.findlastindex": "^4.6.0"
   },
