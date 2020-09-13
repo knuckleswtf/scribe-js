@@ -12,6 +12,8 @@ declare const _default: {
     /**
      * Transform body parameters such that object fields have a `fields` property containing a list of all subfields
      * Subfields will be removed from the main parameter map
+     * For instance, if parameters is {dad: {}, 'dad.cars': {}, 'dad.age': {}},
+     * normalise this into {dad: {..., fields: {'dad.cars': {}, {'dad.age': {}}}
      *
      * @param parameters
      */

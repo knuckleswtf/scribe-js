@@ -248,7 +248,7 @@ function generateResponseContentSpec(responseContent: string | null, endpoint: s
         };
     }
 
-    let type = p.gettype(decoded);
+    let type = getTypeForOpenAPI(decoded);
     switch (type) {
         case 'null':
             return {
@@ -294,7 +294,7 @@ function generateResponseContentSpec(responseContent: string | null, endpoint: s
                     schema: {
                         type: 'array',
                         items: {
-                            type: p.gettype(decoded[0]),
+                            type: getTypeForOpenAPI(decoded[0]),
                         },
                         example: decoded,
                     }
@@ -305,7 +305,7 @@ function generateResponseContentSpec(responseContent: string | null, endpoint: s
             let properties = collect(decoded).mapWithKeys((value, key) => {
                 const spec: SchemaObject = {
                     // Note that we aren't recursing for nested objects. We stop at one level.
-                    type: p.gettype(value),
+                    type: getTypeForOpenAPI(value),
                     example: value,
 
                 };
@@ -313,7 +313,7 @@ function generateResponseContentSpec(responseContent: string | null, endpoint: s
                     spec.description = endpoint.responseFields[key].description;
                 }
                 if (spec.type === 'array' && value.length) {
-                    spec.items = {type: p.gettype(value[0])};
+                    spec.items = {type: getTypeForOpenAPI(value[0])};
                 }
 
                 return [key, spec];
@@ -382,7 +382,6 @@ function generateEndpointRequestBodySpec(endpoint: scribe.Endpoint): RequestBody
 
         let fieldData: SchemaObject = {};
         if (details.type === 'file') {
-            // See https://swagger.io/docs/specification/describing-request-body/file-upload/
             hasFileParameter = true;
         }
 
@@ -409,8 +408,27 @@ function generateEndpointRequestBodySpec(endpoint: scribe.Endpoint): RequestBody
     return body as RequestBodyObject;
 }
 
+
+function getTypeForOpenAPI(value: any) {
+    if (Array.isArray(value)) {
+        return 'array';
+    }
+
+    if (value === null) {
+        // null is not an allowed type in OpenAPI
+        return 'string';
+    }
+
+    if (Number.isInteger(value)) {
+        return 'integer';
+    }
+
+    return typeof value;
+}
+
 function generateFieldData(field: scribe.Parameter): SchemaObject {
     if (field.type === 'file') {
+        // See https://swagger.io/docs/specification/describing-request-body/file-upload/
         return {
             type: 'string',
             format: 'binary',
@@ -430,10 +448,15 @@ function generateFieldData(field: scribe.Parameter): SchemaObject {
         };
 
         if (baseType === 'object') {
-            // @ts-ignore
-            fieldData.items.properties = collect(field.fields).mapWithKeys((f: scribe.Parameter) => {
-                return [f.name.replace(new RegExp(`^${field.name}\\[\]\\\.`), ''), generateFieldData(f)];
-            }).all();
+            Object.values(field.fields).forEach(subfield => {
+                const fieldSimpleName = subfield.name.replace(new RegExp(`^${field.name}\\[\]\\\.`), '');
+                // @ts-ignore
+                fieldData.items.properties[fieldSimpleName] = generateFieldData(subfield);
+                if (subfield.required) {
+                    // @ts-ignore
+                    fieldData.items.required = (fieldData.items.required || []).push(fieldSimpleName);
+                }
+            });
         }
 
         return fieldData;
@@ -442,8 +465,8 @@ function generateFieldData(field: scribe.Parameter): SchemaObject {
             type: 'object',
             description: field.description ?? '',
             example: field.value ?? null,
-            properties: collect(field.fields).mapWithKeys((f: scribe.Parameter) => {
-                return [f.name.replace(new RegExp(`^${field.name}\\\.`), ''), generateFieldData(f)];
+            properties: collect(field.fields).mapWithKeys((subfield: scribe.Parameter) => {
+                return [subfield.name.replace(new RegExp(`^${field.name}\\\.`), ''), generateFieldData(subfield)];
             }).all(),
         };
     } else {

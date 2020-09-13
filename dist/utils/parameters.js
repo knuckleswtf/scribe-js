@@ -87,18 +87,6 @@ function removeEmptyOptionalParametersAndTransformToKeyExample(parameters = {}) 
     }
     return cleanParameters;
 }
-function gettype(value) {
-    if (Array.isArray(value)) {
-        return 'array';
-    }
-    if (value === null) {
-        return 'null';
-    }
-    if (Number.isInteger(value)) {
-        return 'integer';
-    }
-    return typeof value;
-}
 function normalizeTypeName(typeName) {
     const base = typeName.toLowerCase().replace(/\[]/g, '');
     switch (base) {
@@ -132,7 +120,7 @@ function setObject(results, path, value, source) {
         const normalisedBaseName = baseName.replace('[]', '');
         const parentData = get(source, normalisedBaseName);
         if (parentData) {
-            // Path we use for lodash set
+            // Path we use for lodash.set
             const lodashPath = path.replace(/\[]/g, '.0');
             if (parentData.type === 'object') {
                 if (get(results, lodashPath) === undefined) {
@@ -155,7 +143,6 @@ module.exports = {
     getParameterExample,
     removeEmptyOptionalParametersAndTransformToKeyExample,
     castValueToType,
-    gettype,
     normalizeTypeName,
     isArrayType,
     getBaseTypeFromArrayType,

@@ -51,7 +51,7 @@
 {{/if}}
 {{#if (isNonEmptyObject endpoint.nestedBodyParameters) }}
 <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
-{{> partials.body-parameters bodyParameters=endpoint.nestedBodyParameters }}
+{{> partials.body-parameters parameters=endpoint.nestedBodyParameters }}
 {{/if}}
 
 {{#if (isNonEmptyObject endpoint.responseFields) }}

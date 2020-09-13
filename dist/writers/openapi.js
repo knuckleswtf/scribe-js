@@ -119,7 +119,7 @@ function generateResponseContentSpec(responseContent, endpoint) {
             }
         };
     }
-    let type = p.gettype(decoded);
+    let type = getTypeForOpenAPI(decoded);
     switch (type) {
         case 'null':
             return {
@@ -163,7 +163,7 @@ function generateResponseContentSpec(responseContent, endpoint) {
                     schema: {
                         type: 'array',
                         items: {
-                            type: p.gettype(decoded[0]),
+                            type: getTypeForOpenAPI(decoded[0]),
                         },
                         example: decoded,
                     }
@@ -174,14 +174,14 @@ function generateResponseContentSpec(responseContent, endpoint) {
                 var _a;
                 const spec = {
                     // Note that we aren't recursing for nested objects. We stop at one level.
-                    type: p.gettype(value),
+                    type: getTypeForOpenAPI(value),
                     example: value,
                 };
                 if ((_a = endpoint.responseFields[key]) === null || _a === void 0 ? void 0 : _a.description) {
                     spec.description = endpoint.responseFields[key].description;
                 }
                 if (spec.type === 'array' && value.length) {
-                    spec.items = { type: p.gettype(value[0]) };
+                    spec.items = { type: getTypeForOpenAPI(value[0]) };
                 }
                 return [key, spec];
             }).all();
@@ -240,7 +240,6 @@ function generateEndpointRequestBodySpec(endpoint) {
         }
         let fieldData = {};
         if (details.type === 'file') {
-            // See https://swagger.io/docs/specification/describing-request-body/file-upload/
             hasFileParameter = true;
         }
         fieldData = generateFieldData(details);
@@ -262,9 +261,23 @@ function generateEndpointRequestBodySpec(endpoint) {
     // return object rather than empty array, so can get properly serialised as object
     return body;
 }
+function getTypeForOpenAPI(value) {
+    if (Array.isArray(value)) {
+        return 'array';
+    }
+    if (value === null) {
+        // null is not an allowed type in OpenAPI
+        return 'string';
+    }
+    if (Number.isInteger(value)) {
+        return 'integer';
+    }
+    return typeof value;
+}
 function generateFieldData(field) {
     var _a, _b, _c, _d, _e, _f, _g, _h;
     if (field.type === 'file') {
+        // See https://swagger.io/docs/specification/describing-request-body/file-upload/
         return {
             type: 'string',
             format: 'binary',
@@ -284,10 +297,15 @@ function generateFieldData(field) {
                 },
         };
         if (baseType === 'object') {
-            // @ts-ignore
-            fieldData.items.properties = collect(field.fields).mapWithKeys((f) => {
-                return [f.name.replace(new RegExp(`^${field.name}\\[\]\\\.`), ''), generateFieldData(f)];
-            }).all();
+            Object.values(field.fields).forEach(subfield => {
+                const fieldSimpleName = subfield.name.replace(new RegExp(`^${field.name}\\[\]\\\.`), '');
+                // @ts-ignore
+                fieldData.items.properties[fieldSimpleName] = generateFieldData(subfield);
+                if (subfield.required) {
+                    // @ts-ignore
+                    fieldData.items.required = (fieldData.items.required || []).push(fieldSimpleName);
+                }
+            });
         }
         return fieldData;
     }
@@ -296,8 +314,8 @@ function generateFieldData(field) {
             type: 'object',
             description: (_e = field.description) !== null && _e !== void 0 ? _e : '',
             example: (_f = field.value) !== null && _f !== void 0 ? _f : null,
-            properties: collect(field.fields).mapWithKeys((f) => {
-                return [f.name.replace(new RegExp(`^${field.name}\\\.`), ''), generateFieldData(f)];
+            properties: collect(field.fields).mapWithKeys((subfield) => {
+                return [subfield.name.replace(new RegExp(`^${field.name}\\\.`), ''), generateFieldData(subfield)];
             }).all(),
         };
     }

@@ -89,21 +89,38 @@ module.exports = (config) => {
             protocol: parsedUrl.protocol.replace(/:$/, ''),
             host: "{{baseUrl}}",
             path: endpoint.uri.replace(/^\//, ''),
-            query: Object.entries(endpoint.queryParameters).map(function ([key, parameterData]) {
-                return {
-                    key: key,
+        };
+        const query = [];
+        Object.entries(endpoint.queryParameters).forEach(([name, parameterData]) => {
+            if (parameterData.type.endsWith('[]')) {
+                // Node.js's querystring module parses array query parameters as filters=name&filters=age
+                // See https://nodejs.org/api/querystring.html#querystring_querystring_parse_str_sep_eq_options
+                const values = parameterData.value || [];
+                values.forEach((value) => {
+                    query.push({
+                        key: name,
+                        value: encodeURIComponent(value),
+                        description: striptags(parameterData.description),
+                        // Default query params to disabled if they aren't required and have empty values
+                        disabled: (parameterData.required == false) && parameterData.value == null,
+                    });
+                });
+            }
+            else {
+                query.push({
+                    key: name,
                     value: encodeURIComponent(parameterData.value),
                     description: striptags(parameterData.description),
                     // Default query params to disabled if they aren't required and have empty values
                     disabled: (parameterData.required == false) && parameterData.value == null,
-                };
-            })
-        };
+                });
+            }
+        });
         // Create raw url-parameter (Insomnia uses this on import)
-        const query = base.query
+        const queryString = base.query
             .map((queryParamData) => `${queryParamData.key}=${queryParamData.value}`)
             .join('&');
-        base.raw = `${base.protocol}://${base.host}/${base.path}${query ? '?' + query : ''}`;
+        base.raw = `${base.protocol}://${base.host}/${base.path}${queryString ? '?' + queryString : ''}`;
         // If there aren't any url parameters described then return what we've got
         if (!urlParams.length) {
             return base;

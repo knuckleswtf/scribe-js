@@ -107,22 +107,6 @@ function removeEmptyOptionalParametersAndTransformToKeyExample(parameters: scrib
     return cleanParameters;
 }
 
-function gettype(value: any) {
-    if (Array.isArray(value)) {
-        return 'array';
-    }
-
-    if (value === null) {
-        return 'null';
-    }
-
-    if (Number.isInteger(value)) {
-        return 'integer';
-    }
-
-    return typeof value;
-}
-
 function normalizeTypeName(typeName: string) {
     const base = typeName.toLowerCase().replace(/\[]/g, '');
     switch (base) {
@@ -161,7 +145,7 @@ function setObject(results: {}, path: string, value: any, source: {}) {
 
         const parentData = get(source, normalisedBaseName);
         if (parentData) {
-            // Path we use for lodash set
+            // Path we use for lodash.set
             const lodashPath = path.replace(/\[]/g, '.0');
             if (parentData.type === 'object') {
                 if (get(results, lodashPath) === undefined) {
@@ -179,11 +163,11 @@ function setObject(results: {}, path: string, value: any, source: {}) {
         }
     }
 }
+
 export = {
     getParameterExample,
     removeEmptyOptionalParametersAndTransformToKeyExample,
     castValueToType,
-    gettype,
     normalizeTypeName,
     isArrayType,
     getBaseTypeFromArrayType,

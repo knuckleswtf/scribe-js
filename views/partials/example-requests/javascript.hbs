@@ -38,9 +38,11 @@ fetch(url, {
 {{#if (isNonEmptyObject endpoint.headers) }}
     headers: headers,
 {{/if}}
-{{#or (isNonEmptyObject endpoint.fileParameters) (isNonEmptyObject endpoint.cleanBodyParameters) }}
-    body: body
-{{/or}}
+{{#if (isNonEmptyObject endpoint.fileParameters) }}
+    body,
+{{else if (isNonEmptyObject endpoint.cleanBodyParameters) }}
+    body: JSON.stringify(body),
+{{/if}}
 })
 .then(response => response.json())
 .then(json => console.log(json));

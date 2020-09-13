@@ -2,12 +2,22 @@
 
 Generate API documentation for humans from your Node.js codebase. [Here's what the output looks like](https://shalvah.me/TheCensorshipAPI/).
 
-
 ```eval_rst
 .. admonition:: Wondering where to get started?
    
    Check out our getting started guide for your framework: `Adonis.js <guide-getting-started/adonis.html>`_, `Express <guide-getting-started/express.html>`_, and `Restify <guide-getting-started/restify.html>`_,.
 ```
+
+```eval_rst
+.. Tip:: Looking to document your Laravel/Lumen/Dingo APIs easily? Check out `Scribe for Laravel <https://github.com/knuckleswtf/scribe>`_.
+```
+
+## Features
+- Pretty HTML documentation page, with included code samples and friendly text
+- Included "Try It Out" button so users can test your API
+- Markdown source files that can be edited to modify docs
+- Safely calls API endpoints to generate sample responses, with authentication and other custom configuration supported
+- Supports Postman collection and OpenAPI (Swagger) spec generation
 
 ## Contents
 ```eval_rst
@@ -22,12 +32,12 @@ Generate API documentation for humans from your Node.js codebase. [Here's what t
 ```
 
 ## Supported frameworks
-Currently, only Adonis.js 4+, Express 4+ and Restify 8+ are supported.
+Currently, only Adonis.js 4, Express 4+ and Restify 8+ are supported.
 
 ## Usage
 Node.js 12.4.0 or higher is required.
 
-## Adonis.js
+### Adonis.js
 
 Install with:
 

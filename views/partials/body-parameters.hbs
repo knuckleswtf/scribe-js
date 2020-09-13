@@ -1,5 +1,5 @@
 
-{{#each bodyParameters }}
+{{#each parameters }}
 {{#if this.fields }}
 <p>
 <details>
@@ -10,7 +10,7 @@
 
   {{#each this.fields }}
   {{#if this.fields }}
-  {{> partials.body-parameters bodyParameters=(objectWrap this.name this) }}
+  {{> partials.body-parameters parameters=(objectWrap this.name this) }}
   {{else}}
   <p>
   {{> components.field-details name=this.name type=this.type required=this.required description=this.description }}
