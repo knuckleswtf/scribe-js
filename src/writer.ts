@@ -4,8 +4,6 @@ import fs = require("fs");
 import set = require("lodash.set");
 import tools = require('./tools');
 
-const get = require('lodash.get');
-
 export = {
     async writePostmanCollectionFile(config: scribe.Config, groupedEndpoints: { [groupName: string]: scribe.Endpoint[] }) {
         tools.info(`Writing Postman collection to ${path.resolve(config.outputPath)}...`);

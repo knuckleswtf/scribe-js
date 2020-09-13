@@ -16,7 +16,8 @@
     "spec",
     "frameworks",
     "demos",
-    "test"
+    "test",
+    "resources"
   ],
   "include": [
     "src"

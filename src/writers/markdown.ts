@@ -9,10 +9,10 @@ import Handlebars = require("handlebars");
 import tools = require('../tools');
 
 require('handlebars-helpers')(['string', 'comparison', 'object'], {handlebars: Handlebars});
-registerPartialsInDirectory(path.join(__dirname, '../../views/partials'));
-registerPartialsInDirectory(path.join(__dirname, '../../views/partials/example-requests'));
-registerPartialsInDirectory(path.join(__dirname, '../../views/components'));
-registerPartialsInDirectory(path.join(__dirname, '../../views/components/badges'));
+registerPartialsInDirectory(path.join(__dirname, '../../resources/views/partials'));
+registerPartialsInDirectory(path.join(__dirname, '../../resources/views/partials/example-requests'));
+registerPartialsInDirectory(path.join(__dirname, '../../resources/views/components'));
+registerPartialsInDirectory(path.join(__dirname, '../../resources/views/components/badges'));
 
 Handlebars.registerHelper('objectWrap', (key, value) => ({[key]: value}));
 Handlebars.registerHelper('defaultValue', (value, defaultValue) => new Handlebars.SafeString(value || defaultValue));
@@ -72,7 +72,7 @@ export = (config: scribe.Config) => {
             }
         }
 
-        const template = Handlebars.compile(fs.readFileSync(path.resolve(__dirname, '../../views/index.hbs'), 'utf8'));
+        const template = Handlebars.compile(fs.readFileSync(path.resolve(__dirname, '../../resources/views/index.hbs'), 'utf8'));
         const markdown = template({
             settings: config,
             introText: config.introText,
@@ -92,7 +92,7 @@ export = (config: scribe.Config) => {
             }
         }
 
-        const template = Handlebars.compile(fs.readFileSync(path.resolve(__dirname, '../../views/authentication.hbs'), 'utf8'));
+        const template = Handlebars.compile(fs.readFileSync(path.resolve(__dirname, '../../resources/views/authentication.hbs'), 'utf8'));
         const isAuthed = config.auth.enabled || false;
         let extraAuthInfo = '', authDescription = '';
 
@@ -143,7 +143,7 @@ export = (config: scribe.Config) => {
         !fs.existsSync(groupsPath) && fs.mkdirSync(groupsPath);
 
         const groupFileNames = Object.entries(groupedEndpoints).map(function writeGroupFileAndReturnFileName([groupName, endpoints]) {
-            const template = Handlebars.compile(fs.readFileSync(path.resolve(__dirname, '../../views/partials/group.hbs'), 'utf8'));
+            const template = Handlebars.compile(fs.readFileSync(path.resolve(__dirname, '../../resources/views/partials/group.hbs'), 'utf8'));
             const markdown = template({
                 settings: config,
                 endpoints,
