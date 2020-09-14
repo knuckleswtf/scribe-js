@@ -34,7 +34,8 @@
     "cross-spawn": "^7.0.2",
     "docblock-parser": "^1.0.0",
     "dotenv": "^8.2.0",
-    "faker": "^4.1.0",
+    "faker": "^5.1.0",
+    "form-data": "^3.0.0",
     "handlebars": "^4.7.6",
     "handlebars-helpers": "^0.10.0",
     "inquirer": "^7.3.3",
@@ -50,6 +51,7 @@
     "randexp": "^0.5.3",
     "slugify": "^1.4.0",
     "striptags": "^3.1.1",
+    "tmp-promise": "^3.0.2",
     "uuid": "^8.3.0"
   },
   "devDependencies": {

@@ -98,6 +98,9 @@ export declare namespace scribe {
         queryParams: {
 
         },
+        fileParams: {
+
+        },
     }
 
     export interface RouteGroup {

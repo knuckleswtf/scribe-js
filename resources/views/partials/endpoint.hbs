@@ -47,7 +47,7 @@
 </h3>
 {{#each endpoint.methods }}
 <p>
-{{> components.badges.http-method method=this }} <b><code>{{ ../this.uri }}</b></code>ryit
+{{> components.badges.http-method method=this }} <b><code>{{ ../this.uri }}</b></code>
 </p>
 {{/each}}
 {{#if (and endpoint.metadata.authenticated (is auth.location 'header')) }}

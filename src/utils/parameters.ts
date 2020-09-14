@@ -30,6 +30,9 @@ function getParameterExample(type = 'string', regex: string = null) {
         case 'object':
             return {};
 
+        case 'file':
+            return faker.system.filePath();
+
         case 'string':
         default:
             if (!regex) {

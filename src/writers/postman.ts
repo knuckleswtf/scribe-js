@@ -186,7 +186,7 @@ export = (config: scribe.Config) => {
                     });
                 }
 
-                for (let [key, value] of Object.entries(endpoint['fileParameters'])) {
+                for (let [key, value] of Object.entries(endpoint.fileParameters)) {
                     // @ts-ignore
                     body[inputMode].push({
                         key: key,
@@ -197,7 +197,7 @@ export = (config: scribe.Config) => {
                 break;
             case 'raw':
             default:
-                body[inputMode] = JSON.stringify(endpoint['cleanBodyParameters'], null, 4);
+                body[inputMode] = JSON.stringify(endpoint.cleanBodyParameters, null, 4);
         }
         return body;
     }

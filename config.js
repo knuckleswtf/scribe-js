@@ -107,7 +107,17 @@ module.exports = {
                      */
                     env: {
                         // NODE_ENV: 'docs'
-                    }
+                    },
+
+                    bodyParams: {
+
+                    },
+                    queryParams: {
+
+                    },
+                    fileParams: {
+
+                    },
                 }
             }
         }

@@ -8,6 +8,7 @@ import matcher = require('matcher');
 import path = require('path');
 import url = require('url');
 import union = require('lodash.union');
+const collect = require('collect.js');
 
 import d = require("./utils/docblocks");
 import p = require('./utils/parameters');
@@ -120,7 +121,21 @@ async function generate(
                         = Object.assign({}, endpoint.bodyParameters, await bodyParametersStrategy.run(endpoint, config, routeGroup));
                 }
             }
-            endpoint.cleanBodyParameters = p.removeEmptyOptionalParametersAndTransformToKeyExample(endpoint.bodyParameters);
+            let [files, regularParameters] = collect(endpoint.bodyParameters).partition((p) => p.type == 'file');
+            files = files.all();
+            regularParameters = regularParameters.all();
+
+            endpoint.cleanBodyParameters = p.removeEmptyOptionalParametersAndTransformToKeyExample(regularParameters);
+            if (Object.keys(endpoint.cleanBodyParameters).length && !endpoint.headers['Content-Type']) {
+                // Set content type if the user forgot to set it
+                endpoint.headers['Content-Type'] = 'application/json';
+            }
+            if (Object.keys(files).length) {
+                // If there are files, content type has to change
+                endpoint.headers['Content-Type'] = 'multipart/form-data';
+            }
+            endpoint.fileParameters = p.removeEmptyOptionalParametersAndTransformToKeyExample(files);
+
 
             addAuthField(endpoint, config);
 
@@ -206,14 +221,14 @@ function getStrategies(config: scribe.Config) {
         './extractors/2_headers/header_tag',
     ], config?.strategies?.headers ?? []);
     const urlParameters = union([
-        './extractors/3_url_parameters/url_param_tag',
+        './extractors/3_url_parameters/urlparam_tag',
     ], config?.strategies?.urlParameters ?? []);
     const queryParameters = union([
-        './extractors/4_query_parameters/query_param_tag',
+        './extractors/4_query_parameters/queryparam_tag',
     ], config?.strategies?.queryParameters ?? []);
     const bodyParameters = union([
         './extractors/5_body_parameters/read_source_code',
-        './extractors/5_body_parameters/body_param_tag',
+        './extractors/5_body_parameters/bodyparam_tag',
     ], config?.strategies?.bodyParameters ?? []);
     const responses = union([
         './extractors/6_responses/response_tag',
@@ -221,7 +236,7 @@ function getStrategies(config: scribe.Config) {
         './extractors/6_responses/response_call',
     ], config?.strategies?.responses ?? []);
     const responseFields = union([
-        './extractors/7_response_fields/response_field_tag'
+        './extractors/7_response_fields/responsefield_tag'
     ], config?.strategies?.responseFields ?? []);
     return {
         metadata,

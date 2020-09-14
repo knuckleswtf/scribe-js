@@ -128,7 +128,7 @@ The configuration for response calls is located in the `apply.responseCalls` sec
 
 - You can also modify the environment variables directly by adding a :code:`.env.docs` file or using the `env` key. Scribe will load these env variables after starting your server, but before beginning response calls.
 
-- By default, the package will generate dummy values for your documented query, body and file parameters and send in the request. If you specified example values using `@bodyParam` or `@queryParam`, those will be used instead. You can configure additional parameters or overwrite the existing ones for the request in the `responseCalls.queryParams`, `responseCalls.bodyParams`, and `responseCalls.fileParams` sections. For file parameters, each value should be a valid absolute path to a file on the machine. [coming soon]
+- By default, the package will generate dummy values for your documented query, body and file parameters and send in the request. If you specified example values using `@bodyParam` or `@queryParam`, those will be used instead. You can configure additional parameters or overwrite the existing ones for the request in the `responseCalls.queryParams`, `responseCalls.bodyParams`, and `responseCalls.fileParams` sections. For file parameters, each value should be a valid path (absolute or relative to the project directory) to a file on the machine.
 
 ```eval_rst
 .. Note:: If you specified :code:`No-example` for a parameter earlier, it won't be included when making a response call.

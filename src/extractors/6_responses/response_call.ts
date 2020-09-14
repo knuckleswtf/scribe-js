@@ -38,8 +38,8 @@ function makeResponseCall(responseCallRules: scribe.ResponseCallRules, endpoint:
 
     const bodyParameters = Object.assign({}, endpoint.cleanBodyParameters || {}, responseCallRules.bodyParams || {});
     const queryParameters = Object.assign({}, endpoint.cleanQueryParameters || {}, responseCallRules.queryParams || {});
+    const fileParameters = Object.assign({}, endpoint.fileParameters || {}, responseCallRules.fileParams || {});
 
-    // todo file params
 
     console.log("Hitting " + endpoint.methods[0] + " " + endpoint.uri);
 
@@ -80,10 +80,26 @@ function makeResponseCall(responseCallRules: scribe.ResponseCallRules, endpoint:
             })
             .setTimeout(3000);
 
-        if (Object.keys(bodyParameters).length) {
+        if (Object.keys(fileParameters).length) {
+            const FormData = require('form-data');
+            const form = new FormData();
+            const tmp = require('tmp-promise');
+            for (let [name, value] of Object.entries(fileParameters)) {
+                if (!fs.existsSync(value) || fs.existsSync(path.resolve(value))) { // The user may have passed ni an actual file path
+                    const tempFile = tmp.fileSync();
+                    value = tempFile.name;
+                }
+                const readStream = fs.createReadStream(value);
+                form.append(name, readStream);
+            }
+            for (let [name, value] of Object.entries(fileParameters)) {
+                form.append(name, value);
+            }
+            form.pipe(req);
+        } else if (Object.keys(bodyParameters).length) {
             req.write(JSON.stringify(bodyParameters));
+            req.end();
         }
-        req.end();
     });
 
     return promise.then(response => {
