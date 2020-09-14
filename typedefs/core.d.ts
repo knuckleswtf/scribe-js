@@ -120,6 +120,7 @@ export declare namespace scribe {
         },
         auth: {
             enabled: boolean,
+            default: boolean,
             in: 'query' | 'body' | 'bearer' | 'basic' | 'header',
             name: string,
             useValue: any,
@@ -174,6 +175,7 @@ export declare namespace scribe {
         title?: string | null,
         description?: string | null,
         authenticated?: boolean,
+        unauthenticated?: boolean,
         group?: string | null,
         groupDescription?: string | null,
         header: Record<string, string>,

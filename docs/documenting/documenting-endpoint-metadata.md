@@ -55,7 +55,12 @@ app.post('changePassword', (req, res) => {
 Grouping endpoints is optional. Any endpoints not in a group will be placed in a default group, "Endpoints" (or whatever is specified in your config file as `defaultGroup`).
 
 ## Indicating authentication status
-You can use the `@authenticated` annotation on a method to indicate if the endpoint is authenticated. A "Requires authentication" badge will be added to that route in the generated documentation. 
+If you have `auth.default` set to `false` in your config, your endpoints will be treated as open by default. You can use the `@authenticated` annotation on a method to indicate that the endpoint is authenticated.
+
+Similarly, if you have `auth.default` set to `true` in your config, your endpoints will be treated as authenticated by default. You can use the `@unauthenticated` annotation on a method to indicate that the endpoint is unauthenticated. 
+
+```eval_rst
+.. Tip:: You can also specify `@authenticated` or `@unauthenticated` in a controller doc block instead to override the status for all the routes in that controller. 
 
 ```js
 /**
@@ -68,5 +73,7 @@ You can use the `@authenticated` annotation on a method to indicate if the endpo
 app.post('/createUser', (req, res) => {
 });
 ```
+
+A "Requires authentication" badge will be added to that endpoint in the generated documentation.
 
 ![](../images/endpoint-auth.png)

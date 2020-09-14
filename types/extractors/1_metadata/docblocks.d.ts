@@ -4,7 +4,7 @@ declare function run(endpoint: scribe.Endpoint, config: scribe.Config): Promise<
     groupDescription: string;
     title: string;
     description: string;
-    authenticated: boolean;
+    authenticated: any;
 }>;
 declare const _default: {
     routers: any[];

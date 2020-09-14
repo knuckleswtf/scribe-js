@@ -32,9 +32,14 @@ module.exports = {
      */
     auth: {
         /*
-         * Set this to true if your API is authenticated.
+         * Set this to true if any endpoints in your API uses authentication.
          */
         enabled: false,
+        /*
+         * Set this to true if your API should be authenticated by default.
+         * You can then use @unauthenticated or @authenticated on individual endpoints to change their status.
+         */
+        default: false,
         /*
          * Where is the auth value meant to be sent in a request?
          * Options: query, body, query_or_body, basic, bearer, header (for custom header)

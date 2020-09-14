@@ -6,6 +6,7 @@ const { normalizeTypeName } = require("./parameters");
 const defaultTagValues = {
     hideFromApiDocs: false,
     authenticated: false,
+    unauthenticated: false,
     group: null,
     groupDescription: null,
     header: [],
@@ -54,6 +55,7 @@ function parseDocBlockString(docBlock) {
         tags: {
             hideFromApiDocs: docblockParser.booleanTag,
             authenticated: docblockParser.booleanTag,
+            unauthenticated: docblockParser.booleanTag,
             group: docblockParser.singleParameterTag,
             groupDescription: docblockParser.multilineTilTag,
             header: docblockParser.multiParameterTag(/\s+/),
