@@ -7,12 +7,13 @@ const matcher = require("matcher");
 const Handlebars = require("handlebars");
 const tools = require("../tools");
 require('handlebars-helpers')(['string', 'comparison', 'object'], { handlebars: Handlebars });
-registerPartialsInDirectory(path.join(__dirname, '../../views/partials'));
-registerPartialsInDirectory(path.join(__dirname, '../../views/partials/example-requests'));
-registerPartialsInDirectory(path.join(__dirname, '../../views/components'));
-registerPartialsInDirectory(path.join(__dirname, '../../views/components/badges'));
+registerPartialsInDirectory(path.join(__dirname, '../../resources/views/partials'));
+registerPartialsInDirectory(path.join(__dirname, '../../resources/views/partials/example-requests'));
+registerPartialsInDirectory(path.join(__dirname, '../../resources/views/components'));
+registerPartialsInDirectory(path.join(__dirname, '../../resources/views/components/badges'));
 Handlebars.registerHelper('objectWrap', (key, value) => ({ [key]: value }));
-Handlebars.registerHelper('defaultValue', (value, defaultValue) => new Handlebars.SafeString(value || defaultValue));
+Handlebars.registerHelper('defaultValue', (value, defaultValue) => value || defaultValue);
+Handlebars.registerHelper('endsWith', (value, other) => value.endsWith(other));
 Handlebars.registerHelper('httpMethodToCssColour', function (method) {
     const colours = {
         GET: 'green',
@@ -29,6 +30,8 @@ Handlebars.registerHelper('escapeString', escapeString);
 Handlebars.registerHelper('isNonEmptyObject', isNonEmptyObject);
 Handlebars.registerHelper('printQueryParamsAsKeyValue', printQueryParamsAsKeyValue);
 Handlebars.registerHelper('getParameterNamesAndValuesForFormData', getParameterNamesAndValuesForFormData);
+Handlebars.registerHelper('getInputTypeForField', getInputTypeForField);
+Handlebars.registerHelper('getFullNameForField', getFullNameForField);
 function registerPartialsInDirectory(partialPath) {
     fs.readdirSync(partialPath).forEach((filename) => {
         const matches = /^([^.]+).hbs$/.exec(filename);
@@ -134,6 +137,34 @@ function printQueryParamsAsKeyValue(cleanQueryParameters, opts = {}) {
     let closing = options.braces[1] ? " ".repeat(options.closingBraceIndentation) + options.braces[1] : '';
     return output + closing;
 }
+function getFullNameForField(name, type) {
+    name = name.replace('[]', '.0');
+    if (type.endsWith('[]')) {
+        // Ignore the first '[]': the frontend will take care of it
+        type = type.substr(0, type.length - 2);
+    }
+    while (type.endsWith('[]')) {
+        name += '.0';
+        type = type.substr(0, type.length - 2);
+    }
+    return name;
+}
+function getInputTypeForField(type) {
+    const baseType = type.replace('[]', '');
+    let inputType = '';
+    switch (baseType) {
+        case 'number':
+        case 'integer':
+            inputType = 'number';
+            break;
+        case 'file':
+            inputType = 'file';
+            break;
+        default:
+            inputType = 'text';
+    }
+    return inputType;
+}
 function hasFileBeenModified(filePath, lastTimesWeModifiedTheseFiles) {
     var _a;
     if (!fs.existsSync(filePath)) {
@@ -207,11 +238,12 @@ module.exports = (config) => {
                 return;
             }
         }
-        const template = Handlebars.compile(fs.readFileSync(path.resolve(__dirname, '../../views/index.hbs'), 'utf8'));
+        const template = Handlebars.compile(fs.readFileSync(path.resolve(__dirname, '../../resources/views/index.hbs'), 'utf8'));
         const markdown = template({
             settings: config,
             introText: config.introText,
             description: config.description,
+            baseUrl: config.baseUrl.replace(/\/$/, ''),
         });
         writeFile(indexMarkdownFile, markdown);
     }
@@ -226,7 +258,7 @@ module.exports = (config) => {
                 return;
             }
         }
-        const template = Handlebars.compile(fs.readFileSync(path.resolve(__dirname, '../../views/authentication.hbs'), 'utf8'));
+        const template = Handlebars.compile(fs.readFileSync(path.resolve(__dirname, '../../resources/views/authentication.hbs'), 'utf8'));
         const isAuthed = config.auth.enabled || false;
         let extraAuthInfo = '', authDescription = '';
         if (isAuthed) {
@@ -269,9 +301,21 @@ module.exports = (config) => {
         !fs.existsSync(groupsPath) && fs.mkdirSync(groupsPath);
         const groupFileNames = Object.entries(groupedEndpoints).map(function writeGroupFileAndReturnFileName([groupName, endpoints]) {
             var _a, _b;
-            const template = Handlebars.compile(fs.readFileSync(path.resolve(__dirname, '../../views/partials/group.hbs'), 'utf8'));
+            const template = Handlebars.compile(fs.readFileSync(path.resolve(__dirname, '../../resources/views/partials/group.hbs'), 'utf8'));
+            // Needed for Try It Out
+            const auth = config.auth;
+            if (auth.in === 'bearer' || auth.in === 'basic') {
+                auth.name = 'Authorization';
+                auth.location = 'header';
+                auth.prefix = auth.in === 'bearer' ? 'Bearer ' : 'Basic ';
+            }
+            else {
+                auth.location = auth.in;
+                auth.prefix = '';
+            }
             const markdown = template({
                 settings: config,
+                auth,
                 endpoints,
                 groupName,
                 groupDescription: (_b = (_a = endpoints.find(e => Boolean(e.metadata.groupDescription))) === null || _a === void 0 ? void 0 : _a.metadata.groupDescription) !== null && _b !== void 0 ? _b : '',

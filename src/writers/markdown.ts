@@ -15,7 +15,8 @@ registerPartialsInDirectory(path.join(__dirname, '../../resources/views/componen
 registerPartialsInDirectory(path.join(__dirname, '../../resources/views/components/badges'));
 
 Handlebars.registerHelper('objectWrap', (key, value) => ({[key]: value}));
-Handlebars.registerHelper('defaultValue', (value, defaultValue) => new Handlebars.SafeString(value || defaultValue));
+Handlebars.registerHelper('defaultValue', (value, defaultValue) => value || defaultValue);
+Handlebars.registerHelper('endsWith', (value: string, other: string) => value.endsWith(other));
 Handlebars.registerHelper('httpMethodToCssColour', function (method: string) {
     const colours = {
         GET: 'green',
@@ -32,6 +33,8 @@ Handlebars.registerHelper('escapeString', escapeString);
 Handlebars.registerHelper('isNonEmptyObject', isNonEmptyObject);
 Handlebars.registerHelper('printQueryParamsAsKeyValue', printQueryParamsAsKeyValue);
 Handlebars.registerHelper('getParameterNamesAndValuesForFormData', getParameterNamesAndValuesForFormData);
+Handlebars.registerHelper('getInputTypeForField', getInputTypeForField);
+Handlebars.registerHelper('getFullNameForField', getFullNameForField);
 
 export = (config: scribe.Config) => {
 
@@ -77,6 +80,7 @@ export = (config: scribe.Config) => {
             settings: config,
             introText: config.introText,
             description: config.description,
+            baseUrl: config.baseUrl.replace(/\/$/, ''),
         });
         writeFile(indexMarkdownFile, markdown);
     }
@@ -144,8 +148,19 @@ export = (config: scribe.Config) => {
 
         const groupFileNames = Object.entries(groupedEndpoints).map(function writeGroupFileAndReturnFileName([groupName, endpoints]) {
             const template = Handlebars.compile(fs.readFileSync(path.resolve(__dirname, '../../resources/views/partials/group.hbs'), 'utf8'));
+            // Needed for Try It Out
+            const auth = config.auth as any;
+            if (auth.in === 'bearer' || auth.in === 'basic') {
+                auth.name = 'Authorization';
+                auth.location = 'header';
+                auth.prefix = auth.in === 'bearer' ? 'Bearer ' : 'Basic ';
+            } else {
+                auth.location = auth.in;
+                auth.prefix = '';
+            }
             const markdown = template({
                 settings: config,
+                auth,
                 endpoints,
                 groupName,
                 groupDescription: endpoints.find(e => Boolean(e.metadata.groupDescription))?.metadata.groupDescription ?? '',
@@ -300,6 +315,36 @@ function printQueryParamsAsKeyValue(cleanQueryParameters, opts = {}): string {
 
     let closing = options.braces[1] ? " ".repeat(options.closingBraceIndentation) + options.braces[1] : '';
     return output + closing;
+}
+
+function getFullNameForField(name: string, type?: string) {
+    name = name.replace('[]', '.0');
+    if (type.endsWith('[]')) {
+        // Ignore the first '[]': the frontend will take care of it
+        type = type.substr(0, type.length - 2);
+    }
+    while (type.endsWith('[]')) {
+        name += '.0';
+        type = type.substr(0, type.length - 2);
+    }
+    return name;
+}
+
+function getInputTypeForField(type: string) {
+    const baseType = type.replace('[]', '');
+    let inputType = '';
+    switch (baseType) {
+        case 'number':
+        case 'integer':
+            inputType = 'number';
+            break;
+        case 'file':
+            inputType = 'file';
+            break;
+        default:
+            inputType = 'text';
+    }
+    return inputType;
 }
 
 function hasFileBeenModified(filePath: string, lastTimesWeModifiedTheseFiles: {}): boolean {

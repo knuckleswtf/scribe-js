@@ -175,6 +175,8 @@ async function generate(
 
     parsedEndpoints = parsedEndpoints.map(e => {
         e.nestedBodyParameters = writer.nestArrayAndObjectFields(e.bodyParameters);
+        // @ts-ignore
+        e.endpointId = e.methods[0] + e.uri.replace(/[/?{}]/g, '-');
         return e;
     });
 

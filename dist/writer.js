@@ -3,7 +3,6 @@ const path = require("path");
 const fs = require("fs");
 const set = require("lodash.set");
 const tools = require("./tools");
-const get = require('lodash.get');
 module.exports = {
     async writePostmanCollectionFile(config, groupedEndpoints) {
         tools.info(`Writing Postman collection to ${path.resolve(config.outputPath)}...`);
@@ -48,6 +47,7 @@ module.exports = {
         }
         const pastel = require('@knuckleswtf/pastel');
         await pastel.generate(sourceOutputPath + '/index.md', path.resolve(config.outputPath));
+        fs.copyFileSync(path.join(__dirname, '../resources/js/tryitout.js'), path.join(path.resolve(config.outputPath), 'js/tryitout.js'));
     },
     /**
      * Transform body parameters such that object fields have a `fields` property containing a list of all subfields

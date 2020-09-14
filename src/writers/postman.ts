@@ -134,9 +134,10 @@ export = (config: scribe.Config) => {
                 });
             }
         });
+        base.query = query;
 
         // Create raw url-parameter (Insomnia uses this on import)
-        const queryString = (base.query as QueryParamDefinition[])
+        const queryString = (query as QueryParamDefinition[])
             .map((queryParamData) => `${queryParamData.key}=${queryParamData.value}`)
             .join('&');
         base.raw = `${base.protocol}://${base.host}/${base.path}${queryString ? '?' + queryString : ''}`;

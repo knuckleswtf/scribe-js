@@ -1,4 +1,15 @@
 <b><code>{{ name }}</code></b>&nbsp;&nbsp;{{#if type}}<small>{{ type }}</small>{{/if}} {{#unless required}}
     <i>optional</i>{{/unless}}
+{{#if (and (defaultValue isInput true) (not (defaultValue hasChildren false))) }}
+{{#if (eq type 'boolean') }}
+<label data-endpoint="{{ endpointId }}" hidden><input type="radio" name="{{getFullNameForField name type }}" value="true" data-endpoint="{{ endpointId }}" data-component="{{ component }}" {{#if required}}required {{/if}}><code>true</code></label>
+<label data-endpoint="{{ endpointId }}" hidden><input type="radio" name="{{getFullNameForField name type }}" value="false" data-endpoint="{{ endpointId }}" data-component="{{ component }}" {{#if required}}required {{/if}}><code>false</code></label>
+{{else if (endsWith type '[]') }}
+<input type="{{getInputTypeForField type }}" name="{{append (getFullNameForField name type) ".0" }}" data-endpoint="{{ endpointId }}" data-component="{{ component }}" {{#if required}}required {{/if}} hidden>
+<input type="{{getInputTypeForField type }}" name="{{append (getFullNameForField name type) ".1" }}" data-endpoint="{{ endpointId }}" data-component="{{ component }}" hidden>
+{{else}}
+<input type="{{getInputTypeForField type }}" name="{{getFullNameForField name type }}" data-endpoint="{{ endpointId }}" data-component="{{ component }}" {{#if required}}required {{/if}}hidden>
+{{/if}}
+{{/if}}
 <br>
 {{{ description }}}

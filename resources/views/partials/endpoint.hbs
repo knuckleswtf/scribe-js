@@ -27,17 +27,39 @@
 ```
 {{/each}}
 {{/if}}
+<div id="execution-results-{{ endpoint.endpointId }}" hidden>
+    <blockquote>Received response<span id="execution-response-status-{{ endpoint.endpointId }}"></span>:</blockquote>
+    <pre class="json"><code id="execution-response-content-{{ endpoint.endpointId }}"></code></pre>
+</div>
+<div id="execution-error-{{ endpoint.endpointId }}" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-{{ endpoint.endpointId }}"></code></pre>
+</div>
 
-### Request
+<form id="form-{{ endpoint.endpointId }}" data-method="{{{ endpoint.methods.[0] }}}" data-path="{{{ endpoint.uri }}}" data-authed="{{#isTruthy endpoint.metadata.authenticated}}1{{else}}0{{/isTruthy}}" data-hasfiles="{{#if (isNonEmptyObject endpoint.fileParameters) }}1{{else}}0{{/if}}" data-headers='{{{JSONstringify endpoint.headers }}}' onsubmit="event.preventDefault(); executeTryOut('{{ endpoint.endpointId }}', this);">
+<h3>
+    Request
+    {{#if settings.output.interactive}}
+    <button type="button" style="background-color: #8fbcd4; padding: 5px 10px; border-radius 5px; border-width: thin;" id="btn-tryout-{{ endpoint.endpointId }}" onclick="tryItOut('{{ endpoint.endpointId }}');">Try it out ⚡</button>
+    {{/if}}
+    <button type="button" style="background-color: #c97a7e; padding: 5px 10px; border-radius 5px; border-width: thin;" id="btn-canceltryout-{{ endpoint.endpointId }}" onclick="cancelTryOut('{{ endpoint.endpointId }}');" hidden>Cancel</button>&nbsp;&nbsp;
+    <button type="submit" style="background-color: #6ac174; padding: 5px 10px; border-radius 5px; border-width: thin;" id="btn-executetryout-{{ endpoint.endpointId }}" hidden>Execute</button>
+</h3>
 {{#each endpoint.methods }}
-{{> components.badges.http-method method=this }} **`{{ ../this.uri }}`**
-
+<p>
+{{> components.badges.http-method method=this }} <b><code>{{ ../this.uri }}</b></code>ryit
+</p>
 {{/each}}
+{{#if (and endpoint.metadata.authenticated (is auth.location 'header')) }}
+<p>
+    <label id="auth-{{ endpoint.endpointId }}" hidden>{{ auth.name }} header: <b><code>{{ auth.prefix }}</code></b><input type="text" name="{{ auth.name }}" data-prefix="{{ auth.prefix }}" data-endpoint="{{ endpoint.endpointId }}" data-component="header"></label>
+</p>
+{{/if}}
 {{#if (isNonEmptyObject endpoint.urlParameters) }}
 <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
 {{#each endpoint.urlParameters }}
 <p>
-{{> components.field-details name=this.name type=this.type required=this.required description=this.description }}
+{{> components.field-details name=this.name type=this.type required=this.required description=this.description endpointId=../endpoint.endpointId component='url' }}
 </p>
 {{/each}}
 {{/if}}
@@ -45,20 +67,21 @@
 <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
 {{#each endpoint.queryParameters }}
 <p>
-{{> components.field-details name=this.name type=this.type required=this.required description=this.description }}
+{{> components.field-details name=this.name type=this.type required=this.required description=this.description endpointId=../endpoint.endpointId component='query' }}
 </p>
 {{/each}}
 {{/if}}
 {{#if (isNonEmptyObject endpoint.nestedBodyParameters) }}
 <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
-{{> partials.body-parameters parameters=endpoint.nestedBodyParameters }}
+{{> partials.body-parameters parameters=endpoint.nestedBodyParameters endpointId=endpoint.endpointId }}
 {{/if}}
+</form>
 
 {{#if (isNonEmptyObject endpoint.responseFields) }}
 <h4 class="fancy-heading-panel"><b>Response Fields</b></h4>
 {{#each endpoint.responseFields }}
 <p>
-{{> components.field-details name=this.name type=this.type required=true description=this.description }}
+{{> components.field-details name=this.name type=this.type required=true description=this.description isInput=false }}
 </p>
 {{/each}}
 {{/if}}

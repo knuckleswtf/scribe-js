@@ -4,24 +4,24 @@
 <p>
 <details>
     <summary>
-        {{> components.field-details name=this.name type=this.type required=this.required description=this.description }}
+        {{> components.field-details name=this.name type=this.type required=this.required description=this.description endpointId=../endpointId component='body' hasChildren=true }}
     </summary>
 <br>
 
   {{#each this.fields }}
   {{#if this.fields }}
-  {{> partials.body-parameters parameters=(objectWrap this.name this) }}
+  {{> partials.body-parameters parameters=(objectWrap this.name this) endpointId=../../endpointId}}
   {{else}}
   <p>
-  {{> components.field-details name=this.name type=this.type required=this.required description=this.description }}
+  {{> components.field-details name=this.name type=this.type required=this.required description=this.description endpointId=../../endpointId hasChildren=false component='body' }}
   </p>
-      {{/if}}
+  {{/if}}
   {{/each}}
 </details>
 </p>
 {{else}}
 <p>
-{{> components.field-details name=this.name type=this.type required=this.required description=this.description }}
+{{> components.field-details name=this.name type=this.type required=this.required description=this.description endpointId=../endpointId hasChildren=false component='body' }}
 </p>
 {{/if}}
 {{/each}}

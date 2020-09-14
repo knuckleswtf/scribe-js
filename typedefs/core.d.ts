@@ -115,6 +115,9 @@ export declare namespace scribe {
         description: string,
         logo: false | string,
         outputPath: string,
+        output: {
+            interactive: boolean,
+        },
         auth: {
             enabled: boolean,
             in: 'query' | 'body' | 'bearer' | 'basic' | 'header',

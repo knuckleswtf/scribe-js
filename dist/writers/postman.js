@@ -116,8 +116,9 @@ module.exports = (config) => {
                 });
             }
         });
+        base.query = query;
         // Create raw url-parameter (Insomnia uses this on import)
-        const queryString = base.query
+        const queryString = query
             .map((queryParamData) => `${queryParamData.key}=${queryParamData.value}`)
             .join('&');
         base.raw = `${base.protocol}://${base.host}/${base.path}${queryString ? '?' + queryString : ''}`;

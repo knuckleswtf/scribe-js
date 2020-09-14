@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/knuckleswtf/scribe-js#readme",
   "dependencies": {
-    "@knuckleswtf/pastel": "^1.0.0",
+    "@knuckleswtf/pastel": "^1.1.2",
     "collect.js": "^4.28.2",
     "cross-spawn": "^7.0.2",
     "docblock-parser": "^1.0.0",

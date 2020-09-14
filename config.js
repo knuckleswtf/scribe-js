@@ -23,6 +23,10 @@ module.exports = {
      */
     outputPath: 'public/docs',
 
+    output: {
+        interactive: true,
+    },
+
     /*
      * How is your API authenticated? This information will be used in the displayed docs, generated examples and response calls.
      */
