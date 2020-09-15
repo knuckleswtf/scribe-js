@@ -1,20 +1,18 @@
-import fs = require("fs");
-import path = require("path");
-import readline = require('readline');
-
+"use strict";
+const fs = require("fs");
+const path = require("path");
+const readline = require("readline");
 const inferApiName = () => {
     // Basically ucwords (folderName)
     return path.basename(path.resolve('./')).split(/[-_\s]+/)
         .map(word => word[0].toUpperCase() + word.slice(1)).join(' ')
         .replace(/\bApi\b/, 'API');
-}
-
-function generateConfigFile(configFilePath, values, options = {silent: false}) {
+};
+function generateConfigFile(configFilePath, values, options = { silent: false }) {
     try {
         let title = (values.name || inferApiName()) + ' Documentation';
         let baseUrl = values.baseUrl || 'http://localhost:3000';
         let responseCallsBaseUrl = "http://localhost:" + (values.localPort || 3000);
-
         // Doing a string find + replace rather than JSON.stringify because we want to preserve comments
         let fileContents = fs.readFileSync(path.join(__dirname, '../config.js'), 'utf8');
         fileContents = fileContents.replace(/title: "(.+)"/, `title: "${title}"`);
@@ -23,16 +21,14 @@ function generateConfigFile(configFilePath, values, options = {silent: false}) {
             occurrence++;
             return (occurrence == 2) ? `baseUrl: "${responseCallsBaseUrl}"` : `baseUrl: "${baseUrl}"`;
         });
-
         fs.writeFileSync(configFilePath, fileContents);
-
         options.silent || success(`Config file ${configFilePath} created.`);
-    } catch (e) {
+    }
+    catch (e) {
         error(`Failed to create config file ${configFilePath}: ${e.message}`);
         process.exit(1);
     }
 }
-
 /**
  * Find first line where a string or regex occurs in a file, without reading the entire file
  * @param filePath
@@ -44,7 +40,6 @@ async function searchFileLazily(filePath, content) {
         input: fileStream,
         crlfDelay: Infinity
     });
-
     let lineNumber = 0;
     for await (const line of rl) {
         lineNumber++;
@@ -52,54 +47,47 @@ async function searchFileLazily(filePath, content) {
             return lineNumber;
         }
     }
-
     return false;
 }
-
-const kleur = require('kleur')
-kleur.enabled = process.env.NO_ANSI === 'false'
-
+const kleur = require('kleur');
+kleur.enabled = process.env.NO_ANSI === 'false';
 function icon(type) {
     const iconsMain = {
         info: kleur.cyan('ℹ'),
         success: kleur.green('✔'),
         warn: kleur.yellow('⚠'),
         error: kleur.red('✖')
-    }
+    };
     const iconsForWindows = {
         info: kleur.cyan('i'),
         success: kleur.green('√'),
         warn: kleur.yellow('‼'),
         error: kleur.red('×')
-    }
-    return process.platform === 'win32' ? iconsForWindows[type] : iconsMain[type]
+    };
+    return process.platform === 'win32' ? iconsForWindows[type] : iconsMain[type];
 }
-
 function info(input) {
-    console.log(kleur.cyan(input))
+    console.log(kleur.cyan(input));
 }
-
 function warn(input) {
     console.warn(icon('warn') + kleur.yellow(' ' + input));
 }
-
 function success(input) {
-    console.log(icon('success') + kleur.green(' ' + input))
+    console.log(icon('success') + kleur.green(' ' + input));
 }
-
 function error(input) {
     console.error(icon('error') + kleur.red(' ' + input));
 }
-
 function dumpExceptionIfVerbose(error) {
     if (process.env.SCRIBE_BE_VERBOSE) {
         console.log(error);
-    } else {
+    }
+    else {
         warn(error.message);
         warn("Run this again with the --verbose flag to see the full stack trace.");
     }
 }
-export = {
+module.exports = {
     generateConfigFile,
     searchFileLazily,
     info,
@@ -109,3 +97,4 @@ export = {
     inferApiName,
     dumpExceptionIfVerbose,
 };
+//# sourceMappingURL=tools.js.map

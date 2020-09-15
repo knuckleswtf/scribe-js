@@ -23,9 +23,11 @@ module.exports = {
      */
     outputPath: 'public/docs',
 
-    output: {
-        interactive: true,
-    },
+    /**
+     * Add a Try It Out button to your endpoints so consumers can test endpoints right from their browser.
+     * Don't forget to enable CORS headers for your endpoints.
+     */
+    interactive: true,
 
     /*
      * How is your API authenticated? This information will be used in the displayed docs, generated examples and response calls.
@@ -109,15 +111,9 @@ module.exports = {
                         // NODE_ENV: 'docs'
                     },
 
-                    bodyParams: {
-
-                    },
-                    queryParams: {
-
-                    },
-                    fileParams: {
-
-                    },
+                    bodyParams: {},
+                    queryParams: {},
+                    fileParams: {},
                 }
             }
         }
