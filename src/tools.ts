@@ -91,7 +91,14 @@ function error(input) {
     console.error(icon('error') + kleur.red(' ' + input));
 }
 
-
+function dumpExceptionIfVerbose(error) {
+    if (process.env.SCRIBE_VERBOSE) {
+        console.log(error);
+    } else {
+        warn(error.message);
+        warn("Run this again with the --verbose flag to see the full stack trace.");
+    }
+}
 export = {
     generateConfigFile,
     searchFileLazily,
@@ -100,4 +107,5 @@ export = {
     success,
     error,
     inferApiName,
+    dumpExceptionIfVerbose,
 };

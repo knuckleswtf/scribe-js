@@ -1,9 +1,12 @@
 #!/usr/bin/env node
+require('hard-rejection')();
+
 const fs = require("fs");
 const path = require("path");
 const program = require('commander');
 
-const log = require('debug')('lib:scribe:express');
+const debug = require('debug')('lib:scribe:express:cli');
+const tools = require("@knuckleswtf/scribe/dist/tools");
 const VERSION = require('../package.json').version;
 
 program
@@ -42,7 +45,7 @@ program
         const serverFile = server ? path.resolve(server) : null;
 
         if (!fs.existsSync(configFile)) {
-            console.log(`⚠ Config file ${configFile} does not exist. Initialising with a default config file...`);
+            tools.warn(`Config file ${configFile} does not exist. Initialising with a default config file...`);
             console.log();
             await createConfigFile();
             return;
@@ -52,7 +55,7 @@ program
             const configObject = require(configFile);
 
             const {generate} = require('@knuckleswtf/scribe');
-            await generate(null, configObject, 'restify', null, {
+            await generate(null, configObject, 'express', null, {
                 noExtraction: !extraction,
             });
             return;
@@ -61,12 +64,12 @@ program
         const appObject = require(appFile);
 
         if (!appObject._router) {
-            console.error("Couldn't find an export from your app file. Did you remember to export your `app` object?");
+            tools.error("Couldn't find an export from your app file. Did you remember to export your `app` object?");
             process.exit(1);
         }
 
         if (!appObject._decoratedByScribe) {
-            console.error("Something's not right. Did you remember to add `require('@knuckleswtf/scribe-express')(app)` before registering your Express routes?");
+            tools.error("Something's not right. Did you remember to add `require('@knuckleswtf/scribe-express')(app)` before registering your Express routes?");
             process.exit(1);
         }
 
@@ -96,7 +99,6 @@ program.parse(process.argv);
 async function createConfigFile() {
     const fileName = '.scribe.config.js';
 
-    const tools = require("@knuckleswtf/scribe/dist/tools");
     tools.info(`Hi! We'll ask a few questions to help set up your config file. All questions are optional and you can set the values yourself later.`);
     tools.info('Hit Enter to skip a question.');
     console.log();

@@ -1,9 +1,11 @@
 const { getParameterExample } = require("@knuckleswtf/scribe/dist/utils/parameters");
 const keyBy = require('lodash.keyby');
+const debug = require('debug')('lib:scribe:adonis:urlparams');
 
 function run(endpoint, config) {
     const parameters = endpoint._adonis._keys;
     const urlParameters = parameters.map(p => {
+        debu(`Processing Restify URL parameter ` + JSON.stringify(p));
         let type = 'string';
         let usePattern = p.pattern;
 

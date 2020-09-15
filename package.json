@@ -38,6 +38,7 @@
     "form-data": "^3.0.0",
     "handlebars": "^4.7.6",
     "handlebars-helpers": "^0.10.0",
+    "hard-rejection": "^2.1.0",
     "inquirer": "^7.3.3",
     "js-yaml": "^3.14.0",
     "kleur": "^4.0.3",

@@ -1,4 +1,5 @@
 module.exports = {generate};
+require('hard-rejection')();
 
 import {scribe} from "../typedefs/core";
 export {scribe} from "../typedefs/core";
@@ -17,7 +18,7 @@ import writer = require("./writer");
 
 const {isPortTaken} = require('./utils/response_calls');
 
-const log = require('debug')('lib:scribe');
+const debug = require('debug')('lib:scribe');
 
 const defaultOptions = {overwriteMarkdownFiles: false, noExtraction: false};
 
@@ -40,6 +41,7 @@ async function generate(
     // Initialise faker with seed if present
     require('./utils/faker')(config.fakerSeed);
 
+    new Promise((a, b) => b())
     const strategies = getStrategies(config);
     let parsedEndpoints = (await Promise.all(config.routes.map(async (routeGroup) => {
         let endpointsToDocument: scribe.Endpoint[] = [];
@@ -144,7 +146,7 @@ async function generate(
                 const taken = await isPortTaken(url.parse(routeGroup.apply.responseCalls.baseUrl).port);
                 if (!taken) {
                     try {
-                        console.log("Starting app server for response calls...");
+                        tools.info("Starting app server for response calls...");
                         appProcess = spawn('node', [serverFile], {stdio: 'ignore'});
                         await new Promise(res => {
                             // Assuming it takes at most 2 seconds to start
@@ -178,7 +180,7 @@ async function generate(
 
         setTimeout(() => {
             if (appProcess) {
-                console.log("Stopping app server...");
+                tools.info("Stopping app server...");
                 appProcess.kill();
             }
         }, 3000);
@@ -208,7 +210,7 @@ async function generate(
     }
 
     console.log();
-    tools.info(`You can view your docs locally by opening file:///${path.resolve(config.outputPath, 'index.html').replace(/\\/g, '/')} in your browser`)
+    tools.info(`You can view your docs locally by opening ${path.resolve(config.outputPath, 'index.html')} in your browser`)
 }
 
 

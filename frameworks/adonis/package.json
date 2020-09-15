@@ -24,6 +24,7 @@
   "homepage": "https://github.com/knuckleswtf/scribe-js#readme",
   "dependencies": {
     "@knuckleswtf/scribe": "0.2.0",
+    "hard-rejection": "^2.1.0",
     "lodash.keyby": "^4.6.0"
   },
   "devDependencies": {

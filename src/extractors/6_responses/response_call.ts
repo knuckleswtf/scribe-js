@@ -2,6 +2,8 @@ import {scribe} from "../../../typedefs/core";
 import fs = require("fs");
 import path = require("path");
 import * as qs from "querystring";
+const debug = require('debug')('lib:scribe:responsecall');
+const tools = require('./../../tools');
 
 function shouldMakeResponseCall(config: scribe.Config, endpoint: scribe.Endpoint, routeGroup: typeof config.routes[0]) {
     // If there's already a success response, don't make a response call
@@ -41,7 +43,7 @@ function makeResponseCall(responseCallRules: scribe.ResponseCallRules, endpoint:
     const fileParameters = Object.assign({}, endpoint.fileParameters || {}, responseCallRules.fileParams || {});
 
 
-    console.log("Hitting " + endpoint.methods[0] + " " + endpoint.uri);
+    debug("Hitting " + endpoint.methods[0] + " " + endpoint.uri);
 
     const http = require('http');
     let responseContent: string;
@@ -105,7 +107,8 @@ function makeResponseCall(responseCallRules: scribe.ResponseCallRules, endpoint:
     return promise.then(response => {
         return [response];
     }).catch((err) => {
-        console.log("Error during response call: " + err.message);
+        tools.warn("Error encountered during response call.");
+        tools.dumpExceptionIfVerbose(err);
         return [];
     });
 }

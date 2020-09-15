@@ -1,5 +1,7 @@
 'use strict'
 
+require('hard-rejection')();
+
 const path = require("path");
 
 const { Command } = require.main.require('@adonisjs/ace')

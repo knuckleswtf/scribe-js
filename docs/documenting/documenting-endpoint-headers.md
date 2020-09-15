@@ -1,4 +1,4 @@
-# Documenting headers for endpoints [coming soon]
+# Documenting headers for endpoints
 
 To specify headers to be added to your endpoints, you can use the `apply.headers` section of the route group in `.scribe.config.js`. For instance, if you have this config:
 

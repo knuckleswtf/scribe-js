@@ -33,6 +33,7 @@
  * @typedef {string | RegExp | (string | RegExp)[]} PathArgument
  */
 
+
 const findLastIndex = require('lodash.findlastindex');
 
 /**

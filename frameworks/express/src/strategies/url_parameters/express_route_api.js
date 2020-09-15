@@ -1,6 +1,7 @@
 const { getParameterExample } = require("@knuckleswtf/scribe/dist/utils/parameters");
 const trim = require('lodash.trim');
 const keyBy = require('lodash.keyby');
+const debug = require('debug')('lib:scribe:express:urlparams');
 
 function run(endpoint, config) {
     let uri = endpoint.uri;
@@ -10,6 +11,7 @@ function run(endpoint, config) {
     }
 
     const urlParameters = matches.map((match) => {
+        debu(`Processing Express URL parameter ` + match);
         let parameter = trim(match, ':');
 
         const parameterRegexPattern = parameter.match(/\((.+)\)/);

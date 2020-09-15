@@ -1,10 +1,14 @@
 #!/usr/bin/env node
+
+require('hard-rejection')();
+
 const fs = require("fs");
 const path = require("path");
 const program = require('commander');
 const EventEmitter = require("events").EventEmitter;
 
-const log = require('debug')('lib:scribe:restify');
+const debug = require('debug')('lib:scribe:restify:cli');
+const tools = require("@knuckleswtf/scribe/dist/tools");
 const VERSION = require('../package.json').version;
 
 program
@@ -37,7 +41,7 @@ program
         const serverFile = path.resolve(server);
 
         if (!fs.existsSync(configFile)) {
-            console.log(`⚠ Config file ${configFile} does not exist. Initialising with a default config file...`);
+            tools.warn(`Config file ${configFile} does not exist. Initialising with a default config file...`);
             console.log();
             await createConfigFile();
             return;
@@ -56,12 +60,12 @@ program
         let serverObject = require(serverFile);
 
         if (!(serverObject instanceof EventEmitter)) {
-            console.error("Couldn't find an export from your server file. Did you remember to export your Restify `server` object?");
+            tools.error("Couldn't find an export from your server file. Did you remember to export your Restify `server` object?");
             process.exit(1);
         }
 
         if (!serverObject._decoratedByScribe) {
-            console.error("Something's not right. Did you remember to add `require('@knuckleswtf/scribe-restify')(server)` before registering your Restify routes?");
+            tools.error("Something's not right. Did you remember to add `require('@knuckleswtf/scribe-restify')(server)` before registering your Restify routes?");
             process.exit(1);
         }
 
@@ -75,7 +79,7 @@ program
         await generate(endpoints, configObject, 'restify', null, {overwriteMarkdownFiles: force});
 
         // Make sure to end process, in case server is still running
-        setTimeout(() => process.exit(0), 2000);
+        setTimeout(() => process.exit(0), 1500);
     });
 
 
@@ -89,7 +93,6 @@ program.parse(process.argv);
 async function createConfigFile() {
     const fileName = '.scribe.config.js';
 
-    const tools = require("@knuckleswtf/scribe/dist/tools");
     tools.info(`Hi! We'll ask a few questions to help set up your config file. All questions are optional and you can set the values yourself later.`);
     tools.info('Hit Enter to skip a question.');
     console.log();
