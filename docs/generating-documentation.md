@@ -26,6 +26,11 @@ Running this command will:
 ## Viewing the generated docs
 To access your generated docs, find the `index.html` file in your `outputPath` folder (by default, `public/docs`) and open that in your browser.
 
+## Configuring interactive documentation
+When `interactive` is set to `true` (which is also the default value) in your config, Scribe will add a "Try It Out" button to your endpoints so users can test them from their browser.
+
+For this to work, though, you'll need to make sure CORS is enabled.
+
 ## Postman collection generation
 By default, a Postman collection file which you can import into API clients like Postman or Insomnia is generated alongside your docs. You can view it by visiting `public/docs/collection.json`. This link will also be added to the sidebar of your docs.
 
