@@ -11,7 +11,7 @@ function run(endpoint, config) {
     }
 
     const urlParameters = matches.map((match) => {
-        debu(`Processing Restify URL parameter ` + match);
+        debug(`Processing Restify URL parameter ` + match);
         let parameter = trim(match, ':');
 
         const isOptional = parameter.endsWith('?');

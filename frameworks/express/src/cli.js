@@ -38,8 +38,19 @@ program
         "Skip extraction of route info and just transform the Markdown files",
         false,
     )
+    .option(
+        '--verbose',
+        "Enable debug logging",
+        false,
+    )
     .description("Generate API documentation from your Express routes.")
-    .action(async ({config, app, server, force, extraction}) => {
+    .action(async ({config, app, server, force, extraction, verbose}) => {
+        if (verbose) {
+            // Needed to do this since enable() clears all previously enabled
+            const namespacesToEnable = process.env.DEBUG ? (process.env.DEBUG + ',lib:scribe*') : 'lib:scribe*';
+            require('debug').enable(namespacesToEnable);
+        }
+
         const configFile = path.resolve(config);
         const appFile = path.resolve(app);
         const serverFile = server ? path.resolve(server) : null;
@@ -85,7 +96,7 @@ program
 
         // Make sure to end process, in case server is still running
         // Wrapping in a timeout because it seems sometimes ncp/pastel fails to copy over all assets in time
-        setTimeout(() => process.exit(0), 2000);
+        setTimeout(() => process.exit(0), 1300);
     });
 
 

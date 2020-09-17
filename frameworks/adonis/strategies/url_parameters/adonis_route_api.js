@@ -5,7 +5,7 @@ const debug = require('debug')('lib:scribe:adonis:urlparams');
 function run(endpoint, config) {
     const parameters = endpoint._adonis._keys;
     const urlParameters = parameters.map(p => {
-        debu(`Processing Restify URL parameter ` + JSON.stringify(p));
+        debug(`Processing Adonis URL parameter ` + JSON.stringify(p));
         let type = 'string';
         let usePattern = p.pattern;
 

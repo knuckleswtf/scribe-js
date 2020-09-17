@@ -11,7 +11,8 @@ class GenerateDocumentation extends Command {
     static get signature () {
         return `scribe:generate 
             {--force : Discard any changes you've made to the Markdown files}
-            {--no-extraction : Skip extraction of route info and just transform the Markdown files}`
+            {--no-extraction : Skip extraction of route info and just transform the Markdown files}
+            {--verbose : Enable debug logging}`
     }
 
     static get description () {
@@ -19,6 +20,12 @@ class GenerateDocumentation extends Command {
     }
 
     async handle (args, options) {
+        if (options.verbose) {
+            // Needed to do this since enable() clears all previously enabled
+            const namespacesToEnable = process.env.DEBUG ? (process.env.DEBUG + ',lib:scribe*') : 'lib:scribe*';
+            require('debug').enable(namespacesToEnable);
+        }
+
         const tools = require("@knuckleswtf/scribe/dist/tools");
         const Env = use('Env');
 
@@ -51,7 +58,7 @@ class GenerateDocumentation extends Command {
         });
 
         // Make sure to end process, in case server is still running
-        setTimeout(() => process.exit(0), 2000);
+        setTimeout(() => process.exit(0), 1300);
     }
 
     async getEndpoints(tools) {

@@ -11,7 +11,7 @@ function run(endpoint, config) {
     }
 
     const urlParameters = matches.map((match) => {
-        debu(`Processing Express URL parameter ` + match);
+        debug(`Processing Express URL parameter ` + match);
         let parameter = trim(match, ':');
 
         const parameterRegexPattern = parameter.match(/\((.+)\)/);

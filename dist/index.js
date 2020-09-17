@@ -25,7 +25,6 @@ async function generate(endpoints, config, router, serverFile, { overwriteMarkdo
     }
     // Initialise faker with seed if present
     require('./utils/faker')(config.fakerSeed);
-    new Promise((a, b) => b());
     const strategies = getStrategies(config);
     let parsedEndpoints = (await Promise.all(config.routes.map(async (routeGroup) => {
         let endpointsToDocument = [];

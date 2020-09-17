@@ -35,8 +35,19 @@ program
         "Skip extraction of route info and just transform the Markdown files",
         false,
     )
+    .option(
+        '--verbose',
+        "Enable debug logging",
+        false,
+    )
     .description("Generate API documentation from your Restify routes.")
-    .action(async ({config, server, force, extraction}) => {
+    .action(async ({config, server, force, extraction, verbose}) => {
+        if (verbose) {
+            // Needed to do this since enable() clears all previously enabled
+            const namespacesToEnable = process.env.DEBUG ? (process.env.DEBUG + ',lib:scribe*') : 'lib:scribe*';
+            require('debug').enable(namespacesToEnable);
+        }
+
         const configFile = path.resolve(config);
         const serverFile = path.resolve(server);
 
@@ -79,7 +90,7 @@ program
         await generate(endpoints, configObject, 'restify', null, {overwriteMarkdownFiles: force});
 
         // Make sure to end process, in case server is still running
-        setTimeout(() => process.exit(0), 1500);
+        setTimeout(() => process.exit(0), 1300);
     });
 
 

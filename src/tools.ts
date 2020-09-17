@@ -92,10 +92,10 @@ function error(input) {
 }
 
 function dumpExceptionIfVerbose(error) {
-    if (process.env.SCRIBE_BE_VERBOSE) {
-        console.log(error);
+    if (require('debug').enabled('lib:scribe')) {
+        require('debug')('lib:scribe')(error);
     } else {
-        warn(error.message);
+        warn("Error: " + error.message);
         warn("Run this again with the --verbose flag to see the full stack trace.");
     }
 }
