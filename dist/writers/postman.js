@@ -90,8 +90,13 @@ module.exports = (config) => {
             host: "{{baseUrl}}",
             path: endpoint.uri.replace(/^\//, ''),
         };
+        const queryParameters = Object.assign({}, endpoint.queryParameters);
+        const [where, authParam] = getAuthParamToExclude();
+        if (where === 'query') {
+            delete queryParameters[authParam];
+        }
         const query = [];
-        Object.entries(endpoint.queryParameters).forEach(([name, parameterData]) => {
+        Object.entries(queryParameters).forEach(([name, parameterData]) => {
             if (parameterData.type.endsWith('[]')) {
                 // Node.js's querystring module parses array query parameters as filters=name&filters=age
                 // See https://nodejs.org/api/querystring.html#querystring_querystring_parse_str_sep_eq_options
@@ -177,7 +182,11 @@ module.exports = (config) => {
         return body;
     }
     function resolveHeadersForEndpoint(endpoint) {
-        const headers = endpoint.headers;
+        const headers = Object.assign({}, endpoint.headers);
+        const [where, authParam] = getAuthParamToExclude();
+        if (where === 'header') {
+            delete headers[authParam];
+        }
         return Object.entries(Object.assign({ Accept: 'application/json' }, headers))
             .map(([header, value]) => {
             // Allow users to write {header: '@{{value}}'} in config
@@ -188,6 +197,17 @@ module.exports = (config) => {
                 value: value,
             };
         });
+    }
+    function getAuthParamToExclude() {
+        if (!config.auth.enabled) {
+            return [null, null];
+        }
+        if (['bearer', 'basic'].includes(config.auth.in)) {
+            return ['header', 'Authorization'];
+        }
+        else {
+            return [config.auth.in, config.auth.name];
+        }
     }
     return {
         VERSION,
