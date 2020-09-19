@@ -14,7 +14,7 @@ Automatically generate API documentation for humans from your Node.js codebase. 
 
 ## Features
 - Pretty HTML documentation page, with included code samples and friendly text
-- Included "Try It Out" button so users can test your API
+- Included "Try It Out" button so users can test endpoints right from their browser
 - Markdown source files that can be edited to modify docs
 - Safely calls API endpoints to generate sample responses, with authentication and other custom configuration supported
 - Supports Postman collection and OpenAPI (Swagger) spec generation

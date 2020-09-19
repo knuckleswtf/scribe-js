@@ -103,7 +103,20 @@ module.exports = (config) => {
                 const values = parameterData.value || [];
                 values.forEach((value) => {
                     query.push({
-                        key: name,
+                        key: encodeURIComponent(name),
+                        value: encodeURIComponent(value),
+                        description: striptags(parameterData.description),
+                        // Default query params to disabled if they aren't required and have empty values
+                        disabled: (parameterData.required == false) && parameterData.value == null,
+                    });
+                });
+            }
+            else if (parameterData.type === 'object') {
+                // No guarantee this will actually be parsed by the API
+                const values = parameterData.value || {};
+                Object.entries(values).forEach(([key, value]) => {
+                    query.push({
+                        key: encodeURIComponent(`${key}[${name}]`),
                         value: encodeURIComponent(value),
                         description: striptags(parameterData.description),
                         // Default query params to disabled if they aren't required and have empty values
