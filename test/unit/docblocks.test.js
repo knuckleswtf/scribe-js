@@ -45,6 +45,7 @@ test('parses docblock tags as expected', async () => {
     expect(parsedDocBlock.description).toEqual("Description. Still part\nof the description.");
     expect(parsedDocBlock.group).toEqual("The group name");
     expect(parsedDocBlock.authenticated).toEqual(true);
+    expect(parsedDocBlock.unauthenticated).toEqual(false);
     expect(parsedDocBlock.header).toEqual({'X-Hello': 'World'});
     expect(parsedDocBlock.urlParam).toEqual({
         id: {
@@ -136,6 +137,8 @@ test('can retrieve the docblock for an endpoint based on its declaration file an
             title: 'Title',
             description: "Description. Still part\nof the description.",
             authenticated: true,
+            unauthenticated: false,
+            hideFromApiDocs: false,
             group: 'The group',
             groupDescription: null,
             header: {'X-Hello': 'World'},
@@ -174,6 +177,7 @@ test('can retrieve the docblock for an endpoint based on its declaration file an
                 }
             },
             response: [],
+            responseFile: [],
             responseField: {},
         }
     );

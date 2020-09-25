@@ -47,6 +47,7 @@ function makeResponseCall(responseCallRules, endpoint) {
                 responseContent = data;
                 resolve({
                     status: res.statusCode,
+                    description: '',
                     content: responseContent
                 });
             });
@@ -54,29 +55,38 @@ function makeResponseCall(responseCallRules, endpoint) {
             .on("error", (err) => {
             reject(err);
         })
-            .on("timeout", () => {
+            .setTimeout(7000, () => {
+            req.end();
             reject(new Error("Request timed out"));
-        })
-            .setTimeout(3000);
+        });
         if (Object.keys(fileParameters).length) {
             const FormData = require('form-data');
             const form = new FormData();
             const tmp = require('tmp-promise');
             for (let [name, value] of Object.entries(fileParameters)) {
-                if (!fs.existsSync(value) || fs.existsSync(path.resolve(value))) { // The user may have passed ni an actual file path
-                    const tempFile = tmp.fileSync();
-                    value = tempFile.name;
+                if (!fs.existsSync(value)) { // The user may have passed in an actual file path
+                    if (fs.existsSync(path.resolve(value))) {
+                        value = path.resolve(value);
+                    }
+                    else {
+                        const tempFile = tmp.fileSync();
+                        value = tempFile.name;
+                    }
                 }
                 const readStream = fs.createReadStream(value);
                 form.append(name, readStream);
             }
-            for (let [name, value] of Object.entries(fileParameters)) {
+            for (let [name, value] of Object.entries(bodyParameters)) {
                 form.append(name, value);
             }
+            // Add the Content-type header
+            req.setHeader('content-type', form.getHeaders()['content-type']);
             form.pipe(req);
         }
         else if (Object.keys(bodyParameters).length) {
-            req.write(JSON.stringify(bodyParameters));
+            req.end(JSON.stringify(bodyParameters));
+        }
+        else {
             req.end();
         }
     });

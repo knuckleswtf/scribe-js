@@ -1,5 +1,5 @@
 import { scribe } from "../../typedefs/core";
-declare function getParameterExample(type?: string, regex?: string): any;
+declare function getParameterExample(type?: keyof scribe.ParameterTypes, regex?: string): any;
 declare function castValueToType(value: any, type?: string): any;
 /**
  * This method prepares and simplifies request parameters for use in example requests and response calls.

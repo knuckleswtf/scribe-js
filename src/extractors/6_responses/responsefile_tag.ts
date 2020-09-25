@@ -3,7 +3,7 @@ import fs = require("fs");
 import path = require("path");
 import tools = require('../../tools');
 
-async function run(endpoint: scribe.Endpoint, config) {
+async function run(endpoint: scribe.Endpoint, config: scribe.Config) {
     const responseFileTags = endpoint.docblock.responseFile || [];
 
     const responses = [];

@@ -191,4 +191,13 @@ export declare namespace scribe {
         }>,
         responseField: ParameterBag,
     }
+
+    export type ParameterTypes = {
+        'number',
+        'integer',
+        'string',
+        'boolean',
+        'object',
+        'file'
+    }
 }

@@ -81,7 +81,7 @@ function removeEmptyOptionalParametersAndTransformToKeyExample(parameters = {}) 
             continue;
         }
         if (name.includes('.')) { // Object field
-            setObject(cleanParameters, name, parameter.value, parameters);
+            setObject(cleanParameters, name, parameter.value, parameters, parameter.required);
         }
         else {
             cleanParameters[name] = parameter.value;
@@ -113,7 +113,7 @@ function isArrayType(typeName) {
 function getBaseTypeFromArrayType(typeName) {
     return typeName.substr(0, typeName.length - 2);
 }
-function setObject(results, path, value, source) {
+function setObject(results, path, value, source, isRequired) {
     if (path.includes('.')) {
         const parts = path.split('.');
         let [fieldName, ...parentPath] = parts.reverse();
@@ -135,7 +135,10 @@ function setObject(results, path, value, source) {
                 }
                 // If there's a second item in the array, set for that too.
                 if (get(results, baseName.replace('[]', '.1')) !== undefined) {
-                    set(results, lodashPath.replace('.0', '.1'), value);
+                    // If value is optional, flip a coin on whether to set or not
+                    if (isRequired || [true, false][Math.floor(Math.random() * 2)]) {
+                        set(results, lodashPath.replace('.0', '.1'), value);
+                    }
                 }
             }
         }

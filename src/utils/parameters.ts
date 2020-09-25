@@ -2,7 +2,7 @@ import {scribe} from "../../typedefs/core";
 const set = require('lodash.set');
 const get = require('lodash.get');
 
-function getParameterExample(type = 'string', regex: string = null) {
+function getParameterExample(type: keyof scribe.ParameterTypes = 'string', regex: string = null) {
     const RandExp = require('randexp');
     const faker = require('./faker')();
 
@@ -10,7 +10,7 @@ function getParameterExample(type = 'string', regex: string = null) {
     let isListType = false;
 
     if (type.endsWith('[]')) {
-        baseType = type.substring(0, type.length - 2).toLowerCase();
+        baseType = type.substring(0, type.length - 2).toLowerCase() as keyof scribe.ParameterTypes;
         isListType = true;
     }
 
@@ -102,7 +102,7 @@ function removeEmptyOptionalParametersAndTransformToKeyExample(parameters: scrib
         }
 
         if (name.includes('.')) { // Object field
-            setObject(cleanParameters, name, parameter.value, parameters);
+            setObject(cleanParameters, name, parameter.value, parameters, parameter.required);
         } else {
             cleanParameters[name] = parameter.value;
         }
@@ -137,7 +137,7 @@ function getBaseTypeFromArrayType(typeName: string) {
     return typeName.substr(0, typeName.length - 2);
 }
 
-function setObject(results: {}, path: string, value: any, source: {}) {
+function setObject(results: {}, path: string, value: any, source: {}, isRequired: boolean) {
     if (path.includes('.')) {
         const parts = path.split('.');
         let [fieldName, ...parentPath] = parts.reverse();
@@ -160,7 +160,10 @@ function setObject(results: {}, path: string, value: any, source: {}) {
                 }
                 // If there's a second item in the array, set for that too.
                 if (get(results, baseName.replace('[]', '.1')) !== undefined) {
-                    set(results, lodashPath.replace('.0', '.1'), value);
+                    // If value is optional, flip a coin on whether to set or not
+                    if (isRequired || [true, false][Math.floor(Math.random() * 2)]) {
+                        set(results, lodashPath.replace('.0', '.1'), value);
+                    }
                 }
             }
         }
