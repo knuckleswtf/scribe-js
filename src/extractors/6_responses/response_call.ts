@@ -66,14 +66,17 @@ function makeResponseCall(responseCallRules: scribe.ResponseCallRules, endpoint:
                     data += chunk;
                 });
 
-                res.on('end', () => {
+                const returnResponse = () => {
                     responseContent = data;
                     resolve({
                         status: res.statusCode,
                         description: '',
                         content: responseContent
                     });
-                });
+                };
+                res.on('end', returnResponse);
+                // In case of a premature connection close after the response is received
+                res.on("aborted", returnResponse);
 
             })
             .on("error", (err) => {
