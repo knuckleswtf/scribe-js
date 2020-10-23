@@ -21,6 +21,7 @@ module.exports = {
         in: 'query',
         name: 'apiKey',
         useValue: () => process.env.SCRIBE_API_KEY,
+        placeholder: 'YOUR-API-KEY',
         extraInfo: 'You can retrieve your key by going to settings and clicking <b>Generate API key</b>.',
     },
     // ...
@@ -40,6 +41,7 @@ module.exports = {
         in: 'bearer',
         name: 'hahaha', // <--- This value is ignored for bearer and basic auth
         useValue: () => process.env.SCRIBE_API_KEY,
+        placeholder: '{ACCESS_TOKEN}',
         extraInfo: 'You can retrieve your token by visiting your dashboard and clicking <b>Generate API token</b>.',
     },
     // ...
@@ -58,6 +60,7 @@ module.exports = {
         in: 'header',
         name:  'Api-Key', // <--- The name of the header
         useValue: () => process.env.SCRIBE_API_KEY,
+        placeholder: 'YOUR-API-KEY',
         extraInfo: 'You can retrieve your token by visiting your dashboard and clicking <b>Generate API token</b>.',
     },
     // ...
@@ -67,6 +70,7 @@ module.exports = {
 You can set whatever you want as the `extraInfo`. A good idea would be to tell your users where to get their auth key.
 
 The `useValue` field is only used by Scribe for response calls. It won't be included in the generated output or examples. You can specify a hardcoded value or a function that will be called during the response call.
+                                        The `placeholder` is the opposite of `useValue`. It will be used only as a placeholder in the generated example requests.
 
 For more information, see the [reference documentation on the auth section](config.html#auth).
 

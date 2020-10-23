@@ -72,6 +72,8 @@ Here are the available settings:
 
 - `useValue`: The value of the parameter to be used by Scribe to authenticate response calls. You can also specify a function that will be called during the response call to provide the authentication value.  This will **not** be included in the generated documentation. If this value is null or a function that returns null, Scribe will use a random value.
 
+- `placeholder`: Placeholder your users will see for the auth parameter in the example requests. If this is empty, Scribe will generate a realistic-looking auth token instead. Defaults to: "{YOUR_AUTH_KEY}".
+
 - `extraInfo`: Any extra authentication-related info for your users. For instance, you can describe how to find or generate their auth credentials. Markdown and HTML are supported. This will be included in the `Authentication` section.
 
 ### `routes`

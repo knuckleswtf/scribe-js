@@ -125,6 +125,7 @@ export declare namespace scribe {
             in: 'query' | 'body' | 'bearer' | 'basic' | 'header',
             name: string,
             useValue: any,
+            placeholder: string,
             extraInfo: string,
         },
         routes: RouteGroup[],
