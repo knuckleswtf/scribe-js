@@ -291,12 +291,14 @@ function generateFieldData(field) {
             description: (_b = field.description) !== null && _b !== void 0 ? _b : '',
             example: (_c = field.value) !== null && _c !== void 0 ? _c : null,
             items: p.isArrayType(baseType)
-                ? generateFieldData({ name: '', type: baseType, value: ((_d = field.value) !== null && _d !== void 0 ? _d : [null])[0] })
-                : {
+                ? generateFieldData({
+                    name: '',
                     type: baseType,
-                },
+                    value: ((_d = field.value) !== null && _d !== void 0 ? _d : [null])[0]
+                })
+                : { type: baseType, },
         };
-        if (baseType === 'object') {
+        if (baseType === 'object' && field.fields) {
             Object.values(field.fields).forEach(subfield => {
                 const fieldSimpleName = subfield.name.replace(new RegExp(`^${field.name}\\[\]\\\.`), '');
                 // @ts-ignore
