@@ -441,13 +441,15 @@ function generateFieldData(field: scribe.Parameter): SchemaObject {
             description: field.description ?? '',
             example: field.value ?? null,
             items: p.isArrayType(baseType)
-                ? generateFieldData({name: '', type: baseType, value: (field.value ?? [null])[0]})
-                : {
+                ? generateFieldData({
+                    name: '',
                     type: baseType,
-                },
+                    value: (field.value ?? [null])[0]
+                })
+                : {type: baseType,},
         };
 
-        if (baseType === 'object') {
+        if (baseType === 'object' && field.fields) {
             Object.values(field.fields).forEach(subfield => {
                 const fieldSimpleName = subfield.name.replace(new RegExp(`^${field.name}\\[\]\\\.`), '');
                 // @ts-ignore
