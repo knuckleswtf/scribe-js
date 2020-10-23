@@ -3,7 +3,7 @@
 Generate API documentation for humans from your Node.js codebase. [Here's what the output looks like](https://shalvah.me/TheCensorshipAPI/).
 
 ```eval_rst
-.. admonition:: Wondering where to get started?
+.. admonition:: Wondering where to start?
    
    Check out our getting started guide for your framework: `Adonis.js <guide-getting-started/adonis.html>`_, `Express <guide-getting-started/express.html>`_, and `Restify <guide-getting-started/restify.html>`_,.
 ```
@@ -50,7 +50,7 @@ Then add the service provider to the `aceProviders` array in your `start/app.js`
 ```js
 const aceProviders = [
   '@adonisjs/lucid/providers/MigrationsProvider',
-  '@knuckleswtf/scribe-adonis/providers/ScribeProvider',
+  '@knuckleswtf/scribe-adonis/providers/ScribeProvider', // <-- Add this
 ]
 ```
 

@@ -12,7 +12,7 @@ Then add the service provider to the `aceProviders` array in your `start/app.js`
 ```js
 const aceProviders = [
   '@adonisjs/lucid/providers/MigrationsProvider',
-  '@knuckleswtf/scribe-adonis/providers/ScribeProvider',
+  '@knuckleswtf/scribe-adonis/providers/ScribeProvider', // <-- Add this
 ]
 ```
 
