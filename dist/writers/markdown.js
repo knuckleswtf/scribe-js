@@ -129,6 +129,7 @@ module.exports = (config) => {
                     authDescription += util.format('a **`%s`** header with the value **`"%s"`**.', parameterName, config.auth.placeholder || 'your-token');
                     break;
             }
+            authDescription += '\n\nAll authenticated endpoints are marked with a **requires authentication** badge in the documentation below.';
             extraAuthInfo = config.auth.extraInfo || '';
         }
         const markdown = template({
