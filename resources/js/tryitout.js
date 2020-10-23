@@ -166,7 +166,7 @@ async function executeTryOut(endpointId, form) {
 
     let path = form.dataset.path;
     const urlParameters = form.querySelectorAll('input[data-component=url]');
-    urlParameters.forEach(el => (path = path.replace(new RegExp(`\\{${el.name}\\??}`), el.value)));
+    urlParameters.forEach(el => (path = path.replace(new RegExp(`\\:${el.name}\\??`), el.value)));
 
     const headers = JSON.parse(form.dataset.headers);
     // Check for auth param that might go in header
