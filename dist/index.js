@@ -157,7 +157,7 @@ async function generate(endpoints, config, router, serverFile, { overwriteMarkdo
     parsedEndpoints = parsedEndpoints.map(e => {
         e.nestedBodyParameters = writer.nestArrayAndObjectFields(e.bodyParameters);
         // @ts-ignore
-        e.endpointId = e.methods[0] + e.uri.replace(/[/?{}]/g, '-');
+        e.endpointId = e.methods[0] + e.uri.replace(/[/?{}:]/g, '-');
         return e;
     });
     const groupedEndpoints = groupBy(parsedEndpoints, 'metadata.groupName');
