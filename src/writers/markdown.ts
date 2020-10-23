@@ -6,6 +6,7 @@ import matcher = require('matcher');
 
 import tools = require('../tools');
 import Handlebars = require('../utils/handlebars');
+import util = require("util");
 
 
 export = (config: scribe.Config) => {
@@ -85,19 +86,19 @@ export = (config: scribe.Config) => {
 
             switch (strategy) {
                 case 'query':
-                    authDescription += `a query parameter **\`${parameterName}\`** in the request.`;
+                    authDescription += util.format('a query parameter **`%s`** in the request.', parameterName);
                     break;
                 case 'body':
-                    authDescription += `a parameter **\`${parameterName}\`** in the body of the request.`;
+                    authDescription +=  util.format('a parameter **`%s`** in the body of the request.', parameterName);
                     break;
                 case 'bearer':
-                    authDescription += "an **`Authorization`** header with the value **`\"Bearer {your-token}\"`**.";
+                    authDescription += util.format('an **`Authorization`** header with the value **`"Bearer %s"`**.', config.auth.placeholder || 'your-token');
                     break;
                 case 'basic':
-                    authDescription += "an **`Authorization`** header in the form **`\"Basic {credentials}\"`**. The value of `{credentials}` should be your username/id and your password, joined with a colon (:), and then base64-encoded.";
+                    authDescription += "an **`Authorization`** header in the form **`\"Basic {${config.auth.placeholder || 'credentials'}}\"`**. The value of `{credentials}` should be your username/id and your password, joined with a colon (:), and then base64-encoded.";
                     break;
                 case 'header':
-                    authDescription += `a **\`${parameterName}\`** header with the value **\`"{your-token}"\`**.`;
+                    authDescription += util.format('a **`%s`** header with the value **`"%s"`**.', parameterName, config.auth.placeholder || 'your-token');
                     break;
             }
             extraAuthInfo = config.auth.extraInfo || '';
