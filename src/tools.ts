@@ -13,6 +13,9 @@ function generateConfigFile(configFilePath, values, options = {silent: false}) {
     try {
         let title = (values.name || inferApiName()) + ' Documentation';
         let baseUrl = values.baseUrl || 'http://localhost:3000';
+        if (!baseUrl.startsWith('http')) {
+            baseUrl = 'http://' + baseUrl;
+        }
         let responseCallsBaseUrl = "http://localhost:" + (values.localPort || 3000);
 
         // Doing a string find + replace rather than JSON.stringify because we want to preserve comments

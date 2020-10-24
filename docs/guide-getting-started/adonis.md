@@ -34,7 +34,7 @@ Now let's do a test run. Run the command to generate your docs.
 Visit your newly generated docs. Find the `docs/index.html` file in your `public/` folder and open it in your browser. 
 
 ```eval_rst
-.. Tip:: To access your docs via your Adonis app, you'll need to uncomment or add :code:`Adonis/Middleware/Static`, to the :code:`serverMiddleware` array in `start/kernel.js`.ti
+.. Tip:: Your docs are always accessible by opening the public/docs/index.html file on your machine. However, when deployed, you'll probably want to pass it through your Adonis app. To do that, you can either set up your own routing or uncomment/add :code:`Adonis/Middleware/Static`, to the :code:`serverMiddleware` array in `start/kernel.js`.
 ```
 
 There's also a Postman collection generated for you. You can get it by visiting `public/docs/collection.json`. The link will also be added to the sidebar of the webpage.

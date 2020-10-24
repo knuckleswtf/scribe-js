@@ -49,6 +49,10 @@ npx scribe generate -a <your-app-file>.js -s <your-server-file>
 
 Visit your newly generated docs. Find the `docs/index.html` file in your `public/` folder and open it in your browser.
 
+```eval_rst
+.. Tip:: Your docs are always accessible by opening the public/docs/index.html file on your machine. However, when deployed, you'll probably want to pass it through your Express app. To do that, you can either set up your own routing or make sure you're using `express.static() middleware <https://expressjs.com/en/starter/static-files.html>`_.
+```
+
 There's also a Postman collection generated for you. You can get it by visiting `public/docs/collection.json`. The link will also be added to the sidebar of the webpage.
 
 If you'd like an OpenAPI (Swagger) spec, Scribe can do that too. Set `openapi.enabled` in your config to `true`, then run the `generate` command. You can get the generated spec by visiting `public/docs/openapi.yaml`. The link will also be added to the sidebar of the webpage.
@@ -72,7 +76,7 @@ If you'd like to exclude some routes, there are two ways:
 - In the docblock for the endpoint, add this tag: `@hideFromApiDocs`.
 
 ```eval_rst
-.. Note:: For Express routes, the docblock needs to be on the route declaration, not the function declaration. For instance:
+.. Note:: For Express routes, the docblock containing info for Scribe needs to be on the route declaration, not the function declaration. For instance:
 
   .. code:: javascript
 
