@@ -4,7 +4,7 @@
   <img src="logo-scribe.png"><br>
 </p>
 
-Automatically generate API documentation for humans from your Node.js codebase. [Here's what the output is going to look like](https://shalvah.me/TheCensorshipAPI/).
+Automatically generate API documentation for humans from your Node.js codebase. [Here's what the output looks like](https://shalvah.me/tweetr-api/).
 
 [![npm version](https://badge.fury.io/js/%40knuckleswtf%2Fscribe.svg)](https://badge.fury.io/js/%40knuckleswtf%2Fscribe)
 [![npm](https://img.shields.io/npm/dt/@knuckleswtf/scribe)](https://www.npmjs.com/package/@knuckleswtf/scribe)

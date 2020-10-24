@@ -1,11 +1,11 @@
 # Overview
 
-Generate API documentation for humans from your Node.js codebase. [Here's what the output looks like](https://shalvah.me/TheCensorshipAPI/).
+Generate API documentation for humans from your Node.js codebase. [Here's what the output looks like](https://shalvah.me/tweetr-api/).
 
 ```eval_rst
 .. admonition:: Wondering where to start?
    
-   Check out our getting started guide for your framework: `Adonis.js <guide-getting-started/adonis.html>`_, `Express <guide-getting-started/express.html>`_, and `Restify <guide-getting-started/restify.html>`_,.
+   Check out our getting started guide for your framework: `Adonis.js 4 <guide-getting-started/adonis.html>`_, `Express <guide-getting-started/express.html>`_, and `Restify <guide-getting-started/restify.html>`_,.
 ```
 
 ```eval_rst

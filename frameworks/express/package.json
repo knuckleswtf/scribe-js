@@ -6,6 +6,9 @@
   "bin": {
     "scribe": "src/cli.js"
   },
+  "files": [
+    "src/**"
+  ],
   "scripts": {
     "test": ""
   },
