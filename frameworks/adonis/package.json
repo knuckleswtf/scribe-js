@@ -1,6 +1,6 @@
 {
   "name": "@knuckleswtf/scribe-adonis",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "description": "Generate API documentation for humans from your Adonis.js codebase.",
   "main": "index.js",
   "files": [
@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/knuckleswtf/scribe-js#readme",
   "dependencies": {
-    "@knuckleswtf/scribe": "0.4.6",
+    "@knuckleswtf/scribe": "0.4.7",
     "hard-rejection": "^2.1.0",
     "lodash.keyby": "^4.6.0"
   },
