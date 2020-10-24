@@ -89,7 +89,7 @@ If you'd like to exclude some routes, there are two ways:
       * This will work.
       * @hideFromApiDocs
       */
-     app.post('/users', UserController.create)
+     app.post('/users', UserController.createUser)
 
 ```
 

@@ -1,5 +1,3 @@
-import {scribe} from "@knuckleswtf/scribe";
-
 /**
  * @typedef {Object} Server
  * @property {'restify'} name
