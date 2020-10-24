@@ -275,12 +275,13 @@ function addAuthField(endpoint: scribe.Endpoint, config: scribe.Config): void {
     if (typeof valueToUse == 'function') {
         valueToUse = valueToUse();
     }
+    const valueToDisplay = config.auth.placeholder;
     switch (strategy) {
         case 'query':
             endpoint.auth = `cleanQueryParameters.${parameterName}.${valueToUse || token}`;
             endpoint.queryParameters[parameterName] = {
                 name: parameterName,
-                value: token,
+                value: valueToDisplay || token,
                 type: 'string',
                 description: '',
                 required: true,
@@ -290,7 +291,7 @@ function addAuthField(endpoint: scribe.Endpoint, config: scribe.Config): void {
             endpoint.auth = `cleanBodyParameters.${parameterName}.${valueToUse || token}`;
             endpoint.bodyParameters[parameterName] = {
                 name: parameterName,
-                value: token,
+                value: valueToDisplay || token,
                 type: 'string',
                 description: '',
                 required: true,
@@ -298,16 +299,16 @@ function addAuthField(endpoint: scribe.Endpoint, config: scribe.Config): void {
             break;
         case 'bearer':
             endpoint.auth = `headers.Authorization.Bearer ${valueToUse || token}`;
-            endpoint.headers.Authorization = `Bearer ${token}`;
+            endpoint.headers.Authorization = `Bearer ${valueToDisplay || token}`;
             break;
         case 'basic':
             const encodedToken = Buffer.from(token).toString('base64');
             endpoint.auth = `headers.Authorization.Basic ${valueToUse || encodedToken}`;
-            endpoint.headers.Authorization = `Basic ${encodedToken}`;
+            endpoint.headers.Authorization = `Basic ${valueToDisplay || encodedToken}`;
             break;
         case 'header':
             endpoint.auth = `headers.${parameterName}.${valueToUse || token}`;
-            endpoint.headers[parameterName] = token;
+            endpoint.headers[parameterName] = valueToDisplay || token;
             break;
     }
 
