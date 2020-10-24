@@ -3,9 +3,6 @@
   "version": "0.4.7",
   "description": "Generate API documentation for humans from your Adonis.js codebase.",
   "main": "index.js",
-  "files": [
-    "src/**"
-  ],
   "scripts": {
     "test": ""
   },

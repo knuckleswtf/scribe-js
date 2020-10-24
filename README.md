@@ -20,8 +20,6 @@ Automatically generate API documentation for humans from your Node.js codebase. 
 - Supports Postman collection and OpenAPI (Swagger) spec generation
 
 ## Installation
-> Note: Scribe for JS is still in beta, but we're on our way to stabilizing things. Things may break or change between releases (0.x). Thanks for trying it, and feel free to send in any feedback!
-
 Node.js 12.4.0 or higher is required.
 
 Supported frameworks:

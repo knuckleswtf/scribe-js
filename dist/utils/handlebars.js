@@ -81,9 +81,9 @@ function getParameterNamesAndValuesForFormData(parameter, value) {
             });
             return params;
         }
-    }
-    else {
-        return { [`${parameter}[]`]: value[0] };
+        else {
+            return { [`${parameter}[]`]: value[0] };
+        }
     }
     if (typeof value === "object") {
         // Transform hashes

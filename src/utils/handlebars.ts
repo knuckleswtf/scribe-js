@@ -88,9 +88,9 @@ function getParameterNamesAndValuesForFormData(parameter: string, value: any) {
                 params[paramName] = itemValue;
             });
             return params;
+        } else {
+            return {[`${parameter}[]`]: value[0]};
         }
-    } else {
-        return {[`${parameter}[]`]: value[0]};
     }
 
     if (typeof value === "object") {
