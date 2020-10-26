@@ -43,9 +43,23 @@ The body parameters will be included in the generated documentation text and exa
 
 ### Handling array and object parameters
 Often you have body parameters that are arrays or objects, or a mix of both. To handle them in `@bodyParam`, Scribe follows this convention:
-- For arrays: use a single field with type `<type of items>[]`
-- For objects: you need a parent field with type `object` and an entry for each field, named with the dot notation `<parent name>.<field>`.
-- For an array of objects, you need a parent field with type `object[]`, and an entry for each field, named with the dot notation `<parent name>[].<field>`.
+
+- For arrays: use a single field with type `<type of items>[]`. For instance, to denote an array `cars` of elements of type `integer`:
+  ```
+  @bodyParam {integer[]} cars
+  ```
+  
+- For objects: you need a parent field with type `object` and an entry for each field, named with the dot notation `<parent name>.<field>`. For instance, to denote an object `cars` with a field `name` of type `string`:
+  ```
+  @bodyParam {object} cars
+  @bodyParam {string} cars.name
+  ```
+                                           
+- For an array of objects, you need a parent field with type `object[]`, and an entry for each field, named with the dot notation `<parent name>[].<field>`. For instance, to denote an array of objects `cars` with each item having field `name`:
+  ```
+  @bodyParam {object[]} cars
+  @bodyParam {string} cars[].name
+  ```
 
 
 For instance, if your request body is in this form:
