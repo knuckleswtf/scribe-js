@@ -53,7 +53,7 @@ module.exports = {
      * Transform body parameters such that object fields have a `fields` property containing a list of all subfields
      * Subfields will be removed from the main parameter map
      * For instance, if parameters is {dad: {}, 'dad.cars': {}, 'dad.age': {}},
-     * normalise this into {dad: {..., fields: {'dad.cars': {}, {'dad.age': {}}}
+     * normalise this into {dad: {..., __fields: {'dad.cars': {}, {'dad.age': {}}}
      *
      * @param parameters
      */
@@ -64,10 +64,10 @@ module.exports = {
                 // Get the various pieces of the name
                 const parts = name.split('.');
                 let [fieldName, ...parentPath] = parts.reverse();
-                const baseName = parentPath.reverse().join('.fields.');
+                const baseName = parentPath.reverse().join('.__fields.');
                 // The type should be indicated in the source object by now; we don't need it in the name
-                const normalisedBaseName = baseName.replace('[]', '.fields');
-                const lodashPath = normalisedBaseName.replace(/\.fields$/, '') + '.fields.' + fieldName;
+                const normalisedBaseName = baseName.replace('[]', '.__fields');
+                const lodashPath = normalisedBaseName.replace(/\.__fields$/, '') + '.__fields.' + fieldName;
                 set(finalParameters, lodashPath, parameter);
             }
             else { // A regular field

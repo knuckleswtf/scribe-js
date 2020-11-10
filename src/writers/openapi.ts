@@ -449,8 +449,8 @@ function generateFieldData(field: scribe.Parameter): SchemaObject {
                 : {type: baseType,},
         };
 
-        if (baseType === 'object' && field.fields) {
-            Object.values(field.fields).forEach(subfield => {
+        if (baseType === 'object' && field.__fields) {
+            Object.values(field.__fields).forEach(subfield => {
                 const fieldSimpleName = subfield.name.replace(new RegExp(`^${field.name}\\[\]\\\.`), '');
                 // @ts-ignore
                 fieldData.items.properties[fieldSimpleName] = generateFieldData(subfield);
@@ -467,7 +467,7 @@ function generateFieldData(field: scribe.Parameter): SchemaObject {
             type: 'object',
             description: field.description ?? '',
             example: field.value ?? null,
-            properties: collect(field.fields).mapWithKeys((subfield: scribe.Parameter) => {
+            properties: collect(field.__fields).mapWithKeys((subfield: scribe.Parameter) => {
                 return [subfield.name.replace(new RegExp(`^${field.name}\\\.`), ''), generateFieldData(subfield)];
             }).all(),
         };

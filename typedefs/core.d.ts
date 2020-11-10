@@ -12,7 +12,7 @@ export declare namespace scribe {
         required?: boolean,
         value?: any,
         type?: string,
-        fields?: Record<string, scribe.Parameter>
+        __fields?: Record<string, scribe.Parameter>
     }
 
     export interface BodyParameter extends Parameter {

@@ -51,13 +51,14 @@ function printQueryParamsAsString(cleanQueryParams: Record<string, any>): string
 
     for (let [paramName, value] of Object.entries(cleanQueryParams)) {
 
-        if (!Array.isArray(value) && value.length) {
+        if (Array.isArray(value) && value.length) {
             // List query param (eg filter[]=haha should become "filter[]": "haha")
             qs += `${paramName}[]=${encodeURIComponent(value[0])}&`;
         } else if (typeof value === 'object') {
             // Hash query param (eg filter[name]=john should become "filter[name]": "john")
+            // Not handling nested params for now
             for (let [item, itemValue] of Object.entries(value)) {
-                qs += `${paramName}[${encodeURIComponent(item)}]=${encodeURIComponent(itemValue)}&`;
+                qs += `${paramName}[${encodeURIComponent(item)}]=${encodeURIComponent(itemValue as string)}&`;
             }
         } else {
             qs += `${paramName}=${encodeURIComponent(value)}&`;

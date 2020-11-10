@@ -298,8 +298,8 @@ function generateFieldData(field) {
                 })
                 : { type: baseType, },
         };
-        if (baseType === 'object' && field.fields) {
-            Object.values(field.fields).forEach(subfield => {
+        if (baseType === 'object' && field.__fields) {
+            Object.values(field.__fields).forEach(subfield => {
                 const fieldSimpleName = subfield.name.replace(new RegExp(`^${field.name}\\[\]\\\.`), '');
                 // @ts-ignore
                 fieldData.items.properties[fieldSimpleName] = generateFieldData(subfield);
@@ -316,7 +316,7 @@ function generateFieldData(field) {
             type: 'object',
             description: (_e = field.description) !== null && _e !== void 0 ? _e : '',
             example: (_f = field.value) !== null && _f !== void 0 ? _f : null,
-            properties: collect(field.fields).mapWithKeys((subfield) => {
+            properties: collect(field.__fields).mapWithKeys((subfield) => {
                 return [subfield.name.replace(new RegExp(`^${field.name}\\\.`), ''), generateFieldData(subfield)];
             }).all(),
         };

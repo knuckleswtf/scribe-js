@@ -1,6 +1,6 @@
 
 {{#each parameters }}
-{{#if this.fields }}
+{{#if this.__fields }}
 <p>
 <details>
     <summary>
@@ -8,8 +8,8 @@
     </summary>
 <br>
 
-  {{#each this.fields }}
-  {{#if this.fields }}
+  {{#each this.__fields }}
+  {{#if this.__fields }}
   {{> partials.body-parameters parameters=(objectWrap this.name this) endpointId=../../endpointId}}
   {{else}}
   <p>

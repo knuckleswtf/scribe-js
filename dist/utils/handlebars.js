@@ -44,12 +44,13 @@ function registerPartialsInDirectory(partialPath) {
 function printQueryParamsAsString(cleanQueryParams) {
     let qs = '';
     for (let [paramName, value] of Object.entries(cleanQueryParams)) {
-        if (!Array.isArray(value)) {
+        if (Array.isArray(value) && value.length) {
             // List query param (eg filter[]=haha should become "filter[]": "haha")
             qs += `${paramName}[]=${encodeURIComponent(value[0])}&`;
         }
         else if (typeof value === 'object') {
             // Hash query param (eg filter[name]=john should become "filter[name]": "john")
+            // Not handling nested params for now
             for (let [item, itemValue] of Object.entries(value)) {
                 qs += `${paramName}[${encodeURIComponent(item)}]=${encodeURIComponent(itemValue)}&`;
             }
@@ -121,7 +122,7 @@ function printQueryParamsAsKeyValue(cleanQueryParameters, opts = {}) {
     let options = Object.assign(defaults, opts);
     let output = options.braces[0] ? `{${options.braces[0]}\n` : '';
     for (let [parameter, value] of Object.entries(cleanQueryParameters)) {
-        if (Array.isArray(value)) {
+        if (Array.isArray(value) && value.length) {
             // List query param (eg filter[]=haha should become "filter[]": "haha")
             output += " ".repeat(options.spacesIndentation);
             output += options.startLinesWith
