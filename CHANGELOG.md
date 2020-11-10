@@ -12,7 +12,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
-## 2.0.1 (Monday, 26 October 2020)
+## 1.1.0 (Tuesday, 12 November 2020)
+### Changes
+- tryitout.js will now include the current Scribe version number in its filename, for automatic cache busting (https://github.com/knuckleswtf/scribe-js/commit/37d68b6b235068125e714915a425056aaebd2d95)
+
+### Fixes
+- Fixed bug where query param values that were objects were set as [object Object] in Try It Out url (https://github.com/knuckleswtf/scribe-js/commit/67f609c8669b5deff41703009d396c1033263259)
+- Renamed internal property 'fields' to '__fields' to prevent possible clashes with a user-supplied field called 'fields'. (https://github.com/knuckleswtf/scribe-js/commit/a3d30277b62f9775f3d305e0c03f31bdc133b2c7)
+- Don't print undefined when printing empty arrays for query params (https://github.com/knuckleswtf/scribe-js/commit/52c588989cc024ff4e8d2e07f7ed66ec062d077c)
+
+## 1.0.1 (Monday, 26 October 2020)
 ### Fixes
 - Added a missing colon in Try It Out buttons' CSS (https://github.com/knuckleswtf/scribe/pull/123)
 
