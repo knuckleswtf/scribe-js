@@ -43,4 +43,4 @@ npm i @knuckleswtf/scribe-restify
 ```
 
 ## Documentation
-View the docs at [scribe-js.rtfd.io](https://scribe-js.rtfd.io/);
+View the docs at [scribe-js.rtfd.io](https://scribe-js.rtfd.io/).
