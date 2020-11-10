@@ -8,14 +8,14 @@ import {
 
 const collect = require('collect.js');
 
-const VERSION = '3.0.3';
+const OPENAPI_SCHEMA_VERSION = '3.0.3';
 const EMPTY = {};
 
 export = (config: scribe.Config) => {
 
     function makeOpenAPISpec(groupedEndpoints: { [groupName: string]: scribe.Endpoint[] }) {
         const spec: OpenAPIObject = Object.assign({
-            openapi: VERSION,
+            openapi: OPENAPI_SCHEMA_VERSION,
             info: {
                 title: config.title,
                 description: config.description || '',
@@ -110,7 +110,7 @@ export = (config: scribe.Config) => {
     }
 
     return {
-        VERSION,
+        VERSION: OPENAPI_SCHEMA_VERSION,
         makeOpenAPISpec,
     };
 

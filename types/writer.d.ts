@@ -6,7 +6,7 @@ declare const _default: {
     writeOpenAPISpecFile(config: scribe.Config, groupedEndpoints: {
         [groupName: string]: scribe.Endpoint[];
     }): Promise<void>;
-    writeMarkdownAndHTMLDpcs(config: scribe.Config, groupedEndpoints?: {
+    writeMarkdownAndHTMLDocs(config: scribe.Config, groupedEndpoints?: {
         [groupName: string]: scribe.Endpoint[];
     }, shouldOverwriteMarkdownFiles?: boolean): Promise<void>;
     /**

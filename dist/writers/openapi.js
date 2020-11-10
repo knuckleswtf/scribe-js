@@ -1,7 +1,7 @@
 "use strict";
 const p = require("../utils/parameters");
 const collect = require('collect.js');
-const VERSION = '3.0.3';
+const OPENAPI_SCHEMA_VERSION = '3.0.3';
 const EMPTY = {};
 function generateSecurityPartialSpec(config) {
     const isApiAuthed = config.auth.enabled;
@@ -332,7 +332,7 @@ function generateFieldData(field) {
 module.exports = (config) => {
     function makeOpenAPISpec(groupedEndpoints) {
         const spec = Object.assign({
-            openapi: VERSION,
+            openapi: OPENAPI_SCHEMA_VERSION,
             info: {
                 title: config.title,
                 description: config.description || '',
@@ -415,7 +415,7 @@ module.exports = (config) => {
         }).all();
     }
     return {
-        VERSION,
+        VERSION: OPENAPI_SCHEMA_VERSION,
         makeOpenAPISpec,
     };
 };

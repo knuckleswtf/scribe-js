@@ -50,7 +50,7 @@ export = {
         tools.success("OpenAPI spec generated.");
     },
 
-    async writeMarkdownAndHTMLDpcs(config: scribe.Config, groupedEndpoints?: { [groupName: string]: scribe.Endpoint[] }, shouldOverwriteMarkdownFiles: boolean = false) {
+    async writeMarkdownAndHTMLDocs(config: scribe.Config, groupedEndpoints?: { [groupName: string]: scribe.Endpoint[] }, shouldOverwriteMarkdownFiles: boolean = false) {
         const sourceOutputPath = path.resolve('docs');
         if (groupedEndpoints) {
             const markdown = require("./writers/markdown")(config);
@@ -59,7 +59,7 @@ export = {
 
         const pastel = require('@knuckleswtf/pastel');
         await pastel.generate(sourceOutputPath + '/index.md', path.resolve(config.outputPath));
-        fs.copyFileSync(path.join(__dirname, '../resources/js/tryitout.js'), path.join(path.resolve(config.outputPath), 'js/tryitout.js'));
+        fs.copyFileSync(path.join(__dirname, '../resources/js/tryitout.js'), path.join(path.resolve(config.outputPath), 'js/tryitout-' + process.env.SCRIBE_VERSION + '.js'));
     },
 
     /**

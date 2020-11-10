@@ -15,9 +15,10 @@ const writer = require("./writer");
 const { isPortTaken } = require('./utils/response_calls');
 const debug = require('debug')('lib:scribe');
 const defaultOptions = { overwriteMarkdownFiles: false, noExtraction: false };
+process.env.SCRIBE_VERSION = process.env.SCRIBE_VERSION || require('../package.json').version;
 async function generate(endpoints, config, router, serverFile, { overwriteMarkdownFiles, noExtraction } = defaultOptions) {
     if (noExtraction) {
-        return writer.writeMarkdownAndHTMLDpcs(config);
+        return writer.writeMarkdownAndHTMLDocs(config);
     }
     if (router == 'express' && !serverFile) {
         tools.warn("You didn't specify a server file. This means that either your app is started by your app file, or you forgot.");
@@ -161,7 +162,7 @@ async function generate(endpoints, config, router, serverFile, { overwriteMarkdo
         return e;
     });
     const groupedEndpoints = groupBy(parsedEndpoints, 'metadata.groupName');
-    await writer.writeMarkdownAndHTMLDpcs(config, groupedEndpoints, overwriteMarkdownFiles);
+    await writer.writeMarkdownAndHTMLDocs(config, groupedEndpoints, overwriteMarkdownFiles);
     if (config.postman.enabled) {
         await writer.writePostmanCollectionFile(config, groupedEndpoints);
     }

@@ -86,6 +86,7 @@ module.exports = (config) => {
             introText: config.introText,
             description: config.description,
             baseUrl: config.baseUrl.replace(/\/$/, ''),
+            scribeVersion: process.env.SCRIBE_VERSION
         });
         writeFile(indexMarkdownFile, markdown);
     }

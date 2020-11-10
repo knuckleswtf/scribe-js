@@ -13,7 +13,7 @@ import {URL} from "url";
 import uuid = require('uuid');
 import striptags = require('striptags');
 
-const VERSION = '2.1.0';
+const POSTMAN_SCHEMA_VERSION = '2.1.0';
 export = (config: scribe.Config) => {
     const parsedUrl = new URL(config.baseUrl);
 
@@ -31,7 +31,7 @@ export = (config: scribe.Config) => {
             info: {
                 name: config.title,
                 description: config.description || '',
-                schema: `https://schema.getpostman.com/json/collection/v${VERSION}/collection.json`,
+                schema: `https://schema.getpostman.com/json/collection/v${POSTMAN_SCHEMA_VERSION}/collection.json`,
                 _postman_id: uuid.v4(),
             },
             item: Object.entries(groupedEndpoints).map(([groupName, endpoints]) => {
@@ -253,7 +253,7 @@ export = (config: scribe.Config) => {
     }
 
     return {
-        VERSION,
+        VERSION: POSTMAN_SCHEMA_VERSION,
         makePostmanCollection,
     };
 

@@ -7,11 +7,11 @@ const program = require('commander');
 
 const debug = require('debug')('lib:scribe:express:cli');
 const tools = require("@knuckleswtf/scribe/dist/tools");
-const VERSION = require('../package.json').version;
+process.env.SCRIBE_VERSION = require('../package.json').version;
 
 program
     .name('Scribe')
-    .version(VERSION)
+    .version(process.env.SCRIBE_VERSION)
     .command('generate')
     .option(
         '-c, --config <file>',

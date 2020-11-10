@@ -21,6 +21,7 @@ const {isPortTaken} = require('./utils/response_calls');
 const debug = require('debug')('lib:scribe');
 
 const defaultOptions = {overwriteMarkdownFiles: false, noExtraction: false};
+process.env.SCRIBE_VERSION = process.env.SCRIBE_VERSION || require('../package.json').version;
 
 async function generate(
     endpoints: scribe.Endpoint[],
@@ -30,7 +31,7 @@ async function generate(
     {overwriteMarkdownFiles, noExtraction}: {overwriteMarkdownFiles?: boolean, noExtraction?: boolean} = defaultOptions,
 ) {
     if (noExtraction) {
-        return writer.writeMarkdownAndHTMLDpcs(config);
+        return writer.writeMarkdownAndHTMLDocs(config);
     }
 
     if (router == 'express' && !serverFile) {
@@ -198,7 +199,7 @@ async function generate(
 
     const groupedEndpoints: { [groupName: string]: scribe.Endpoint[] } = groupBy(parsedEndpoints, 'metadata.groupName');
 
-    await writer.writeMarkdownAndHTMLDpcs(config, groupedEndpoints, overwriteMarkdownFiles);
+    await writer.writeMarkdownAndHTMLDocs(config, groupedEndpoints, overwriteMarkdownFiles);
 
     if (config.postman.enabled) {
         await writer.writePostmanCollectionFile(config, groupedEndpoints);

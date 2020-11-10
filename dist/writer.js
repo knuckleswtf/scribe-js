@@ -39,7 +39,7 @@ module.exports = {
         fs.writeFileSync(outputPath + '/openapi.yaml', content);
         tools.success("OpenAPI spec generated.");
     },
-    async writeMarkdownAndHTMLDpcs(config, groupedEndpoints, shouldOverwriteMarkdownFiles = false) {
+    async writeMarkdownAndHTMLDocs(config, groupedEndpoints, shouldOverwriteMarkdownFiles = false) {
         const sourceOutputPath = path.resolve('docs');
         if (groupedEndpoints) {
             const markdown = require("./writers/markdown")(config);
@@ -47,7 +47,7 @@ module.exports = {
         }
         const pastel = require('@knuckleswtf/pastel');
         await pastel.generate(sourceOutputPath + '/index.md', path.resolve(config.outputPath));
-        fs.copyFileSync(path.join(__dirname, '../resources/js/tryitout.js'), path.join(path.resolve(config.outputPath), 'js/tryitout.js'));
+        fs.copyFileSync(path.join(__dirname, '../resources/js/tryitout.js'), path.join(path.resolve(config.outputPath), 'js/tryitout-' + process.env.SCRIBE_VERSION + '.js'));
     },
     /**
      * Transform body parameters such that object fields have a `fields` property containing a list of all subfields
