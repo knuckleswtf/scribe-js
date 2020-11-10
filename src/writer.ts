@@ -72,7 +72,7 @@ export = {
      */
     nestArrayAndObjectFields(parameters: scribe.ParameterBag = {}) {
         const finalParameters: scribe.ParameterBag = {};
-        for (let [name, parameter] of Object.entries(parameters)) {
+            for (let [name, parameter] of Object.entries(parameters)) {
             if (name.includes('.')) { // Likely an object field
                 // Get the various pieces of the name
                 const parts = name.split('.');
