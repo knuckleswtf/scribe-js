@@ -6,11 +6,13 @@
 
 Automatically generate API documentation for humans from your Node.js codebase. [Here's what the output looks like](https://shalvah.me/tweetr-api/).
 
+There's a [Laravel version](https://github.com/knuckleswtf/scribe), too!
+
 [![npm version](https://badge.fury.io/js/%40knuckleswtf%2Fscribe.svg)](https://badge.fury.io/js/%40knuckleswtf%2Fscribe)
 [![npm](https://img.shields.io/npm/dt/@knuckleswtf/scribe)](https://www.npmjs.com/package/@knuckleswtf/scribe)
 [![Build Status](https://travis-ci.com/knuckleswtf/scribe-js.svg?branch=master)](https://travis-ci.com/knuckleswtf/scribe-js)
 
-> Looking to document your Laravel/Lumen/Dingo APIs easily? Check out [Scribe for Laravel](https://github.com/knuckleswtf/scribe).
+> 👋 Want to learn how to make friendly, testable, and maintainable API documentation? I made [a course](https://apidocsfordevs.com?utm_source=scribe-js&utm_medium=referral&utm_campaign=launch) for you! Get 40% off until 28 November with the code KICKASSDOCSYEAH.
 
 ## Features
 - Pretty HTML documentation page, with included code samples and friendly text
@@ -42,6 +44,3 @@ npm i @knuckleswtf/scribe-restify
 
 ## Documentation
 View the docs at [scribe-js.rtfd.io](https://scribe-js.rtfd.io/);
-
-## About Scribe for Node.js
-Scribe is a port of [Scribe for Laravel](https://github.com/knuckleswtf/scribe).

@@ -2,6 +2,8 @@
 
 Generate API documentation for humans from your Node.js codebase. [Here's what the output looks like](https://shalvah.me/tweetr-api/).
 
+There's a [Laravel version](https://github.com/knuckleswtf/scribe), too!
+
 ```eval_rst
 .. admonition:: Wondering where to start?
    
@@ -9,7 +11,7 @@ Generate API documentation for humans from your Node.js codebase. [Here's what t
 ```
 
 ```eval_rst
-.. Tip:: Looking to document your Laravel/Lumen/Dingo APIs easily? Check out `Scribe for Laravel <https://github.com/knuckleswtf/scribe>`_.
+.. Tip:: 👋 Want to learn how to make friendly, testable, and maintainable API documentation? I made `a course <https://apidocsfordevs.com?utm_source=scribe-js&utm_medium=referral&utm_campaign=launch>`_ for you! Get 40% off until 28 November with the code KICKASSDOCSYEAH.
 ```
 
 ## Features
