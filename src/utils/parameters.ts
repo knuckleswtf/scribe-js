@@ -129,6 +129,15 @@ function isArrayType(typeName: string) {
     return typeName.endsWith('[]');
 }
 
+function getBaseType(typeName: string) {
+    let baseType = typeName;
+    while (isArrayType(baseType)) {
+        baseType = getBaseTypeFromArrayType(baseType);
+    }
+
+    return baseType;
+}
+
 /**
  * Array type = int[], object[]
  * @param typeName
@@ -171,6 +180,7 @@ function setObject(results: {}, path: string, value: any, source: {}, isRequired
 }
 
 export = {
+    getBaseType,
     getParameterExample,
     removeEmptyOptionalParametersAndTransformToKeyExample,
     castValueToType,

@@ -18,12 +18,14 @@ declare function castValueToType(value: any, type?: string): any;
 declare function removeEmptyOptionalParametersAndTransformToKeyExample(parameters?: scribe.ParameterBag): {};
 declare function normalizeTypeName(typeName: string): string;
 declare function isArrayType(typeName: string): boolean;
+declare function getBaseType(typeName: string): string;
 /**
  * Array type = int[], object[]
  * @param typeName
  */
 declare function getBaseTypeFromArrayType(typeName: string): string;
 declare const _default: {
+    getBaseType: typeof getBaseType;
     getParameterExample: typeof getParameterExample;
     removeEmptyOptionalParametersAndTransformToKeyExample: typeof removeEmptyOptionalParametersAndTransformToKeyExample;
     castValueToType: typeof castValueToType;

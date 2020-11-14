@@ -106,6 +106,13 @@ function normalizeTypeName(typeName) {
 function isArrayType(typeName) {
     return typeName.endsWith('[]');
 }
+function getBaseType(typeName) {
+    let baseType = typeName;
+    while (isArrayType(baseType)) {
+        baseType = getBaseTypeFromArrayType(baseType);
+    }
+    return baseType;
+}
 /**
  * Array type = int[], object[]
  * @param typeName
@@ -145,6 +152,7 @@ function setObject(results, path, value, source, isRequired) {
     }
 }
 module.exports = {
+    getBaseType,
     getParameterExample,
     removeEmptyOptionalParametersAndTransformToKeyExample,
     castValueToType,

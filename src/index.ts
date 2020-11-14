@@ -123,7 +123,8 @@ async function generate(
                         = Object.assign({}, endpoint.bodyParameters, await bodyParametersStrategy.run(endpoint, config, routeGroup));
                 }
             }
-            let [files, regularParameters] = collect(endpoint.bodyParameters).partition((p) => p.type == 'file');
+            let [files, regularParameters] = collect(endpoint.bodyParameters)
+                .partition((param) => (p.getBaseType(param.type) == 'file'));
             files = files.all();
             regularParameters = regularParameters.all();
 

@@ -180,6 +180,10 @@ module.exports = (config) => {
                     });
                 }
                 for (let [key, value] of Object.entries(endpoint.fileParameters)) {
+                    while (Array.isArray(value)) { // For arrays of files, just send the first one
+                        key += '[]';
+                        value = value[0];
+                    }
                     // @ts-ignore
                     body[inputMode].push({
                         key: key,

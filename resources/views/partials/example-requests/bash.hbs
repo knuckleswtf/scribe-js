@@ -4,16 +4,18 @@ curl -X {{endpoint.methods.[0] }} \
     -H "{{@key}}: {{ escapeString this }}"
 {{/each}}
 {{/if}}
-{{#if endpoint.fileParameters.length }}
+{{#if (isNonEmptyObject endpoint.fileParameters) }}
 {{#each endpoint.cleanBodyParameters }}
-{{#each getParameterNamesAndValuesForFormData @key this}} \
-    -F "{{{@key}}}={{{this}}}"
+{{#each (getParameterNamesAndValuesForFormData @key this) }}
+    \ -F "{{{@key}}}={{{this}}}"
 {{/each}}
 {{/each}}
-{{#each endpoint.fileParameters}} \
-    -F "{{@key}}=@{{this.path}}"
+{{#each endpoint.fileParameters}}
+{{#each (getParameterNamesAndValuesForFormData @key this) }}
+    \ -F "{{@key}}=@{{this}}"
 {{/each}}
-{{else if (isNonEmptyObject endpoint.cleanBodyParameters) }} \
-    -d '{{{JSONstringify endpoint.cleanBodyParameters}}}'
+{{/each}}
+{{else if (isNonEmptyObject endpoint.cleanBodyParameters) }}
+    \ -d '{{{JSONstringify endpoint.cleanBodyParameters}}}'
 {{/if}}
 

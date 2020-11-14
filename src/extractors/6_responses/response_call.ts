@@ -92,6 +92,10 @@ function makeResponseCall(responseCallRules: scribe.ResponseCallRules, endpoint:
             const form = new FormData();
             const tmp = require('tmp-promise');
             for (let [name, value] of Object.entries(fileParameters)) {
+                while (Array.isArray(value)) { // For arrays of files, just send the first one
+                    name += '[]';
+                    value = value[0];
+                }
                 if (!fs.existsSync(value)) { // The user may have passed in an actual file path
                     if (fs.existsSync(path.resolve(value))) {
                         value = path.resolve(value);

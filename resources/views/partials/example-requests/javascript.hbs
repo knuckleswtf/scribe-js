@@ -27,7 +27,9 @@ body.append('{{{ @key }}}', '{{{ this }}}');
 {{/each}}
 {{/each}}
 {{#each endpoint.fileParameters }}
+{{#each (getParameterNamesAndValuesForFormData @key this) }}
 body.append('{{{ @key }}}', document.querySelector('input[name="{{{ @key }}}"]').files[0]);
+{{/each}}
 {{/each}}
 {{else if (isNonEmptyObject endpoint.cleanBodyParameters) }}
 let body = {{{ JSONstringify endpoint.cleanBodyParameters 4 }}}
