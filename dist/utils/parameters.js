@@ -125,9 +125,15 @@ function setObject(results, path, value, source, isRequired) {
         const parts = path.split('.');
         let [fieldName, ...parentPath] = parts.reverse();
         const baseName = parentPath.reverse().join('.');
-        // The type should be indicated in the source object by now; we don't need it in the name
-        const normalisedBaseName = baseName.replace('[]', '');
-        const parentData = get(source, normalisedBaseName);
+        // For array fields, the type should be indicated in the source object by now;
+        // eg test.items[] would actually be described as name: test.items, type: object[]
+        // So we get rid of that ending []
+        // For other fields (eg test.items[].name), it remains as-is
+        let baseNameInOriginalParams = baseName;
+        while (baseNameInOriginalParams.endsWith('[]')) {
+            baseNameInOriginalParams = baseNameInOriginalParams.substr(0, baseNameInOriginalParams.length - 2);
+        }
+        const parentData = get(source, baseNameInOriginalParams);
         if (parentData) {
             // Path we use for lodash.set
             const lodashPath = path.replace(/\[]/g, '.0');

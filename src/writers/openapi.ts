@@ -450,13 +450,17 @@ function generateFieldData(field: scribe.Parameter): SchemaObject {
         };
 
         if (baseType === 'object' && field.__fields) {
-            Object.values(field.__fields).forEach(subfield => {
-                const fieldSimpleName = subfield.name.replace(new RegExp(`^${field.name}\\[\]\\\.`), '');
+            Object.entries(field.__fields).forEach(([subfieldSimpleName, subfield]) => {
                 // @ts-ignore
-                fieldData.items.properties[fieldSimpleName] = generateFieldData(subfield);
+                if (fieldData.items.type === 'object') {
+                    // @ts-ignore
+                    fieldData.items.properties = {};
+                }
+                // @ts-ignore
+                fieldData.items.properties[subfieldSimpleName] = generateFieldData(subfield);
                 if (subfield.required) {
                     // @ts-ignore
-                    fieldData.items.required = (fieldData.items.required || []).push(fieldSimpleName);
+                    fieldData.items.required = (fieldData.items.required || []).push(subfieldSimpleName);
                 }
             });
         }
@@ -467,8 +471,8 @@ function generateFieldData(field: scribe.Parameter): SchemaObject {
             type: 'object',
             description: field.description ?? '',
             example: field.value ?? null,
-            properties: collect(field.__fields).mapWithKeys((subfield: scribe.Parameter) => {
-                return [subfield.name.replace(new RegExp(`^${field.name}\\\.`), ''), generateFieldData(subfield)];
+            properties: collect(Object.entries(field.__fields)).mapWithKeys(([subfieldSimpleName, subfield]) => {
+                return [subfieldSimpleName, generateFieldData(subfield)];
             }).all(),
         };
     } else {

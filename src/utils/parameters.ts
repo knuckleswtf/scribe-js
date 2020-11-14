@@ -1,4 +1,5 @@
 import {scribe} from "../../typedefs/core";
+
 const set = require('lodash.set');
 const get = require('lodash.get');
 
@@ -152,10 +153,16 @@ function setObject(results: {}, path: string, value: any, source: {}, isRequired
         let [fieldName, ...parentPath] = parts.reverse();
 
         const baseName = parentPath.reverse().join('.');
-        // The type should be indicated in the source object by now; we don't need it in the name
-        const normalisedBaseName = baseName.replace('[]', '');
+        // For array fields, the type should be indicated in the source object by now;
+        // eg test.items[] would actually be described as name: test.items, type: object[]
+        // So we get rid of that ending []
+        // For other fields (eg test.items[].name), it remains as-is
+        let baseNameInOriginalParams = baseName;
+        while (baseNameInOriginalParams.endsWith('[]')) {
+            baseNameInOriginalParams = baseNameInOriginalParams.substr(0, baseNameInOriginalParams.length - 2);
+        }
 
-        const parentData = get(source, normalisedBaseName);
+        const parentData = get(source, baseNameInOriginalParams);
         if (parentData) {
             // Path we use for lodash.set
             const lodashPath = path.replace(/\[]/g, '.0');

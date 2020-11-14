@@ -79,12 +79,15 @@ export = {
                 let [fieldName, ...parentPath] = parts.reverse();
 
                 const baseName = parentPath.reverse().join('.__fields.');
-                // The type should be indicated in the source object by now; we don't need it in the name
-                const normalisedBaseName = baseName.replace('[]', '.__fields');
+                // For subfields, the type is indicated in the source object
+                // eg test.items[].more and test.items.more would both have parent field with name `items` and containing __fields => more
+                // The difference would be in the parent field's `type` property (object[] vs object)
+                // So we can get rid of all [] to get the parent name
+                const dotPathToParent = baseName.replace('[]', '');
 
-                const lodashPath = normalisedBaseName.replace(/\.__fields$/, '') + '.__fields.' + fieldName;
+                const lodashPath = dotPathToParent + '.__fields.' + fieldName;
                 set(finalParameters, lodashPath, parameter);
-            } else { // A regular field
+            } else { // A regular field, not a subfield of anything
                 finalParameters[name] = parameter;
             }
 
