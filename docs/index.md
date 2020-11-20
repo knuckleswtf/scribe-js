@@ -11,7 +11,7 @@ There's a [Laravel version](https://github.com/knuckleswtf/scribe), too!
 ```
 
 ```eval_rst
-.. Tip:: 👋 Want to learn how to make friendly, testable, and maintainable API documentation? I made `a course <https://apidocsfordevs.com?utm_source=scribe-js&utm_medium=referral&utm_campaign=launch>`_ for you! Get 40% off until 28 November with the code KICKASSDOCSYEAH.
+.. Tip:: 👋 Scribe helps you generate docs automatically, but if you really want to make friendly, maintainable and testable API docs, there's a few more things you need to know. So we made `a course <https://apidocsfordevs.com?utm_source=scribe-js-docs&utm_medium=referral&utm_campaign=launch>`_ for you! And it's 40% off until 30 November!
 ```
 
 ## Features
