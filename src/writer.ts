@@ -71,8 +71,31 @@ export = {
      * @param parameters
      */
     nestArrayAndObjectFields(parameters: scribe.ParameterBag = {}) {
+        // First, we'll make sure all object fields have parent fields properly set
+        const normalisedParameters: scribe.ParameterBag = {};
+        for (let [name, parameter] of Object.entries(parameters)) {
+            if (name.includes('.')) {
+                // Get the various pieces of the name
+                const parts = name.split('.');
+                const fieldName = parts.pop();
+
+                // If the user didn't add a parent field, we'll conveniently add it for them
+                const parentName = parts.join('.').replace(/\[]$/g, '');
+                if (parameters[parentName] === undefined) {
+                    normalisedParameters[parentName] = {
+                        name: parentName,
+                        type: "object",
+                        description: "",
+                        required: false,
+                        value: {[fieldName]: parameter.value},
+                };
+                }
+            }
+            normalisedParameters[name] = parameter;
+        }
+
         const finalParameters: scribe.ParameterBag = {};
-            for (let [name, parameter] of Object.entries(parameters)) {
+            for (let [name, parameter] of Object.entries(normalisedParameters)) {
             if (name.includes('.')) { // Likely an object field
                 // Get the various pieces of the name
                 const parts = name.split('.');
