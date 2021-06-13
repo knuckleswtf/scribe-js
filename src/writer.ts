@@ -3,9 +3,10 @@ import path = require("path");
 import fs = require("fs");
 import set = require("lodash.set");
 import tools = require('./tools');
+import Endpoint from "./endpoint";
 
 export = {
-    async writePostmanCollectionFile(config: scribe.Config, groupedEndpoints: { [groupName: string]: scribe.Endpoint[] }) {
+    async writePostmanCollectionFile(config: scribe.Config, groupedEndpoints: Record<string, Endpoint[]>) {
         tools.info(`Writing Postman collection to ${path.resolve(config.outputPath)}...`);
 
         const postman = require("./writers/postman")(config);
@@ -25,7 +26,7 @@ export = {
         tools.success("Postman collection generated.");
     },
 
-    async writeOpenAPISpecFile(config: scribe.Config, groupedEndpoints: { [groupName: string]: scribe.Endpoint[] }) {
+    async writeOpenAPISpecFile(config: scribe.Config, groupedEndpoints: Record<string, Endpoint[]>) {
         tools.info(`Writing OpenAPI spec to ${path.resolve(config.outputPath)}...`);
 
         const openapi = require("./writers/openapi")(config);
@@ -50,7 +51,7 @@ export = {
         tools.success("OpenAPI spec generated.");
     },
 
-    async writeMarkdownAndHTMLDocs(config: scribe.Config, groupedEndpoints?: { [groupName: string]: scribe.Endpoint[] }, shouldOverwriteMarkdownFiles: boolean = false) {
+    async writeMarkdownAndHTMLDocs(config: scribe.Config, groupedEndpoints?: Record<string, Endpoint[]>, shouldOverwriteMarkdownFiles: boolean = false) {
         const sourceOutputPath = path.resolve('docs');
         if (groupedEndpoints) {
             const markdown = require("./writers/markdown")(config);

@@ -13,7 +13,7 @@ const EMPTY = {};
 
 export = (config: scribe.Config) => {
 
-    function makeOpenAPISpec(groupedEndpoints: { [groupName: string]: scribe.Endpoint[] }) {
+    function makeOpenAPISpec(groupedEndpoints: { [groupName: string]: scribe.Route[] }) {
         const spec: OpenAPIObject = Object.assign({
             openapi: OPENAPI_SCHEMA_VERSION,
             info: {
@@ -32,17 +32,17 @@ export = (config: scribe.Config) => {
         return spec;
     }
 
-    function generatePathsSpec(groupedEndpoints: { [groupName: string]: scribe.Endpoint[] }) {
+    function generatePathsSpec(groupedEndpoints: { [groupName: string]: scribe.Route[] }) {
         // flatten into a single array
         const allEndpoints = collect(groupedEndpoints).flatten(1);
         // OpenAPI groups endpoints by path, then method
-        const groupedByPath = allEndpoints.groupBy((endpoint: scribe.Endpoint) => {
+        const groupedByPath = allEndpoints.groupBy((endpoint: scribe.Route) => {
             const path = endpoint.uri.replace(/(:.+)?\?/g, "$1"); // Remove optional parameters indicator in p
             return '/' + path.replace(/^\//, '');
         });
 
         return groupedByPath.map((endpoints, path: string) => {
-            const operations = endpoints.mapWithKeys((endpoint: scribe.Endpoint) => {
+            const operations = endpoints.mapWithKeys((endpoint: scribe.Route) => {
                 const spec: OperationObject = {
                     summary: endpoint.metadata.title,
                     description: endpoint.metadata.description || '',
@@ -167,7 +167,7 @@ function generateSecurityPartialSpec(config: scribe.Config) {
     };
 }
 
-function generateEndpointParametersSpec(endpoint: scribe.Endpoint) {
+function generateEndpointParametersSpec(endpoint: scribe.Route) {
     const parameters = [];
 
     if (endpoint.queryParameters) {
@@ -209,7 +209,7 @@ function getResponseDescription(response: scribe.Response): string {
     return String(response.description || '');
 }
 
-function generateResponseContentSpec(responseContent: string | null, endpoint: scribe.Endpoint): ContentObject {
+function generateResponseContentSpec(responseContent: string | null, endpoint: scribe.Route): ContentObject {
 
     if (typeof responseContent == 'string' && responseContent.startsWith("<<binary>>")) {
         return {
@@ -335,7 +335,7 @@ function generateResponseContentSpec(responseContent: string | null, endpoint: s
     }
 }
 
-function generateEndpointResponsesSpec(endpoint: scribe.Endpoint) {
+function generateEndpointResponsesSpec(endpoint: scribe.Route) {
     // See https://swagger.io/docs/specification/describing-responses/
     const responses = {};
 
@@ -359,7 +359,7 @@ function generateEndpointResponsesSpec(endpoint: scribe.Endpoint) {
     return Object.keys(responses).length > 0 ? responses : EMPTY;
 }
 
-function generateEndpointRequestBodySpec(endpoint: scribe.Endpoint): RequestBodyObject {
+function generateEndpointRequestBodySpec(endpoint: scribe.Route): RequestBodyObject {
     const body: Partial<RequestBodyObject> = {
         content: {},
     };

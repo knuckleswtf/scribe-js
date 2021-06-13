@@ -3,7 +3,7 @@ import utils = require("../../utils/parameters");
 
 const { getParameterExample } = utils;
 
-function run(endpoint: scribe.Endpoint): scribe.BodyParameters {
+function run(endpoint: scribe.Route): scribe.BodyParameters {
     const handler = endpoint.handler;
 
     if (typeof handler != 'function') {

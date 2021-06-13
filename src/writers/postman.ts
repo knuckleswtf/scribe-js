@@ -17,7 +17,7 @@ const POSTMAN_SCHEMA_VERSION = '2.1.0';
 export = (config: scribe.Config) => {
     const parsedUrl = new URL(config.baseUrl);
 
-    function makePostmanCollection(groupedEndpoints: { [groupName: string]: scribe.Endpoint[] }) {
+    function makePostmanCollection(groupedEndpoints: { [groupName: string]: scribe.Route[] }) {
         const collection: CollectionDefinition & { info: { description: string, schema: string, _postman_id: string } } = {
             variable: [
                 {
@@ -83,7 +83,7 @@ export = (config: scribe.Config) => {
         }
     }
 
-    function generateEndpointItem(endpoint: scribe.Endpoint): ItemDefinition {
+    function generateEndpointItem(endpoint: scribe.Route): ItemDefinition {
         return {
             name: endpoint.metadata.title !== '' ? endpoint.metadata.title : endpoint.uri,
             request: {
@@ -98,7 +98,7 @@ export = (config: scribe.Config) => {
         };
     }
 
-    function generateUrlObject(endpoint: scribe.Endpoint): UrlDefinition {
+    function generateUrlObject(endpoint: scribe.Route): UrlDefinition {
         // URL Parameters are collected by the `UrlParameters` strategies, but only make sense if they're in the route
         // definition. Filter out any URL parameters that don't appear in the URL.
         const urlParams = Object.entries(endpoint.urlParameters).filter(([key, data]) => endpoint.uri.includes(`:${key}`));
@@ -224,7 +224,7 @@ export = (config: scribe.Config) => {
         return body;
     }
 
-    function resolveHeadersForEndpoint(endpoint: scribe.Endpoint): HeaderDefinition[] {
+    function resolveHeadersForEndpoint(endpoint: scribe.Route): HeaderDefinition[] {
         const headers = Object.assign({}, endpoint.headers);
 
         const [where, authParam] = getAuthParamToExclude();

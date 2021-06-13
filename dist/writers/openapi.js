@@ -150,7 +150,7 @@ function generateResponseContentSpec(responseContent, endpoint) {
                         schema: {
                             type: 'array',
                             items: {
-                                type: 'object',
+                                type: 'object', // No better idea what to put here
                             },
                             example: decoded,
                         }

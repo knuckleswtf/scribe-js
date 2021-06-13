@@ -54,7 +54,7 @@ export declare namespace scribe {
         content: string
     }
 
-    export interface Endpoint {
+    export interface Route {
         uri: string,
         boundUri?: string,
         methods: string[],
@@ -71,7 +71,7 @@ export declare namespace scribe {
         responses?: Response[]
         responseFields?: ResponseFields
         handler: Function,
-        docblock?: DocBlock,
+        docblock?: Partial<DocBlock>,
         auth?: string,
         _adonis?: any,
         _express?: any,
@@ -92,24 +92,20 @@ export declare namespace scribe {
         baseUrl: string,
         methods: Array<'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | '*'>,
         env: Record<string, any>,
-        bodyParams: {
+        bodyParams: {},
+        queryParams: {},
+        fileParams: {},
+    }
 
-        },
-        queryParams: {
-
-        },
-        fileParams: {
-
-        },
+    export interface RouteGroupApply {
+        headers: Record<string, any>,
+        responseCalls: ResponseCallRules
     }
 
     export interface RouteGroup {
         include: string[],
         exclude: string[],
-        apply: {
-            headers: Record<string, any>,
-            responseCalls: ResponseCallRules
-        }
+        apply: RouteGroupApply,
     }
 
     export interface Config {
@@ -144,32 +140,6 @@ export declare namespace scribe {
             [stage in Stage]: string[]
         },
         fakerSeed: number | null;
-    }
-
-    export interface Strategy<T = any> {
-        routers: SupportedRouters[] | null,
-        run: (endpoint: Endpoint, config: Config, routeGroup: typeof config.routes[0]) => T
-    }
-
-    export interface MetadataStrategy extends Strategy<Metadata> {
-    }
-
-    export interface HeadersStrategy extends Strategy<Headers> {
-    }
-
-    export interface UrlParametersStrategy extends Strategy<UrlParameters> {
-    }
-
-    export interface QueryParametersStrategy extends Strategy<QueryParameters> {
-    }
-
-    export interface BodyParametersStrategy extends Strategy<BodyParameters> {
-    }
-
-    export interface ResponsesStrategy extends Strategy<Response[]> {
-    }
-
-    export interface ResponseFieldsStrategy extends Strategy<ResponseFields> {
     }
 
     export interface DocBlock {

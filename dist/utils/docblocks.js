@@ -97,11 +97,11 @@ async function getDocBlockForEndpoint(endpoint) {
     var _a;
     const [file = null, line = null] = endpoint.declaredAt;
     if (!file) {
-        return null;
+        return {};
     }
     const fileDocBlocks = (_a = allDocBlocks[file]) !== null && _a !== void 0 ? _a : await parseDocBlocksFromFile(file);
     const relevantDocBlock = fileDocBlocks.find(d => d.endsAt === (line - 1));
-    return relevantDocBlock ? parseDocBlockString(relevantDocBlock.content) : null;
+    return relevantDocBlock ? parseDocBlockString(relevantDocBlock.content) : {};
 }
 function transformFieldListToObject(fields) {
     return [].concat(fields).reduce((all, paramTag) => {

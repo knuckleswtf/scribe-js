@@ -116,15 +116,15 @@ function parseDocBlockString(docBlock: string): DocBlock {
     return result;
 }
 
-async function getDocBlockForEndpoint(endpoint: scribe.Endpoint): Promise<DocBlock> {
+async function getDocBlockForEndpoint(endpoint: scribe.Route): Promise<DocBlock|{}> {
     const [file = null, line = null] = endpoint.declaredAt;
     if (!file) {
-        return null;
+        return {};
     }
 
     const fileDocBlocks = allDocBlocks[file] ?? await parseDocBlocksFromFile(file);
     const relevantDocBlock = fileDocBlocks.find(d => d.endsAt === (line - 1));
-    return relevantDocBlock ? parseDocBlockString(relevantDocBlock.content) : null;
+    return relevantDocBlock ? parseDocBlockString(relevantDocBlock.content) : {};
 }
 
 export = {

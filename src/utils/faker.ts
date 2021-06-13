@@ -10,5 +10,6 @@ export = (seed: number = null) => {
         faker.seed(seed);
     }
 
-    return fakerInstance = faker;
+    fakerInstance = faker;
+    return fakerInstance;
 }

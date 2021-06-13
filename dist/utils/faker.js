@@ -8,6 +8,7 @@ module.exports = (seed = null) => {
     if (seed) {
         faker.seed(seed);
     }
-    return fakerInstance = faker;
+    fakerInstance = faker;
+    return fakerInstance;
 };
 //# sourceMappingURL=faker.js.map

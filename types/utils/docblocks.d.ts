@@ -6,7 +6,7 @@ declare function parseDocBlocksFromFile(file: any): Promise<{
     endsAt: number;
 }[]>;
 declare function parseDocBlockString(docBlock: string): DocBlock;
-declare function getDocBlockForEndpoint(endpoint: scribe.Endpoint): Promise<DocBlock>;
+declare function getDocBlockForEndpoint(endpoint: scribe.Route): Promise<DocBlock | {}>;
 declare const _default: {
     parseDocBlocksFromFile: typeof parseDocBlocksFromFile;
     parseDocBlockString: typeof parseDocBlockString;

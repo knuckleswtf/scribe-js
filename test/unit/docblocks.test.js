@@ -130,7 +130,7 @@ test('can retrieve the docblock for an endpoint based on its declaration file an
     const file1 = path.resolve(__dirname + '/../fixtures/file_with_docblocks.js');
 
     let docBlock = await getDocBlockForEndpoint({declaredAt: [file1, 11]});
-    expect(docBlock).toEqual(null);
+    expect(docBlock).toMatchObject({});
 
     docBlock = await getDocBlockForEndpoint({declaredAt: [file1, 42]});
     expect(docBlock).toEqual({
@@ -183,5 +183,5 @@ test('can retrieve the docblock for an endpoint based on its declaration file an
     );
 
     docBlock = await getDocBlockForEndpoint({declaredAt: [file1, 45]});
-    expect(docBlock).toEqual(null);
+    expect(docBlock).toMatchObject({});
 });

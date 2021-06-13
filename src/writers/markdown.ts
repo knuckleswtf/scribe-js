@@ -15,7 +15,7 @@ export = (config: scribe.Config) => {
     let fileModificationTimesFile = path.resolve('public/docs/.filemtimes');
 
     function writeDocs(
-        groupedEndpoints: { [groupName: string]: scribe.Endpoint[] },
+        groupedEndpoints: { [groupName: string]: scribe.Route[] },
         sourceOutputPath: string,
         shouldOverwriteMarkdownFiles: boolean
     ) {
@@ -115,7 +115,7 @@ export = (config: scribe.Config) => {
     }
 
     function writeGroupMarkdownFiles(
-        groupedEndpoints: { [groupName: string]: scribe.Endpoint[] },
+        groupedEndpoints: { [groupName: string]: scribe.Route[] },
         sourceOutputPath: string,
         shouldOverwriteMarkdownFiles: boolean = false
     ) {

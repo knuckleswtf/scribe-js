@@ -10,7 +10,8 @@
     "publish:core": "npm publish --access public",
     "publish:adonis": "cd ./frameworks/adonis && npm publish --access public",
     "publish:express": "cd ./frameworks/express && npm publish --access public",
-    "publish:restify": "cd ./frameworks/restify && npm publish --access public"
+    "publish:restify": "cd ./frameworks/restify && npm publish --access public",
+    "tsc": "tsc"
   },
   "repository": {
     "type": "git",
@@ -63,7 +64,7 @@
     "lerna": "^3.22.1",
     "openapi3-ts": "^1.4.0",
     "shx": "^0.3.2",
-    "typescript": "^3.9.3"
+    "typescript": "^4.3"
   },
   "engines": {
     "node": ">=12.4.0"

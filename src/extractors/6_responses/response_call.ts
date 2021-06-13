@@ -6,7 +6,7 @@ import * as qs from "querystring";
 const debug = require('debug')('lib:scribe:responsecall');
 const tools = require('./../../tools');
 
-function shouldMakeResponseCall(config: scribe.Config, endpoint: scribe.Endpoint, routeGroup: typeof config.routes[0]) {
+function shouldMakeResponseCall(config: scribe.Config, endpoint: scribe.Route, routeGroup: typeof config.routes[0]) {
     // If there's already a success response, don't make a response call
     if (endpoint.responses.find(r => r.status >= 200 && r.status <= 300)) {
         return false;
@@ -22,7 +22,7 @@ function shouldMakeResponseCall(config: scribe.Config, endpoint: scribe.Endpoint
     return false;
 }
 
-async function run(endpoint: scribe.Endpoint, config: scribe.Config, routeGroup: typeof config.routes[0]): Promise<scribe.Response[]> {
+async function run(endpoint: scribe.Route, config: scribe.Config, routeGroup: typeof config.routes[0]): Promise<scribe.Response[]> {
     if (!shouldMakeResponseCall(config, endpoint, routeGroup)) {
         return [];
     }
@@ -34,7 +34,7 @@ export = {
     run
 };
 
-function makeResponseCall(responseCallRules: scribe.ResponseCallRules, endpoint: scribe.Endpoint) {
+function makeResponseCall(responseCallRules: scribe.ResponseCallRules, endpoint: scribe.Route) {
     configureEnvironment(responseCallRules);
 
     setAuthFieldProperly(endpoint);
@@ -142,7 +142,7 @@ function configureEnvironment(responseCallRules: scribe.ResponseCallRules) {
     }
 }
 
-function setAuthFieldProperly(endpoint: scribe.Endpoint): void {
+function setAuthFieldProperly(endpoint: scribe.Route): void {
     if (!endpoint.auth) {
         return;
     }

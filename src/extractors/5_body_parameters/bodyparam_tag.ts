@@ -1,7 +1,7 @@
 import {scribe} from "../../../typedefs/core";
 const {getParameterExample, castValueToType} = require("../../utils/parameters");
 
-async function run(endpoint: scribe.Endpoint, config) {
+async function run(endpoint: scribe.Route, config) {
     return Object.fromEntries(Object.values(endpoint.docblock.bodyParam || {}).map(p => {
         if (p.value == null && !((p.description || '').includes(' No-example'))) {
             p.value = getParameterExample(p.type);
