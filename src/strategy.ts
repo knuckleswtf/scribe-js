@@ -18,7 +18,7 @@ class Strategy<T extends StrategyReturnTypes> {
     constructor(private config: scribe.Config) {
     }
 
-    shouldInvoke(endpoint: Endpoint, routeGroupRules: scribe.RouteGroupApply, currentRouter: scribe.SupportedRouters): boolean {
+    shouldRun(endpoint: Endpoint, routeGroupRules: scribe.RouteGroupApply, currentRouter: scribe.SupportedRouters): boolean {
         if (this.routers == null || this.routers.length == 0) {
             return true;
         }
@@ -27,7 +27,7 @@ class Strategy<T extends StrategyReturnTypes> {
     }
 
     invoke(endpoint: Endpoint, routeGroupRules: scribe.RouteGroupApply, currentRouter: scribe.SupportedRouters): T | Promise<T> {
-        if (this.shouldInvoke(endpoint, routeGroupRules, currentRouter)) {
+        if (this.shouldRun(endpoint, routeGroupRules, currentRouter)) {
             return this.run(endpoint, routeGroupRules, currentRouter);
         }
 

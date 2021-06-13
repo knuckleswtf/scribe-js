@@ -1,5 +1,6 @@
 import { scribe } from "../../../typedefs/core";
-declare function run(endpoint: scribe.Route, config: scribe.Config): Promise<{
+import Endpoint from "../../endpoint";
+declare function run(endpoint: Endpoint, config: scribe.Config): Promise<{
     groupName: string;
     groupDescription: string;
     title: string;

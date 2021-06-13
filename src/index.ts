@@ -92,9 +92,9 @@ class Scribe {
 
 module.exports = {
     generate(
+        endpoints: scribe.Route[],
         config: scribe.Config,
         router: scribe.SupportedRouters,
-        endpoints: scribe.Route[],
         serverFile?: string,
         options = defaultOptions
     ) {

@@ -1,6 +1,6 @@
 "use strict";
-async function run(endpoint, config, routeGroup) {
-    return routeGroup.apply.headers || {};
+async function run(endpoint, config, routeGroupApply) {
+    return routeGroupApply.headers || {};
 }
 module.exports = {
     routers: [],

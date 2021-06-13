@@ -12,6 +12,7 @@ class Endpoint {
     bodyParameters: scribe.BodyParameters = {};
     responses: scribe.Response[] = [];
     responseFields: scribe.ResponseFields = {};
+    docblock: Partial<scribe.DocBlock>;
     boundUri = '';
     /**
      * Authentication info for this endpoint. In the form [{where}, {name}, {sample}]
@@ -22,17 +23,13 @@ class Endpoint {
     cleanQueryParameters: Record<string, any> = {};
     cleanBodyParameters: Record<string, any> = {};
     fileParameters: Record<string, any> = {};
+    handler: Function;
 
     constructor(endpointDetails: scribe.Route) {
         this.uri = endpointDetails.uri;
         this.methods = endpointDetails.methods;
-        this.metadata = endpointDetails.metadata;
-        this.headers = endpointDetails.headers;
-        this.urlParameters = endpointDetails.urlParameters;
-        this.queryParameters = endpointDetails.queryParameters;
-        this.bodyParameters = endpointDetails.bodyParameters;
-        this.responses = endpointDetails.responses;
-        this.responseFields = endpointDetails.responseFields;
+        this.docblock = endpointDetails.docblock;
+        this.handler = endpointDetails.handler;
     }
 
     add(stage: string, data) {
@@ -42,7 +39,7 @@ class Endpoint {
 
         switch (stage) {
             case 'responses':
-                this.responses.concat(data);
+                this.responses = this.responses.concat(data);
                 break;
             default:
                 this[stage] = Object.assign({}, this[stage], data);

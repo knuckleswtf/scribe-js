@@ -5,7 +5,7 @@ declare class Strategy<T extends StrategyReturnTypes> {
     private config;
     private routers?;
     constructor(config: scribe.Config);
-    shouldInvoke(endpoint: Endpoint, routeGroupRules: scribe.RouteGroupApply, currentRouter: scribe.SupportedRouters): boolean;
+    shouldRun(endpoint: Endpoint, routeGroupRules: scribe.RouteGroupApply, currentRouter: scribe.SupportedRouters): boolean;
     invoke(endpoint: Endpoint, routeGroupRules: scribe.RouteGroupApply, currentRouter: scribe.SupportedRouters): T | Promise<T>;
     private run;
 }

@@ -5,6 +5,7 @@ const {normalizeTypeName} = require("./parameters");
 import {scribe} from "../../typedefs/core";
 import BodyParameter = scribe.BodyParameter;
 import DocBlock = scribe.DocBlock;
+import ResponseField = scribe.ResponseField;
 
 
 const defaultTagValues = {
@@ -106,7 +107,11 @@ function parseDocBlockString(docBlock: string): DocBlock {
     result.urlParam = transformFieldListToObject(result.urlParam);
     result.queryParam = transformFieldListToObject(result.queryParam);
     result.bodyParam = transformFieldListToObject(result.bodyParam);
-    result.responseField = transformFieldListToObject(result.responseField);
+    result.responseField =  [].concat(result.responseField).reduce((all, paramTag) => {
+        const parsed = parseResponseFieldTagContent(paramTag);
+        all[parsed.name] = parsed;
+        return all;
+    }, {});
 
     result.response = [].concat(result.response).map(parseResponseTagContent);
     result.responseFile = [].concat(result.responseFile).map(parseResponseFileTagContent);
@@ -142,6 +147,8 @@ function transformFieldListToObject(fields) {
 }
 
 function parseParameterTagContent(tagContent: string): BodyParameter {
+    // Get rid of any rogue trailing slashes (from the end of the docblocK)
+    tagContent = tagContent.replace("\n/", '');
     let [, type, name, required, description] = /\s*{([\S]+?)}\s+([\S]+)(\s+required\s*)?([\s\S]*)/.exec(tagContent);
     let value;
 
@@ -157,11 +164,23 @@ function parseParameterTagContent(tagContent: string): BodyParameter {
     description  = description.trim();
     return {
         name,
-        // @ts-ignore
         type: normalizeTypeName(type),
         required: required ? required.includes('required') : false,
         description: description || null,
         value: value ? value.trim() : null,
+    };
+}
+
+function parseResponseFieldTagContent(tagContent: string): ResponseField {
+    let parsedContent = /({[\S]+}\s+)?(.+?)\s+([\s\S]*)/.exec(tagContent);
+    let [_, type, name, description] = parsedContent;
+    type = type ? type.trim().replace(/{}/, '') : '';
+
+    description  = description.trim();
+    return {
+        name,
+        type: normalizeTypeName(type),
+        description: description || null,
     };
 }
 

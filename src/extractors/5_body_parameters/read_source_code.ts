@@ -1,9 +1,10 @@
 import {scribe} from "../../../typedefs/core";
 import utils = require("../../utils/parameters");
+import Endpoint from "../../endpoint";
 
 const { getParameterExample } = utils;
 
-function run(endpoint: scribe.Route): scribe.BodyParameters {
+function run(endpoint: Endpoint): scribe.BodyParameters {
     const handler = endpoint.handler;
 
     if (typeof handler != 'function') {

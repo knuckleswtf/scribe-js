@@ -2,6 +2,7 @@
 import trim = require('lodash.trim');
 import fs = require('fs');
 import path = require('path');
+
 import Handlebars = require("handlebars");
 
 require('handlebars-helpers')(['string', 'comparison', 'object'], {handlebars: Handlebars});

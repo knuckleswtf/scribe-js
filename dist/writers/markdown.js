@@ -163,7 +163,7 @@ module.exports = (config) => {
                 endpoints,
                 groupName,
                 groupDescription: (_b = (_a = endpoints.find(e => Boolean(e.metadata.groupDescription))) === null || _a === void 0 ? void 0 : _a.metadata.groupDescription) !== null && _b !== void 0 ? _b : '',
-            });
+            }, { allowProtoPropertiesByDefault: true });
             // @ts-ignore
             const fileName = slugify(groupName, { lower: true });
             const routeGroupMarkdownFile = sourceOutputPath + `/groups/${fileName}.md`;

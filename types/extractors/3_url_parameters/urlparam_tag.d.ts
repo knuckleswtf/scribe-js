@@ -1,5 +1,6 @@
 import { scribe } from "../../../typedefs/core";
-declare function run(endpoint: scribe.Route, config: any): Promise<{
+import Endpoint from "../../endpoint";
+declare function run(endpoint: Endpoint, config: scribe.Config): Promise<{
     [k: string]: scribe.Parameter;
 }>;
 declare const _default: {

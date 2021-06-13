@@ -1,6 +1,7 @@
 import {scribe} from "../../../typedefs/core";
+import Endpoint from "../../endpoint";
 
-async function run(endpoint: scribe.Route, config: scribe.Config) {
+async function run(endpoint: Endpoint, config: scribe.Config) {
     const docblock = endpoint.docblock;
     let isAuthenticated;
     if (docblock.authenticated) {

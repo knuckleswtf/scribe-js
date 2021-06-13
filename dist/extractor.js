@@ -75,9 +75,21 @@ class Extractor {
     }
     async iterateOverStrategies(stage, strategies, endpoint, rulesToApply) {
         for (let strategyName of strategies) {
-            const strategyClass = require(strategyName);
-            const strategy = new strategyClass(this.config);
-            const data = await strategy.invoke(endpoint, rulesToApply, this.router);
+            const strategyClassOrObject = require(strategyName);
+            let data = null;
+            if ('run' in strategyClassOrObject) {
+                // Simple object with a `run` method and `routers` list
+                if (strategyClassOrObject.routers == null
+                    || strategyClassOrObject.routers.length == 0
+                    || strategyClassOrObject.routers.includes(this.router)) {
+                    data = await strategyClassOrObject.run(endpoint, this.config, rulesToApply, this.router);
+                }
+            }
+            else {
+                // Strategy class
+                const strategy = new strategyClassOrObject(this.config);
+                data = await strategy.invoke(endpoint, rulesToApply, this.router);
+            }
             endpoint.add(stage, data);
         }
     }
@@ -118,7 +130,7 @@ class Extractor {
         };
         return Object.fromEntries(stages.map(stage => {
             var _a;
-            return [stage, union(defaultStrategies, (_a = this.config.strategies[stage]) !== null && _a !== void 0 ? _a : [])];
+            return [stage, union(defaultStrategies[stage], (_a = this.config.strategies[stage]) !== null && _a !== void 0 ? _a : [])];
         }));
     }
     addAuthField(endpoint) {

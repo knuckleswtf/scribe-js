@@ -1,32 +1,32 @@
 import {scribe} from "../../../typedefs/core";
+import Endpoint from "../../endpoint";
+
 import fs = require("fs");
 import path = require("path");
-import * as qs from "querystring";
+import qs = require("querystring");
 
 const debug = require('debug')('lib:scribe:responsecall');
 const tools = require('./../../tools');
 
-function shouldMakeResponseCall(config: scribe.Config, endpoint: scribe.Route, routeGroup: typeof config.routes[0]) {
+function shouldMakeResponseCall(config: scribe.Config, endpoint: Endpoint, routeGroupApply: scribe.RouteGroupApply) {
     // If there's already a success response, don't make a response call
     if (endpoint.responses.find(r => r.status >= 200 && r.status <= 300)) {
         return false;
     }
 
-    const allowedMethods = routeGroup.apply.responseCalls.methods;
+    const allowedMethods = routeGroupApply.responseCalls.methods;
 
     // @ts-ignore
-    if (allowedMethods.includes('*') || allowedMethods.includes(endpoint.methods[0].toUpperCase())) {
-        return true;
-    }
+    return allowedMethods.includes('*') || allowedMethods.includes(endpoint.methods[0].toUpperCase());
 
-    return false;
+
 }
 
-async function run(endpoint: scribe.Route, config: scribe.Config, routeGroup: typeof config.routes[0]): Promise<scribe.Response[]> {
-    if (!shouldMakeResponseCall(config, endpoint, routeGroup)) {
+async function run(endpoint: Endpoint, config: scribe.Config, routeGroupApply: scribe.RouteGroupApply): Promise<scribe.Response[]> {
+    if (!shouldMakeResponseCall(config, endpoint, routeGroupApply)) {
         return [];
     }
-    return makeResponseCall(routeGroup.apply.responseCalls, endpoint);
+    return makeResponseCall(routeGroupApply.responseCalls, endpoint);
 }
 
 export = {
@@ -34,7 +34,7 @@ export = {
     run
 };
 
-function makeResponseCall(responseCallRules: scribe.ResponseCallRules, endpoint: scribe.Route) {
+function makeResponseCall(responseCallRules: scribe.ResponseCallRules, endpoint: Endpoint) {
     configureEnvironment(responseCallRules);
 
     setAuthFieldProperly(endpoint);
@@ -68,8 +68,17 @@ function makeResponseCall(responseCallRules: scribe.ResponseCallRules, endpoint:
 
                 const returnResponse = () => {
                     responseContent = data;
+
+                    try {
+                        // Pretty print JSON responses
+                        const parsedResponse = JSON.parse(responseContent);
+                        responseContent = JSON.stringify(parsedResponse, null, 4);
+                    } catch (e) {
+
+                    }
+
                     resolve({
-                        status: res.statusCode,
+                        status: Number(res.statusCode),
                         description: '',
                         content: responseContent
                     });
@@ -142,12 +151,12 @@ function configureEnvironment(responseCallRules: scribe.ResponseCallRules) {
     }
 }
 
-function setAuthFieldProperly(endpoint: scribe.Route): void {
+function setAuthFieldProperly(endpoint: Endpoint): void {
     if (!endpoint.auth) {
         return;
     }
 
-    const [where, name, value] = endpoint.auth.split('.', 3);
+    const [where, name, value] = endpoint.auth;
     endpoint[where][name] = value;
 
     return;

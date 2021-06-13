@@ -1,7 +1,8 @@
 import {scribe} from "../../../typedefs/core";
+import Endpoint from "../../endpoint";
 
-async function run(endpoint: scribe.Route, config: scribe.Config, routeGroup: scribe.RouteGroup) {
-    return routeGroup.apply.headers || {}
+async function run(endpoint: Endpoint, config: scribe.Config, routeGroupApply: scribe.RouteGroupApply) {
+    return routeGroupApply.headers || {}
 }
 
 export = {

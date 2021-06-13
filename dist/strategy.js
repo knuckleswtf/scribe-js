@@ -4,14 +4,14 @@ class Strategy {
         this.config = config;
         this.routers = null;
     }
-    shouldInvoke(endpoint, routeGroupRules, currentRouter) {
+    shouldRun(endpoint, routeGroupRules, currentRouter) {
         if (this.routers == null || this.routers.length == 0) {
             return true;
         }
         return this.routers.includes(currentRouter);
     }
     invoke(endpoint, routeGroupRules, currentRouter) {
-        if (this.shouldInvoke(endpoint, routeGroupRules, currentRouter)) {
+        if (this.shouldRun(endpoint, routeGroupRules, currentRouter)) {
             return this.run(endpoint, routeGroupRules, currentRouter);
         }
         return null;

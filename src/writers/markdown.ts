@@ -140,7 +140,7 @@ export = (config: scribe.Config) => {
                 endpoints,
                 groupName,
                 groupDescription: endpoints.find(e => Boolean(e.metadata.groupDescription))?.metadata.groupDescription ?? '',
-            });
+            }, {allowProtoPropertiesByDefault: true});
 
             // @ts-ignore
             const fileName = slugify(groupName, {lower: true});

@@ -87,7 +87,11 @@ function parseDocBlockString(docBlock) {
     result.urlParam = transformFieldListToObject(result.urlParam);
     result.queryParam = transformFieldListToObject(result.queryParam);
     result.bodyParam = transformFieldListToObject(result.bodyParam);
-    result.responseField = transformFieldListToObject(result.responseField);
+    result.responseField = [].concat(result.responseField).reduce((all, paramTag) => {
+        const parsed = parseResponseFieldTagContent(paramTag);
+        all[parsed.name] = parsed;
+        return all;
+    }, {});
     result.response = [].concat(result.response).map(parseResponseTagContent);
     result.responseFile = [].concat(result.responseFile).map(parseResponseFileTagContent);
     result.header = transformHeaderListIntoKeyValue([].concat(result.header));
@@ -111,6 +115,8 @@ function transformFieldListToObject(fields) {
     }, {});
 }
 function parseParameterTagContent(tagContent) {
+    // Get rid of any rogue trailing slashes (from the end of the docblocK)
+    tagContent = tagContent.replace("\n/", '');
     let [, type, name, required, description] = /\s*{([\S]+?)}\s+([\S]+)(\s+required\s*)?([\s\S]*)/.exec(tagContent);
     let value;
     if (description) {
@@ -124,11 +130,21 @@ function parseParameterTagContent(tagContent) {
     description = description.trim();
     return {
         name,
-        // @ts-ignore
         type: normalizeTypeName(type),
         required: required ? required.includes('required') : false,
         description: description || null,
         value: value ? value.trim() : null,
+    };
+}
+function parseResponseFieldTagContent(tagContent) {
+    let parsedContent = /({[\S]+}\s+)?(.+?)\s+([\s\S]*)/.exec(tagContent);
+    let [_, type, name, description] = parsedContent;
+    type = type ? type.trim().replace(/{}/, '') : '';
+    description = description.trim();
+    return {
+        name,
+        type: normalizeTypeName(type),
+        description: description || null,
     };
 }
 function parseResponseTagContent(tagContent) {

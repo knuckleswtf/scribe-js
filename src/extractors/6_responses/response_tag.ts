@@ -1,6 +1,6 @@
-import {scribe} from "../../../typedefs/core";
+import Endpoint from "../../endpoint";
 
-async function run(endpoint: scribe.Route, config) {
+async function run(endpoint: Endpoint, config) {
     const docblock = endpoint.docblock;
 
     return docblock.response || [];

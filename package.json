@@ -61,6 +61,7 @@
     "@types/postman-collection": "^3.5.5",
     "busboy": "^0.3.1",
     "jest": "^26.1.0",
+    "js-ray": "^0.0.7",
     "lerna": "^3.22.1",
     "openapi3-ts": "^1.4.0",
     "shx": "^0.3.2",

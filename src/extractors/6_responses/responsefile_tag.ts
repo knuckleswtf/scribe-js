@@ -2,8 +2,9 @@ import {scribe} from "../../../typedefs/core";
 import fs = require("fs");
 import path = require("path");
 import tools = require('../../tools');
+import Endpoint from "../../endpoint";
 
-async function run(endpoint: scribe.Route, config: scribe.Config) {
+async function run(endpoint: Endpoint, config: scribe.Config) {
     const responseFileTags = endpoint.docblock.responseFile || [];
 
     const responses = [];

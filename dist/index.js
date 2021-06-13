@@ -68,7 +68,7 @@ class Scribe {
     }
 }
 module.exports = {
-    generate(config, router, endpoints, serverFile, options = defaultOptions) {
+    generate(endpoints, config, router, serverFile, options = defaultOptions) {
         return (new Scribe(config, router, endpoints, serverFile, options)).generate();
     }
 };
