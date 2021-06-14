@@ -186,6 +186,17 @@ function setObject(results: {}, path: string, value: any, source: {}, isRequired
     }
 }
 
+function prettyPrintResponseIfJson(content: string) {
+    try {
+        const parsedResponse = JSON.parse(content);
+        content = JSON.stringify(parsedResponse, null, 4);
+    } catch (e) {
+
+    }
+
+    return content;
+}
+
 export = {
     getBaseType,
     getParameterExample,
@@ -194,4 +205,5 @@ export = {
     normalizeTypeName,
     isArrayType,
     getBaseTypeFromArrayType,
+    prettyPrintResponseIfJson,
 };

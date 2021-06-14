@@ -7,6 +7,7 @@ import qs = require("querystring");
 
 const debug = require('debug')('lib:scribe:responsecall');
 const tools = require('./../../tools');
+const { prettyPrintResponseIfJson } = require("../../utils/parameters");
 
 function shouldMakeResponseCall(config: scribe.Config, endpoint: Endpoint, routeGroupApply: scribe.RouteGroupApply) {
     // If there's already a success response, don't make a response call
@@ -67,15 +68,7 @@ function makeResponseCall(responseCallRules: scribe.ResponseCallRules, endpoint:
                 });
 
                 const returnResponse = () => {
-                    responseContent = data;
-
-                    try {
-                        // Pretty print JSON responses
-                        const parsedResponse = JSON.parse(responseContent);
-                        responseContent = JSON.stringify(parsedResponse, null, 4);
-                    } catch (e) {
-
-                    }
+                    responseContent = prettyPrintResponseIfJson(data);
 
                     resolve({
                         status: Number(res.statusCode),

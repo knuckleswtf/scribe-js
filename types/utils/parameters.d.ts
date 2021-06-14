@@ -24,6 +24,7 @@ declare function getBaseType(typeName: string): string;
  * @param typeName
  */
 declare function getBaseTypeFromArrayType(typeName: string): string;
+declare function prettyPrintResponseIfJson(content: string): string;
 declare const _default: {
     getBaseType: typeof getBaseType;
     getParameterExample: typeof getParameterExample;
@@ -32,5 +33,6 @@ declare const _default: {
     normalizeTypeName: typeof normalizeTypeName;
     isArrayType: typeof isArrayType;
     getBaseTypeFromArrayType: typeof getBaseTypeFromArrayType;
+    prettyPrintResponseIfJson: typeof prettyPrintResponseIfJson;
 };
 export = _default;

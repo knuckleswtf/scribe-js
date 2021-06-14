@@ -2,7 +2,7 @@
 const docblockParser = require("docblock-parser");
 const fs = require("fs");
 const readline = require("readline");
-const { normalizeTypeName } = require("./parameters");
+const { normalizeTypeName, prettyPrintResponseIfJson } = require("./parameters");
 const defaultTagValues = {
     hideFromApiDocs: false,
     authenticated: false,
@@ -137,6 +137,8 @@ function parseParameterTagContent(tagContent) {
     };
 }
 function parseResponseFieldTagContent(tagContent) {
+    // Get rid of any rogue trailing slashes (from the end of the docblocK)
+    tagContent = tagContent.replace("\n/", '');
     let parsedContent = /({[\S]+}\s+)?(.+?)\s+([\s\S]*)/.exec(tagContent);
     let [_, type, name, description] = parsedContent;
     type = type ? type.trim().replace(/{}/, '') : '';
@@ -148,15 +150,25 @@ function parseResponseFieldTagContent(tagContent) {
     };
 }
 function parseResponseTagContent(tagContent) {
-    // Todo add support for scenarios
-    let [, status = 200, content = null] = /^(\d{3})?\s*(\S[\s\S]*)?$/.exec(tagContent);
-    content = content != null ? content.replace(/\n\/\s*$/, '').trim() : content; // For some reason, the docblock parser sometimes returns the final slash
+    // Get rid of any rogue trailing slashes (from the end of the docblocK)
+    tagContent = tagContent.replace("\n/", '');
+    const parsed = parseIntoContentAndAttributes(tagContent, ["status", "scenario"]);
+    let [, status = null, content = null] = /^(\d{3})?\s*(\S[\s\S]*)?$/.exec(parsed.content);
+    if (!status) {
+        status = parsed.attributes.status;
+    }
+    if (!status) {
+        status = 200;
+    }
     return {
-        status,
-        content
+        status: Number(status),
+        description: parsed.attributes.scenario ? `${status}, ${parsed.attributes.scenario}` : `${status}`,
+        content: prettyPrintResponseIfJson(content),
     };
 }
 function parseResponseFileTagContent(tagContent) {
+    // Get rid of any rogue trailing slashes (from the end of the docblocK)
+    tagContent = tagContent.replace("\n/", '');
     // Example content:  '404 responses/model.not.found.json {"type": "User"}'
     let [, status = 200, filePath = null, extraJson = null] = /^(\d{3})?\s*(.*?)({.*})?$/.exec(tagContent);
     return {
@@ -172,6 +184,28 @@ function transformHeaderListIntoKeyValue(tagContent) {
         headers[tagContent.shift()] = tagContent.shift();
     }
     return headers;
+}
+/**
+ * Parse an annotation like 'status=400 when="things go wrong" {"message": "failed"}'.
+ * Attributes are always optional and may appear at the start or the end of the string.
+ *
+ */
+function parseIntoContentAndAttributes(annotationContent, allowedAttributes) {
+    let parsedAttributes = {};
+    allowedAttributes.forEach(attribute => {
+        const regex = new RegExp(`${attribute}=([^\\s'"]+|".+?"|'.+?')\\s*`);
+        const matches = regex.exec(annotationContent);
+        if (matches) {
+            let [attributeAndValue, attributeValue] = matches;
+            annotationContent = annotationContent.replace(attributeAndValue, '');
+            // Remove any surrounding quotes on the value
+            parsedAttributes[attribute] = attributeValue.trim().replace(/(^["']|["']$)/g, '');
+        }
+    });
+    return {
+        content: annotationContent.trim(),
+        attributes: parsedAttributes
+    };
 }
 module.exports = {
     parseDocBlocksFromFile,

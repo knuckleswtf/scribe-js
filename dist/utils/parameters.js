@@ -157,6 +157,15 @@ function setObject(results, path, value, source, isRequired) {
         }
     }
 }
+function prettyPrintResponseIfJson(content) {
+    try {
+        const parsedResponse = JSON.parse(content);
+        content = JSON.stringify(parsedResponse, null, 4);
+    }
+    catch (e) {
+    }
+    return content;
+}
 module.exports = {
     getBaseType,
     getParameterExample,
@@ -165,5 +174,6 @@ module.exports = {
     normalizeTypeName,
     isArrayType,
     getBaseTypeFromArrayType,
+    prettyPrintResponseIfJson,
 };
 //# sourceMappingURL=parameters.js.map

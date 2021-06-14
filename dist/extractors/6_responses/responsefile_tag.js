@@ -2,6 +2,7 @@
 const fs = require("fs");
 const path = require("path");
 const tools = require("../../tools");
+const { prettyPrintResponseIfJson } = require("../../utils/parameters");
 async function run(endpoint, config) {
     const responseFileTags = endpoint.docblock.responseFile || [];
     const responses = [];
@@ -17,7 +18,7 @@ async function run(endpoint, config) {
             content = JSON.stringify(Object.assign(JSON.parse(content), JSON.parse(extraJson)));
         }
         responses.push({
-            content: content,
+            content: prettyPrintResponseIfJson(content),
             status: Number(t.status),
             description: '',
         });

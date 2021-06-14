@@ -1,7 +1,8 @@
 import docblockParser = require('docblock-parser');
 import fs = require('fs');
 import readline = require('readline');
-const {normalizeTypeName} = require("./parameters");
+const {normalizeTypeName, prettyPrintResponseIfJson} = require("./parameters");
+
 import {scribe} from "../../typedefs/core";
 import BodyParameter = scribe.BodyParameter;
 import DocBlock = scribe.DocBlock;
@@ -107,7 +108,7 @@ function parseDocBlockString(docBlock: string): DocBlock {
     result.urlParam = transformFieldListToObject(result.urlParam);
     result.queryParam = transformFieldListToObject(result.queryParam);
     result.bodyParam = transformFieldListToObject(result.bodyParam);
-    result.responseField =  [].concat(result.responseField).reduce((all, paramTag) => {
+    result.responseField = [].concat(result.responseField).reduce((all, paramTag) => {
         const parsed = parseResponseFieldTagContent(paramTag);
         all[parsed.name] = parsed;
         return all;
@@ -121,7 +122,7 @@ function parseDocBlockString(docBlock: string): DocBlock {
     return result;
 }
 
-async function getDocBlockForEndpoint(endpoint: scribe.Route): Promise<DocBlock|{}> {
+async function getDocBlockForEndpoint(endpoint: scribe.Route): Promise<DocBlock | {}> {
     const [file = null, line = null] = endpoint.declaredAt;
     if (!file) {
         return {};
@@ -161,7 +162,7 @@ function parseParameterTagContent(tagContent: string): BodyParameter {
         }
     }
 
-    description  = description.trim();
+    description = description.trim();
     return {
         name,
         type: normalizeTypeName(type),
@@ -172,11 +173,13 @@ function parseParameterTagContent(tagContent: string): BodyParameter {
 }
 
 function parseResponseFieldTagContent(tagContent: string): ResponseField {
+    // Get rid of any rogue trailing slashes (from the end of the docblocK)
+    tagContent = tagContent.replace("\n/", '');
     let parsedContent = /({[\S]+}\s+)?(.+?)\s+([\s\S]*)/.exec(tagContent);
     let [_, type, name, description] = parsedContent;
     type = type ? type.trim().replace(/{}/, '') : '';
 
-    description  = description.trim();
+    description = description.trim();
     return {
         name,
         type: normalizeTypeName(type),
@@ -184,17 +187,30 @@ function parseResponseFieldTagContent(tagContent: string): ResponseField {
     };
 }
 
-function parseResponseTagContent(tagContent) {
-    // Todo add support for scenarios
-    let [, status = 200, content = null] = /^(\d{3})?\s*(\S[\s\S]*)?$/.exec(tagContent);
-    content = content != null ? content.replace(/\n\/\s*$/, '').trim() : content; // For some reason, the docblock parser sometimes returns the final slash
+function parseResponseTagContent(tagContent): scribe.Response {
+    // Get rid of any rogue trailing slashes (from the end of the docblocK)
+    tagContent = tagContent.replace("\n/", '');
+    const parsed = parseIntoContentAndAttributes(tagContent, ["status", "scenario"] as const);
+
+    let [, status = null, content = null]: any[] = /^(\d{3})?\s*(\S[\s\S]*)?$/.exec(parsed.content);
+    if (!status) {
+        status = parsed.attributes.status;
+    }
+    if (!status) {
+        status = 200;
+    }
+
+
     return {
-        status,
-        content
+        status: Number(status),
+        description: parsed.attributes.scenario ? `${status}, ${parsed.attributes.scenario}` : `${status}`,
+        content: prettyPrintResponseIfJson(content),
     };
 }
 
 function parseResponseFileTagContent(tagContent) {
+    // Get rid of any rogue trailing slashes (from the end of the docblocK)
+    tagContent = tagContent.replace("\n/", '');
     // Example content:  '404 responses/model.not.found.json {"type": "User"}'
     let [, status = 200, filePath = null, extraJson = null] = /^(\d{3})?\s*(.*?)({.*})?$/.exec(tagContent);
     return {
@@ -211,4 +227,32 @@ function transformHeaderListIntoKeyValue(tagContent) {
         headers[tagContent.shift()] = tagContent.shift();
     }
     return headers;
+}
+
+/**
+ * Parse an annotation like 'status=400 when="things go wrong" {"message": "failed"}'.
+ * Attributes are always optional and may appear at the start or the end of the string.
+ *
+ */
+function parseIntoContentAndAttributes<T extends string>(
+    annotationContent: string, allowedAttributes: readonly T[]
+) {
+    let parsedAttributes: {[key in T]?: string} = {};
+
+    allowedAttributes.forEach(attribute => {
+        const regex = new RegExp(`${attribute}=([^\\s'"]+|".+?"|'.+?')\\s*`);
+        const matches = regex.exec(annotationContent);
+        if (matches) {
+            let [attributeAndValue, attributeValue] = matches;
+            annotationContent = annotationContent.replace(attributeAndValue, '');
+
+            // Remove any surrounding quotes on the value
+            parsedAttributes[attribute] = attributeValue.trim().replace(/(^["']|["']$)/g, '');
+        }
+    });
+
+    return {
+        content: annotationContent.trim(),
+        attributes: parsedAttributes
+    };
 }

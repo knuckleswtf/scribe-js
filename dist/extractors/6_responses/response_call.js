@@ -4,6 +4,7 @@ const path = require("path");
 const qs = require("querystring");
 const debug = require('debug')('lib:scribe:responsecall');
 const tools = require('./../../tools');
+const { prettyPrintResponseIfJson } = require("../../utils/parameters");
 function shouldMakeResponseCall(config, endpoint, routeGroupApply) {
     // If there's already a success response, don't make a response call
     if (endpoint.responses.find(r => r.status >= 200 && r.status <= 300)) {
@@ -41,14 +42,7 @@ function makeResponseCall(responseCallRules, endpoint) {
                 data += chunk;
             });
             const returnResponse = () => {
-                responseContent = data;
-                try {
-                    // Pretty print JSON responses
-                    const parsedResponse = JSON.parse(responseContent);
-                    responseContent = JSON.stringify(parsedResponse, null, 4);
-                }
-                catch (e) {
-                }
+                responseContent = prettyPrintResponseIfJson(data);
                 resolve({
                     status: Number(res.statusCode),
                     description: '',
