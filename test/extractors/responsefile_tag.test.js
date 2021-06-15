@@ -18,7 +18,7 @@ test('responsefile_tag strategy correctly extracts response from file', async ()
     const content = fs.readFileSync(__dirname + '/../fixtures/responsefile.json', 'utf8');
     expect(responses[0]).toEqual({
         status: 200,
-        content,
+        content: JSON.stringify(JSON.parse(content), null, 4),
         description: '',
     });
 });
@@ -40,12 +40,12 @@ test('responsefile_tag strategy works with multiple files and statuses and can o
     const content = fs.readFileSync(__dirname + '/../fixtures/responsefile.json', 'utf8');
     expect(responses[0]).toEqual({
         status: 201,
-        content,
+        content: JSON.stringify(JSON.parse(content), null, 4),
         description: '',
     });
     const parsedContent = JSON.parse(content);
     parsedContent.error = "not found";
-    const mergedContent = JSON.stringify(parsedContent);
+    const mergedContent = JSON.stringify(parsedContent, null, 4);
     expect(responses[1]).toEqual({
         status: 400,
         content: mergedContent,

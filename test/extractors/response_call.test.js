@@ -55,7 +55,7 @@ test('response_call strategy does not make call if rules forbid', async () => {
     };
     const config = {routes: [routeGroup]};
 
-    let responses = await strategy.run(endpoint, config, routeGroup);
+    let responses = await strategy.run(endpoint, config, routeGroup.apply);
     expect(responses).toHaveLength(0);
 });
 
@@ -77,7 +77,7 @@ test('response_call strategy does not make call if there is a 2xx response', asy
             }
         }
     };
-    let responses = await strategy.run(endpoint, {routes: [routeGroup]}, routeGroup);
+    let responses = await strategy.run(endpoint, {routes: [routeGroup]}, routeGroup.apply);
     expect(responses).toHaveLength(0);
 });
 
@@ -111,7 +111,7 @@ test('response_call strategy makes correct HTTP request to server', async () => 
     };
     const config = {routes: [routeGroup]};
 
-    let responses = await strategy.run(endpoint, config, routeGroup);
+    let responses = await strategy.run(endpoint, config, routeGroup.apply);
     expect(responses).toHaveLength(1);
     expect(responses[0]).toEqual({
         status: 200,
@@ -120,7 +120,7 @@ test('response_call strategy makes correct HTTP request to server', async () => 
             headers: sortObjectKeys(Object.assign({}, defaultHeaders, endpoint.headers)),
             query: endpoint.cleanQueryParameters,
             body: '',
-        }),
+        }, null, 4),
         description: '',
     });
 
@@ -140,7 +140,7 @@ test('response_call strategy makes correct HTTP request to server', async () => 
         responses: [],
     };
 
-    responses = await strategy.run(endpoint, config, routeGroup);
+    responses = await strategy.run(endpoint, config, routeGroup.apply);
     expect(responses).toHaveLength(1);
     expect(responses[0]).toEqual({
         status: 200,
@@ -154,7 +154,7 @@ test('response_call strategy makes correct HTTP request to server', async () => 
             ),
             query: endpoint.cleanQueryParameters,
             body: JSON.stringify(endpoint.cleanBodyParameters),
-        }),
+        }, null, 4),
         description: '',
     });
 });
@@ -219,7 +219,7 @@ test('response_call strategy handles file upload', async (done) => {
             done(err);
         })
         .listen(8101, "127.0.0.1",  async() => {
-            let responses = await strategy.run(endpoint, config, routeGroup);
+            let responses = await strategy.run(endpoint, config, routeGroup.apply);
 
             const defaultHeaders = {
                 "user-agent": "curl/7.22.0",
@@ -234,7 +234,7 @@ test('response_call strategy handles file upload', async (done) => {
                     headers: sortObjectKeys(Object.assign({}, defaultHeaders, endpoint.headers, {'transfer-encoding': 'chunked'})),
                     query: endpoint.cleanQueryParameters,
                     body: {testThis: "Just putting something here", another: "13"},
-                }),
+                }, null, 4),
                 description: '',
             });
 
