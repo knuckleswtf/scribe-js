@@ -17,7 +17,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Fixed errors with handling arrays of files (https://github.com/knuckleswtf/scribe-js/commit/dede0821f67ab08e8d4f75d31264b138f90dfee1)
 - Fixed errors with handling nested objects in arrays of objects (https://github.com/knuckleswtf/scribe-js/commit/26c1ef620f7b0155b0eca283c581fc9651860327)
 
-## 1.1.0 (Tuesday, 12 November 2020)
+## 1.3.0 (Tuesday, 15 June 2021)
+## Added
+- Support for attributes in docblocks (scenario=, status=)
+- Support for Express sub-apps and sub-routers
+
+## 1.1.0 (Thursday, 12 November 2020)
 ### Changes
 - tryitout.js will now include the current Scribe version number in its filename, for automatic cache busting (https://github.com/knuckleswtf/scribe-js/commit/37d68b6b235068125e714915a425056aaebd2d95)
 
