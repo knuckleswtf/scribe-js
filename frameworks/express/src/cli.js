@@ -73,14 +73,15 @@ program
         }
 
         const appObject = require(appFile);
-
         if (!appObject._router) {
-            tools.error("Couldn't find an export from your app file. Did you remember to export your `app` object?");
+            tools.error("Couldn't find an export from your app file. Did you remember to export your Express `app` object?");
             process.exit(1);
         }
 
-        if (!appObject._decoratedByScribe) {
-            tools.error("Something's not right. Did you remember to add `require('@knuckleswtf/scribe-express')(app)` before registering your Express routes?");
+        const decorator = require("./decorator");
+
+        if (!decorator.decorated) {
+            tools.error("Couldn't find any routes. Did you remember to add `require('@knuckleswtf/scribe-express')()` before registering your Express routes?");
             process.exit(1);
         }
 
@@ -89,7 +90,7 @@ program
         configObject.strategies = configObject.strategies || {};
         configObject.strategies.urlParameters = (configObject.strategies.urlParameters || []).concat(path.join(__dirname, './strategies/url_parameters/express_route_api'));
 
-        const endpoints = require('./get_routes.js')(appObject);
+        const endpoints = require('./get_routes.js')(decorator);
 
         const {generate} = require('@knuckleswtf/scribe');
         await generate(endpoints, configObject, 'express', serverFile, {overwriteMarkdownFiles: force});
