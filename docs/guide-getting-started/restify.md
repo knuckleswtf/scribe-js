@@ -35,6 +35,10 @@ module.exports = server;
 require('@knuckleswtf/scribe-restify')(server)
 ```
 
+```eval_rst
+.. Tip:: You can leave this line in permanently. When you run your app normally (eg with npm start or node), this line does nothing.
+```
+
 ## Do a test run
 Now let's do a test run. Run the command to generate your docs.
 

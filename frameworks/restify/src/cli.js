@@ -68,6 +68,7 @@ program
             return;
         }
 
+        process.env.SCRIBE_GENERATE = "1";
         let serverObject = require(serverFile);
 
         if (!(serverObject instanceof EventEmitter)) {

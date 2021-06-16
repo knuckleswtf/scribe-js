@@ -2,6 +2,10 @@
 const methods = ['get', 'post', 'put', 'patch', 'head', 'del'];
 
 module.exports = function (server) {
+    if (!process.env.SCRIBE_GENERATE) {
+        return;
+    }
+
     server._decoratedByScribe = true;
 
     decorateRestifyRouter(server);

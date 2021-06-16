@@ -29,7 +29,7 @@ require('@knuckleswtf/scribe-express')();
 ```
 
 ```eval_rst
-.. Tip:: You can leave this line in permanently. When `NODE_ENV` is `production`, this line does nothing.
+.. Tip:: You can leave this line in permanently. When you run your app normally (eg with npm start or node), this line does nothing.
 ```
 
 ## Do a test run

@@ -6,7 +6,7 @@ const rtrim = require('lodash.trimend');
 module.exports = decorator;
 
 function decorator() {
-    if (process.env.NODE_ENV === 'production') {
+    if (!process.env.SCRIBE_GENERATE) {
         return;
     }
 
@@ -29,13 +29,16 @@ function decorateExpress() {
         }
 
         httpMethods.forEach(function(httpMethod) {
-            // Decorate express.Router(), so we pick up route declarations on subrouters
             shimmer.wrap(exports.application, httpMethod, original => {
-                return patchRouterOrAppHttpVerbMethod(original, 'app', httpMethod);
+                return patchHttpVerbMethod(original, 'app', httpMethod);
             });
 
             shimmer.wrap(exports.Router, httpMethod, original => {
-                return patchRouterOrAppHttpVerbMethod(original, 'router', httpMethod);
+                return patchHttpVerbMethod(original, 'router', httpMethod);
+            });
+
+            shimmer.wrap(exports.Route.prototype, httpMethod, original => {
+                return patchHttpVerbMethod(original, 'route', httpMethod);
             });
         });
 
@@ -43,6 +46,16 @@ function decorateExpress() {
         shimmer.wrap(exports.application, 'use', original => {
             return patchAppUseMethod(original);
         });
+
+        // Handle app.route(path).get()
+        shimmer.wrap(exports.Router, 'route', original => {
+            return function (...args) {
+                const routeObject = original.apply(this, args);
+                routeObject.___router = this;
+                return routeObject;
+            }
+        });
+
 
         decorator.decorated = true;
 
@@ -113,9 +126,25 @@ function patchAppUseMethod(originalMethod) {
     };
 }
 
-function patchRouterOrAppHttpVerbMethod(originalMethod, type, method) {
+function patchHttpVerbMethod(originalMethod, type, method) {
     return function (...args) {
         const returnVal = originalMethod.apply(this, args);
+
+        if (type == 'route') {
+            const router = this.___router;
+
+            let frameAtCallSite = getFrameAtCallSite();
+            const {filePath, lineNumber} = getFilePathAndLineNumberFromCallStackFrame(frameAtCallSite);
+            const route = {
+                methods: Object.keys(this.methods).map(m => m.toUpperCase()),
+                uri: this.path,
+                declaredAt: [filePath, lineNumber],
+                handler: args[args.length - 1]
+            };
+            addRouteToExpressRouter(router, route);
+
+            return returnVal;
+        }
 
         if (args.length < 2 || typeof args[0] != 'string'
             || typeof args[args.length - 1] !== 'function') {

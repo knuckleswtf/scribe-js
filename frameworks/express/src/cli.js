@@ -72,11 +72,8 @@ program
             return;
         }
 
-        const appObject = require(appFile);
-        if (!appObject._router) {
-            tools.error("Couldn't find an export from your app file. Did you remember to export your Express `app` object?");
-            process.exit(1);
-        }
+        process.env.SCRIBE_GENERATE = "1";
+        require(appFile);
 
         const decorator = require("./decorator");
 
