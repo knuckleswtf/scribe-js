@@ -12,15 +12,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removals
 
-## 1.1.1 (Saturday, 14 November 2020)
-### Fixes
-- Fixed errors with handling arrays of files (https://github.com/knuckleswtf/scribe-js/commit/dede0821f67ab08e8d4f75d31264b138f90dfee1)
-- Fixed errors with handling nested objects in arrays of objects (https://github.com/knuckleswtf/scribe-js/commit/26c1ef620f7b0155b0eca283c581fc9651860327)
 
 ## 1.3.0 (Tuesday, 15 June 2021)
 ## Added
 - Support for attributes in docblocks (scenario=, status=)
 - Support for Express sub-apps and sub-routers
+
+## 1.4.0 (Wednesday, 16 June 2021)
+## Added
+- Support Express chainable routes
+
+## 1.1.1 (Saturday, 14 November 2020)
+### Fixes
+- Fixed errors with handling arrays of files (https://github.com/knuckleswtf/scribe-js/commit/dede0821f67ab08e8d4f75d31264b138f90dfee1)
+- Fixed errors with handling nested objects in arrays of objects (https://github.com/knuckleswtf/scribe-js/commit/26c1ef620f7b0155b0eca283c581fc9651860327)
 
 ## 1.1.0 (Thursday, 12 November 2020)
 ### Changes
