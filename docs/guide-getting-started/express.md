@@ -28,6 +28,10 @@ Got that? Cool. Finally, add the following line at the top of your app file. Mak
 require('@knuckleswtf/scribe-express')();
 ```
 
+```eval_rst
+.. Tip:: You can leave this line in permanently. When `NODE_ENV` is `production`, this line does nothing.
+```
+
 ## Do a test run
 Now let's do a test run. Run the command to generate your docs.
 
