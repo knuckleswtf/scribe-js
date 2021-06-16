@@ -71,10 +71,10 @@ Install with:
 npm i @knuckleswtf/scribe-express
 ```
 
-To generate your docs, you'll need to locate your "app file". Your app file is the file where you create your Express app. Make sure to export the `app` object from the file. Also, add this line in that file before registering your routes:
+To generate your docs, you'll need to locate your "app file". Your app file is the file where you create your main Express app. Add this line to the top of that file:
 
 ```js
-require('@knuckleswtf/scribe-express')(app)
+require('@knuckleswtf/scribe-express')();
 ```
 
 To generate your docs, run:
