@@ -13,11 +13,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Removals
 
 
-## 1.3.0 (Tuesday, 15 June 2021)
+## 1.5.0 (Thursday, 17 June 2021)
 ## Added
-- Support for attributes in docblocks (scenario=, status=)
-- Support for Express sub-apps and sub-routers
-
+- Improve Restify routing support
+  
 ## 1.4.0 (Wednesday, 16 June 2021)
 ## Added
 - Support Express chainable routes

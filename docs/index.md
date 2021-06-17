@@ -92,10 +92,10 @@ Install with:
 npm i @knuckleswtf/scribe-restify
 ```
 
-To generate your docs, you'll need to locate your "server file". Your server file is the file where you set up and start your Restify server. Make sure to export the `server` object from the file. Also, add this line in that file before registering your routes:
+To generate your docs, you'll need to locate your "server file". Your server file is the file where you set up and start your Restify server. Add this line in that file before, at the top, before you require restify:
 
 ```js
-require('@knuckleswtf/scribe-restify')(server)
+require('@knuckleswtf/scribe-restify')();
 ```
 
 To generate your docs, run:

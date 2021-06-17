@@ -1,45 +1,47 @@
-
 const methods = ['get', 'post', 'put', 'patch', 'head', 'del'];
 
-module.exports = function (server) {
+module.exports = decorator;
+
+function decorator(server) {
     if (!process.env.SCRIBE_GENERATE) {
         return;
     }
-
-    server._decoratedByScribe = true;
-
     decorateRestifyRouter(server);
 };
 
+decorator.decorated = false;
+decorator.allRoutes = [];
+
 function decorateRestifyRouter(server) {
-    methods.forEach(function decorateRouterMethodWithStackTraceCapturer(method) {
-        const original = server[method].bind(server);
-        server[method] = function (...args) {
-            const stackTrace = new Error().stack;
-            const frames = stackTrace.split("\n");
-            frames.shift();
+    const hook = require('require-in-the-middle');
+    const shimmer = require('shimmer');
 
-            let frameAtCallSite = frames[1];
+    hook(['restify/lib/router'], function (exports, name, basedir) {
+        shimmer.wrap(exports.prototype, 'mount', original => {
+            return function (...args) {
+                const returned = original.apply(this, args);
 
-            if (frameAtCallSite.includes('node_modules')) {
-                return original(...args);
-            }
+                const stackTrace = new Error().stack;
+                const frames = stackTrace.split("\n");
+                frames.shift();
 
-            frameAtCallSite = frames[1].replace(/.+\(|\)/g, '');
-            const [filePath, lineNumber, characterNumber]
-                = frameAtCallSite.split(/:(?=\d)/);  // any colon followed by a number. This is important bc file paths may have colons
+                let frameAtCallSite = frames[2].replace(/.+\(|\)/g, '');
+                const [filePath, lineNumber, characterNumber]
+                    = frameAtCallSite.split(/:(?=\d)/);  // any colon followed by a number. This is important bc file paths may have colons
 
-            const returned = original(...args);
+                decorator.allRoutes.push({
+                    methods: [args[0].method],
+                    handler: args[1][args[1].length - 1],
+                    uri: args[0].path,
+                    declaredAt: [filePath, lineNumber],
+                });
 
-            if (!server.router._scribe) {
-                server.router._scribe = {handlers: {}}
-            }
+                return returned;
+            };
+        });
 
-            // Restify routes can be defined with an object with path and version
-            const path = typeof args[0] == "object" ? args[0].path : args[0];
-            server.router._scribe.handlers[method + " " + path] = [filePath, lineNumber];
-
-            return returned;
-        };
+        return exports;
     });
+
+    decorator.decorated = true;
 }

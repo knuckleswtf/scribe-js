@@ -78,16 +78,15 @@ program
         const decorator = require("./decorator");
 
         if (!decorator.decorated) {
-            tools.error("Couldn't find any routes. Did you remember to add `require('@knuckleswtf/scribe-express')()` before registering your Express routes?");
+            tools.error("Couldn't find any routes. Did you remember to add `require('@knuckleswtf/scribe-express')()` before requiring Express?");
             process.exit(1);
         }
 
         const configObject = require(configFile);
-        // @ts-ignore
         configObject.strategies = configObject.strategies || {};
         configObject.strategies.urlParameters = (configObject.strategies.urlParameters || []).concat(path.join(__dirname, './strategies/url_parameters/express_route_api'));
 
-        const endpoints = require('./get_routes.js')(decorator);
+        const endpoints = getRoutesFromOurDecorator(decorator);
 
         const {generate} = require('@knuckleswtf/scribe');
         await generate(endpoints, configObject, 'express', serverFile, {overwriteMarkdownFiles: force});
@@ -147,4 +146,12 @@ async function createConfigFile() {
     });
 
     tools.info(`Take a moment to check it out, and then run \`generate\` when you're ready.`);
+}
+
+
+function getRoutesFromOurDecorator(decorator) {
+    // At this point, there should be only one root app or router
+    let [[, routes]] = decorator.subApps.size ? decorator.subApps : decorator.subRouters;
+
+    return routes;
 }

@@ -22,7 +22,7 @@ Two things you need to know:
 - **Your "app file"** is the file where you create your main Express app and attach routes. Usually an `index.js` or `app.js`.
 - **Your server file** is the file where you actually start your server (usually by calling `app.listen()`). Sometimes it's the same as your app file, sometimes it's a different file (like `bin/www`).
 
-Got that? Cool. Finally, add the following line at the top of your app file. Make sure it's placed before you require Express:
+Got that? Cool. Now add the following line at the top of your app file. Make sure it's placed before you require Express:
 
 ```js
 require('@knuckleswtf/scribe-express')();

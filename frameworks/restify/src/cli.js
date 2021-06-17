@@ -69,26 +69,22 @@ program
         }
 
         process.env.SCRIBE_GENERATE = "1";
-        let serverObject = require(serverFile);
+        require(serverFile);
 
-        if (!(serverObject instanceof EventEmitter)) {
-            tools.error("Couldn't find an export from your server file. Did you remember to export your Restify `server` object?");
-            process.exit(1);
-        }
+        const decorator = require("./decorator");
 
-        if (!serverObject._decoratedByScribe) {
-            tools.error("Something's not right. Did you remember to add `require('@knuckleswtf/scribe-restify')(server)` before registering your Restify routes?");
+        if (!decorator.decorated) {
+            tools.error("Something's not right. Did you remember to add `require('@knuckleswtf/scribe-restify')()` before requiring Restify?");
             process.exit(1);
         }
 
         const configObject = require(configFile);
-        // @ts-ignore
         configObject.strategies = configObject.strategies || {};
         configObject.strategies.urlParameters = (configObject.strategies.urlParameters || []).concat(path.join(__dirname, './strategies/url_parameters/restify_route_api'));
 
-        const endpoints = require('./get_routes')(serverObject);
+        const routes = decorator.allRoutes;
         const {generate} = require('@knuckleswtf/scribe');
-        await generate(endpoints, configObject, 'restify', null, {overwriteMarkdownFiles: force});
+        await generate(routes, configObject, 'restify', null, {overwriteMarkdownFiles: force});
 
         // Make sure to end process, in case server is still running
         setTimeout(() => process.exit(0), 1300);

@@ -18,21 +18,12 @@ This will ask you a few questions and create a `.scribe.config.js` file in your 
 ## Initialise
 Almost ready!
 
-Two things you need to know:
-- **Your "server file"** is the file where you set up and start your Restify server. Usually an `index.js`.
+One more thing: you need to locate **your "server file"** — the file where you set up and start your Restify server. Usually an `index.js` or `server.js`.
 
-Got that? Cool. Here are the key things to do:
-
-- Make sure to export the `server` object from the server file.
+Add this line in your server file, at the top, before you require restify:
 
 ```js
-module.exports = server;
-```
-
-- Add this line in your server file. Make sure it's placed before your routes are registered:
-
-```js
-require('@knuckleswtf/scribe-restify')(server)
+require('@knuckleswtf/scribe-restify')()
 ```
 
 ```eval_rst
