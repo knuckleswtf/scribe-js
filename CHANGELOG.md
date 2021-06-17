@@ -13,6 +13,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Removals
 
 
+## 1.6.0 (Thursday, 17 June 2021)
+UX/setup improvements
+## Modified
+- [Express] Automatically infer server file
+- [Express, Restify] Remove the need to manually require the package in app file
+
 ## 1.5.0 (Thursday, 17 June 2021)
 ## Added
 - Improve Restify routing support
