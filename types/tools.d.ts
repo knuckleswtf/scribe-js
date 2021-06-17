@@ -12,6 +12,7 @@ declare function warn(input: any): void;
 declare function success(input: any): void;
 declare function error(input: any): void;
 declare function dumpExceptionIfVerbose(error: any): void;
+declare function findServerStartCommand(): string;
 declare const _default: {
     generateConfigFile: typeof generateConfigFile;
     searchFileLazily: typeof searchFileLazily;
@@ -20,6 +21,7 @@ declare const _default: {
     success: typeof success;
     error: typeof error;
     inferApiName: () => string;
+    findServerStartCommand: typeof findServerStartCommand;
     dumpExceptionIfVerbose: typeof dumpExceptionIfVerbose;
 };
 export = _default;

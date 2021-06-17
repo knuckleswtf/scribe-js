@@ -102,6 +102,34 @@ function dumpExceptionIfVerbose(error) {
         warn("Run this again with the --verbose flag to see the full stack trace.");
     }
 }
+
+function findServerStartCommand(): string {
+    const path = require('path');
+    const fs = require('fs');
+    // In order:
+    // npm start, "main", server.js, index.js, bin/www
+    const pkgJson = require(path.join(process.cwd(), 'package.json'));
+    const npmStart = pkgJson?.scripts?.start;
+
+    if (npmStart) {
+        return npmStart;
+    }
+
+    const mainFile = pkgJson?.main;
+    if (mainFile && fs.existsSync(path.join(process.cwd(), mainFile))) {
+        return `node ${mainFile}`;
+    }
+
+    const filesToTry = ["server.js", "index.js", "bin/www"];
+    for (let fileToTry of filesToTry) {
+        if (fs.existsSync(path.join(process.cwd(), fileToTry))) {
+            return `node ${fileToTry}`;
+        }
+    }
+
+    return null;
+}
+
 export = {
     generateConfigFile,
     searchFileLazily,
@@ -110,5 +138,6 @@ export = {
     success,
     error,
     inferApiName,
+    findServerStartCommand,
     dumpExceptionIfVerbose,
 };

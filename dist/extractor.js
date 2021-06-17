@@ -8,11 +8,11 @@ const p = require("./utils/parameters");
 const tools = require("./tools");
 const Endpoint = require("./endpoint");
 class Extractor {
-    constructor(config, router, routesToDocument, serverFile) {
+    constructor(config, router, routesToDocument, serverStartCommand) {
         this.config = config;
         this.router = router;
         this.routesToDocument = routesToDocument;
-        this.serverFile = serverFile;
+        this.serverStartCommand = serverStartCommand;
     }
     async extract() {
         // Initialise faker with seed if present
@@ -44,16 +44,17 @@ class Extractor {
             }
             endpointDetails.fileParameters = p.removeEmptyOptionalParametersAndTransformToKeyExample(files);
             this.addAuthField(endpoint);
-            if (this.serverFile && !appProcess) {
+            if (this.serverStartCommand && !appProcess) {
                 // Using a single global app process here to avoid premature kills
                 const taken = await isPortTaken(url.parse(rulesToApply.responseCalls.baseUrl).port);
                 if (!taken) {
                     try {
-                        tools.info("Starting app server for response calls...");
-                        appProcess = spawn('node', [this.serverFile], { stdio: 'ignore' });
-                        await new Promise(res => {
-                            // Assuming it takes at most 2 seconds to start
-                            setTimeout(res, 2000);
+                        tools.info(`Starting your app (\`${this.serverStartCommand}\`) for response calls...`);
+                        const [command, ...args] = this.serverStartCommand.split(" ");
+                        appProcess = spawn(command, args, { stdio: 'ignore', cwd: process.cwd() });
+                        await new Promise(resolve => {
+                            // Delay for 2s to give the app time to start
+                            setTimeout(resolve, 2000);
                         });
                     }
                     catch (e) {

@@ -2,6 +2,8 @@
 
 import {scribe} from "../typedefs/core";
 
+const sortBy = require("lodash.sortby");
+
 class Endpoint {
     uri = '';
     methods: string[] = [];
@@ -39,7 +41,7 @@ class Endpoint {
 
         switch (stage) {
             case 'responses':
-                this.responses = this.responses.concat(data);
+                this.responses = sortBy(this.responses.concat(data), 'status');
                 break;
             default:
                 this[stage] = Object.assign({}, this[stage], data);

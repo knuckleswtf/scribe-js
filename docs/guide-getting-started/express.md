@@ -16,21 +16,13 @@ npx scribe init
 This will ask you a few questions and create a `.scribe.config.js` file in your project directory. There are a few other useful settings you should change in that file, but we'll leave them as is for now.
 
 ## Do a test run
-Now let's do a test run. We'll need two pieces of information:
-- **Your "app file"** is the file where you create your main Express app and attach routes. Usually an `index.js` or `app.js`.
-- **Your server file** is the file where you actually start your server (usually by calling `app.listen()`). Sometimes it's the same as your app file, sometimes it's a different file (like `bin/www`).
-  
-Now run the `scribe generate` command to generate your docs, passing in the path to your app and server files.
+Now let's do a test run. You'll need to locate your *"app file"* — the file where you create your main Express app and attach routes. Usually an `index.js` or `app.js`. Run the `scribe generate` command to generate your docs, passing in the path to your app file (for example, `./index.js`).
 
 ```bash
-npx scribe generate -a <your-app-file> -s <your-server-file>
+npx scribe generate -a <your-app-file>
 
 # Example:
-# npx scribe generate -a app.js -s bin/www
-```
-
-```eval_rst
-   .. Note:: Scribe needs your app file to extract information about your routes. It needs your server file to try to start your app for `response calls <documenting-endpoint-responses.html#generating-responses-automatically-via-response-calls>`_  (if it isn't already running). If your app file is the same as your server file (your app file also starts your HTTP server), you can omit the :code:`-s <your-server-file>`
+# npx scribe generate -a app.js
 ```
 
 Visit your newly generated docs. Find the `docs/index.html` file in your `public/` folder and open it in your browser.

@@ -21,7 +21,7 @@ class Extractor {
         public config: scribe.Config,
         public router: scribe.SupportedRouters,
         public routesToDocument: [scribe.Route, scribe.RouteGroupApply][],
-        private serverFile?: string
+        private serverStartCommand?: string
     ) {
     }
 
@@ -66,16 +66,17 @@ class Extractor {
 
             this.addAuthField(endpoint);
 
-            if (this.serverFile && !appProcess) {
+            if (this.serverStartCommand && !appProcess) {
                 // Using a single global app process here to avoid premature kills
                 const taken = await isPortTaken(url.parse(rulesToApply.responseCalls.baseUrl).port);
                 if (!taken) {
                     try {
-                        tools.info("Starting app server for response calls...");
-                        appProcess = spawn('node', [this.serverFile], {stdio: 'ignore'});
-                        await new Promise(res => {
-                            // Assuming it takes at most 2 seconds to start
-                            setTimeout(res, 2000);
+                        tools.info(`Starting your app (\`${this.serverStartCommand}\`) for response calls...`);
+                        const [command, ...args] = this.serverStartCommand.split(" ");
+                        appProcess = spawn(command, args, {stdio: 'ignore', cwd: process.cwd()});
+                        await new Promise(resolve => {
+                            // Delay for 2s to give the app time to start
+                            setTimeout(resolve, 2000);
                         });
                     } catch (e) {
                         // do nothing; app is probably running already

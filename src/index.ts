@@ -24,7 +24,7 @@ class Scribe {
         public config: scribe.Config,
         public router: scribe.SupportedRouters,
         public endpoints: scribe.Route[],
-        private serverFile?: string,
+        private serverStartCommand?: string,
         private options = defaultOptions
     ) {
     }
@@ -34,13 +34,13 @@ class Scribe {
             return writer.writeMarkdownAndHTMLDocs(this.config);
         }
 
-        if (this.router === 'express' && !this.serverFile) {
-            tools.warn("You didn't specify a server file. This means that either your app is started by your app file, or you forgot.");
-            tools.warn("If you forgot, you'll need to specify a server file for response calls to work.");
+        if (this.router === 'express' && !this.serverStartCommand) {
+            tools.warn("We couldn't find a way to run your API. This means response calls won't work.");
+            tools.warn("You can specify a server file with the `-s` flag.");
         }
 
         const routes = await this.getRoutesToDocument();
-        const extractor = new Extractor(this.config, this.router, routes, this.serverFile);
+        const extractor = new Extractor(this.config, this.router, routes, this.serverStartCommand);
         let parsedEndpoints = await extractor.extract();
 
         parsedEndpoints = parsedEndpoints.map(e => {
@@ -95,14 +95,14 @@ module.exports = {
         endpoints: scribe.Route[],
         config: scribe.Config,
         router: scribe.SupportedRouters,
-        serverFile?: string,
+        serverStartCommand?: string,
         options = defaultOptions
     ) {
         return (new Scribe(
             config,
             router,
             endpoints,
-            serverFile,
+            serverStartCommand,
             options
         )).generate();
     }

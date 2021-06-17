@@ -1,4 +1,5 @@
 'use strict';
+const sortBy = require("lodash.sortby");
 class Endpoint {
     constructor(endpointDetails) {
         this.uri = '';
@@ -31,7 +32,7 @@ class Endpoint {
         }
         switch (stage) {
             case 'responses':
-                this.responses = this.responses.concat(data);
+                this.responses = sortBy(this.responses.concat(data), 'status');
                 break;
             default:
                 this[stage] = Object.assign({}, this[stage], data);

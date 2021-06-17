@@ -53,7 +53,7 @@ program
 
         const configFile = path.resolve(config);
         const appFile = path.resolve(app);
-        const serverFile = server ? path.resolve(server) : null;
+        const serverStartCommand = server ? `node ${path.resolve(server)}` : tools.findServerStartCommand();
 
         if (!fs.existsSync(configFile)) {
             tools.warn(`Config file ${configFile} does not exist. Initialising with a default config file...`);
@@ -86,7 +86,7 @@ program
         const endpoints = getRoutesFromOurDecorator(decorator);
 
         const {generate} = require('@knuckleswtf/scribe');
-        await generate(endpoints, configObject, 'express', serverFile, {overwriteMarkdownFiles: force});
+        await generate(endpoints, configObject, 'express', serverStartCommand, {overwriteMarkdownFiles: force});
 
         // Make sure to end process, in case server is still running
         // Wrapping in a timeout because it seems sometimes ncp/pastel fails to copy over all assets in time

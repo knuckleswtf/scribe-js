@@ -12,23 +12,23 @@ const debug = require('debug')('lib:scribe');
 const defaultOptions = { overwriteMarkdownFiles: false, noExtraction: false };
 process.env.SCRIBE_VERSION = process.env.SCRIBE_VERSION || require('../package.json').version;
 class Scribe {
-    constructor(config, router, endpoints, serverFile, options = defaultOptions) {
+    constructor(config, router, endpoints, serverStartCommand, options = defaultOptions) {
         this.config = config;
         this.router = router;
         this.endpoints = endpoints;
-        this.serverFile = serverFile;
+        this.serverStartCommand = serverStartCommand;
         this.options = options;
     }
     async generate() {
         if (this.options.noExtraction) {
             return writer.writeMarkdownAndHTMLDocs(this.config);
         }
-        if (this.router === 'express' && !this.serverFile) {
-            tools.warn("You didn't specify a server file. This means that either your app is started by your app file, or you forgot.");
-            tools.warn("If you forgot, you'll need to specify a server file for response calls to work.");
+        if (this.router === 'express' && !this.serverStartCommand) {
+            tools.warn("We couldn't find a way to run your API. This means response calls won't work.");
+            tools.warn("You can specify a server file with the `-s` flag.");
         }
         const routes = await this.getRoutesToDocument();
-        const extractor = new Extractor(this.config, this.router, routes, this.serverFile);
+        const extractor = new Extractor(this.config, this.router, routes, this.serverStartCommand);
         let parsedEndpoints = await extractor.extract();
         parsedEndpoints = parsedEndpoints.map(e => {
             e.nestedBodyParameters = writer.nestArrayAndObjectFields(e.bodyParameters);
@@ -68,8 +68,8 @@ class Scribe {
     }
 }
 module.exports = {
-    generate(endpoints, config, router, serverFile, options = defaultOptions) {
-        return (new Scribe(config, router, endpoints, serverFile, options)).generate();
+    generate(endpoints, config, router, serverStartCommand, options = defaultOptions) {
+        return (new Scribe(config, router, endpoints, serverStartCommand, options)).generate();
     }
 };
 //# sourceMappingURL=index.js.map
