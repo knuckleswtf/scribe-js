@@ -1,22 +1,28 @@
-const methods = ['get', 'post', 'put', 'patch', 'head', 'del'];
+'use strict';
 
 module.exports = decorator;
 
-function decorator(server) {
+function decorator() {
     if (!process.env.SCRIBE_GENERATE) {
         return;
     }
-    decorateRestifyRouter(server);
+
+    decorateRestifyRouter();
 };
 
 decorator.decorated = false;
 decorator.allRoutes = [];
 
-function decorateRestifyRouter(server) {
+function decorateRestifyRouter() {
     const hook = require('require-in-the-middle');
     const shimmer = require('shimmer');
 
     hook(['restify/lib/router'], function (exports, name, basedir) {
+        if (decorator.decorated) {
+            console.log("already");
+            return exports;
+        }
+
         shimmer.wrap(exports.prototype, 'mount', original => {
             return function (...args) {
                 const returned = original.apply(this, args);
@@ -40,8 +46,7 @@ function decorateRestifyRouter(server) {
             };
         });
 
+        decorator.decorated = true;
         return exports;
     });
-
-    decorator.decorated = true;
 }

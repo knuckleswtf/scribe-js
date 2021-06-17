@@ -56,9 +56,7 @@ function decorateExpress() {
             }
         });
 
-
         decorator.decorated = true;
-
         return exports;
     });
 }

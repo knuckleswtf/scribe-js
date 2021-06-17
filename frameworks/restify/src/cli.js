@@ -69,14 +69,11 @@ program
         }
 
         process.env.SCRIBE_GENERATE = "1";
-        require(serverFile);
 
         const decorator = require("./decorator");
+        decorator();
 
-        if (!decorator.decorated) {
-            tools.error("Something's not right. Did you remember to add `require('@knuckleswtf/scribe-restify')()` before requiring Restify?");
-            process.exit(1);
-        }
+        require(serverFile);
 
         const configObject = require(configFile);
         configObject.strategies = configObject.strategies || {};

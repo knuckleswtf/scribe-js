@@ -73,14 +73,11 @@ program
         }
 
         process.env.SCRIBE_GENERATE = "1";
-        require(appFile);
 
         const decorator = require("./decorator");
+        decorator();
 
-        if (!decorator.decorated) {
-            tools.error("Couldn't find any routes. Did you remember to add `require('@knuckleswtf/scribe-express')()` before requiring Express?");
-            process.exit(1);
-        }
+        require(appFile);
 
         const configObject = require(configFile);
         configObject.strategies = configObject.strategies || {};
