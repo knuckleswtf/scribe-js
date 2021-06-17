@@ -15,26 +15,14 @@ npx scribe init
 
 This will ask you a few questions and create a `.scribe.config.js` file in your project directory. There are a few other useful settings you should change in that file, but we'll leave them as is for now.
 
-## Initialise
-Almost ready!
-
-One more thing: you need to locate **your "server file"** — the file where you set up and start your Restify server. Usually an `index.js` or `server.js`.
-
-Add this line in your server file, at the top, before you require restify:
-
-```js
-require('@knuckleswtf/scribe-restify')()
-```
-
-```eval_rst
-.. Tip:: You can leave this line in permanently. When you run your app normally (eg with npm start or node), this line does nothing.
-```
-
 ## Do a test run
-Now let's do a test run. Run the command to generate your docs.
+Now let's do a test run. You'll need to locate your *"server file"* — the file where you set up and start your Restify server, usually an `index.js` or `server.js`. Run the `scribe generate` command to generate your docs, passing in the path to your server file (for example, `./index.js`).
 
 ```bash
 npx scribe generate -s <your-server-file>
+
+# Example:
+# npx scribe generate -s server.js
 ```
 
 Visit your newly generated docs. Find the `docs/index.html` file in your `public/` folder and open it in your browser.

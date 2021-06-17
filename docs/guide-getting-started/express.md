@@ -15,28 +15,18 @@ npx scribe init
 
 This will ask you a few questions and create a `.scribe.config.js` file in your project directory. There are a few other useful settings you should change in that file, but we'll leave them as is for now.
 
-## Initialise
-Almost ready!
-
-Two things you need to know:
+## Do a test run
+Now let's do a test run. We'll need two pieces of information:
 - **Your "app file"** is the file where you create your main Express app and attach routes. Usually an `index.js` or `app.js`.
 - **Your server file** is the file where you actually start your server (usually by calling `app.listen()`). Sometimes it's the same as your app file, sometimes it's a different file (like `bin/www`).
-
-Got that? Cool. Now add the following line at the top of your app file. Make sure it's placed before you require Express:
-
-```js
-require('@knuckleswtf/scribe-express')();
-```
-
-```eval_rst
-.. Tip:: You can leave this line in permanently. When you run your app normally (eg with npm start or node), this line does nothing.
-```
-
-## Do a test run
-Now let's do a test run. Run the command to generate your docs.
+  
+Now run the `scribe generate` command to generate your docs, passing in the path to your app and server files.
 
 ```bash
-npx scribe generate -a <your-app-file>.js -s <your-server-file>
+npx scribe generate -a <your-app-file> -s <your-server-file>
+
+# Example:
+# npx scribe generate -a app.js -s bin/www
 ```
 
 ```eval_rst

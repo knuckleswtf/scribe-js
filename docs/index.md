@@ -71,13 +71,7 @@ Install with:
 npm i @knuckleswtf/scribe-express
 ```
 
-To generate your docs, you'll need to locate your "app file". Your app file is the file where you create your main Express app. Add this line to the top of that file:
-
-```js
-require('@knuckleswtf/scribe-express')();
-```
-
-To generate your docs, run:
+To generate your docs, you'll need to locate your "app file". Then pass the path to Scribe:
 
 ```sh
 npx scribe generate -a <your-app-file>.js
@@ -92,13 +86,7 @@ Install with:
 npm i @knuckleswtf/scribe-restify
 ```
 
-To generate your docs, you'll need to locate your "server file". Your server file is the file where you set up and start your Restify server. Add this line in that file before, at the top, before you require restify:
-
-```js
-require('@knuckleswtf/scribe-restify')();
-```
-
-To generate your docs, run:
+To generate your docs, you'll need to locate your "server file". Your server file is the file where you set up and start your Restify server. Then pass the path to Scribe:
 
 ```sh
 npx scribe generate -s <your-server-file>.js
