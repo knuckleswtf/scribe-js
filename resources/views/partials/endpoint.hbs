@@ -36,7 +36,13 @@
     <pre><code id="execution-error-message-{{ endpoint.endpointId }}"></code></pre>
 </div>
 
-<form id="form-{{ endpoint.endpointId }}" data-method="{{{ endpoint.methods.[0] }}}" data-path="{{{ endpoint.uri }}}" data-authed="{{#isTruthy endpoint.metadata.authenticated}}1{{else}}0{{/isTruthy}}" data-hasfiles="{{#if (isNonEmptyObject endpoint.fileParameters) }}1{{else}}0{{/if}}" data-headers='{{{JSONstringify endpoint.headers }}}' onsubmit="event.preventDefault(); executeTryOut('{{ endpoint.endpointId }}', this);">
+<form id="form-{{ endpoint.endpointId }}"
+      data-method="{{{ endpoint.methods.[0] }}}"
+      data-path="{{{ endpoint.uri }}}"
+      data-authed="{{#isTruthy endpoint.metadata.authenticated}}1{{else}}0{{/isTruthy}}"
+      data-hasfiles="{{#if (isNonEmptyObject endpoint.fileParameters) }}1{{else}}0{{/if}}"
+      data-headers='{{{JSONstringify endpoint.headers }}}'
+      onsubmit="event.preventDefault(); executeTryOut('{{ endpoint.endpointId }}', this);">
 <h3>
     Request
     {{#if settings.interactive}}

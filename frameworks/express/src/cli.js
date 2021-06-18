@@ -147,8 +147,9 @@ async function createConfigFile() {
 
 
 function getRoutesFromOurDecorator(decorator) {
-    // At this point, there should be only one root app or router
-    let [[, routes]] = decorator.subApps.size ? decorator.subApps : decorator.subRouters;
+    // At this point, there should be only one router (the main router)
+    // and one app (routes added via sub-routers or sub-apps)
+    let allRoutes = [...decorator.subRouters.values()].concat([...decorator.subApps.values()]).flat(1);
 
-    return routes;
+    return allRoutes;
 }

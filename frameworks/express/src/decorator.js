@@ -28,17 +28,9 @@ function decorateExpress() {
             return exports;
         }
 
-        httpMethods.forEach(function(httpMethod) {
-            shimmer.wrap(exports.application, httpMethod, original => {
-                return patchHttpVerbMethod(original, 'app', httpMethod);
-            });
-
-            shimmer.wrap(exports.Router, httpMethod, original => {
-                return patchHttpVerbMethod(original, 'router', httpMethod);
-            });
-
+        httpMethods.forEach(function (httpMethod) {
             shimmer.wrap(exports.Route.prototype, httpMethod, original => {
-                return patchHttpVerbMethod(original, 'route', httpMethod);
+                return patchHttpVerbMethod(original, httpMethod);
             });
         });
 
@@ -66,7 +58,7 @@ function getFrameAtCallSite() {
     const frames = stackTrace.split("\n");
 
     frames.shift();
-    while (frames[0].includes("decorator.js")) {
+    while (frames[0].includes("decorator.js") || frames[0].includes("node_modules")) {
         frames.shift();
     }
 
@@ -113,12 +105,12 @@ function patchAppUseMethod(originalMethod) {
 
         const routerOrApp = args[args.length - 1];
         const isApp = '_router' in routerOrApp;
-        const routes = decorator[isApp ? 'subApps' : 'subRouters'].get(routerOrApp);
+        const routes = decorator.subRouters.get(isApp ? routerOrApp._router : routerOrApp);
         routes.forEach((r) => {
             r.uri = rtrim(args[0], '/') + '/' + trim(r.uri, '/');
             addRouteToExpressApp(this, r);
         });
-        decorator[isApp ? 'subApps' : 'subRouters'].delete(routerOrApp);
+        decorator.subRouters.delete(isApp ? routerOrApp._router : routerOrApp);
 
         return returnVal;
     };
@@ -128,36 +120,17 @@ function patchHttpVerbMethod(originalMethod, type, method) {
     return function (...args) {
         const returnVal = originalMethod.apply(this, args);
 
-        if (type == 'route') {
-            const router = this.___router;
-
-            let frameAtCallSite = getFrameAtCallSite();
-            const {filePath, lineNumber} = getFilePathAndLineNumberFromCallStackFrame(frameAtCallSite);
-            const route = {
-                methods: Object.keys(this.methods).map(m => m.toUpperCase()),
-                uri: this.path,
-                declaredAt: [filePath, lineNumber],
-                handler: args[args.length - 1]
-            };
-            addRouteToExpressRouter(router, route);
-
-            return returnVal;
-        }
-
-        if (args.length < 2 || typeof args[0] != 'string'
-            || typeof args[args.length - 1] !== 'function') {
-            return returnVal;
-        }
+        const router = this.___router;
 
         let frameAtCallSite = getFrameAtCallSite();
         const {filePath, lineNumber} = getFilePathAndLineNumberFromCallStackFrame(frameAtCallSite);
         const route = {
-            methods: [method.toUpperCase()],
-            uri: args[0],
+            methods: Object.keys(this.methods).map(m => m.toUpperCase()),
+            uri: this.path,
             declaredAt: [filePath, lineNumber],
             handler: args[args.length - 1]
         };
-        type === 'app' ? addRouteToExpressApp(this, route) : addRouteToExpressRouter(this, route);
+        addRouteToExpressRouter(router, route);
 
         return returnVal;
     };
