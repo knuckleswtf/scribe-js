@@ -4,7 +4,9 @@
   "description": "Generate API documentation for humans from your Node.js codebase.",
   "main": "dist/index.js",
   "scripts": {
-    "test": "jest",
+    "test:unit": "jest",
+    "test:feature": "jasmine --config=test/feature/jasmine.json",
+    "test": "@test:unit && @test:feature",
     "version:all": "lerna version --no-push --force-publish=* --exact",
     "publish:all": "npm run publish:core && npm run publish:adonis && npm run publish:express && npm run publish:restify",
     "publish:core": "npm publish --access public",
@@ -65,12 +67,13 @@
     "@types/postman-collection": "^3.5.5",
     "busboy": "^0.3.1",
     "express": "^4.17.1",
+    "jasmine": "^3.7.0",
     "jest": "^26.1.0",
     "js-ray": "^0.0.7",
     "lerna": "^3.22.1",
     "openapi3-ts": "^1.4.0",
     "restify": "^8.5.1",
-    "shx": "^0.3.2",
+    "sinon": "^11.1.1",
     "typescript": "^4.3"
   },
   "engines": {
@@ -78,5 +81,12 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "jest": {
+    "automock": false,
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/feature/"
+    ]
   }
 }
