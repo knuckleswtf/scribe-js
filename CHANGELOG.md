@@ -13,6 +13,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Removals
 
 
+## 1.7.0 (Saturday, 19 June 2021)
+### Modified
+- [Restify] Improve route matching
+### Fixed
+- [Express] Fix duplicate routes
+
+## Modified
 ## 1.6.0 (Thursday, 17 June 2021)
 UX/setup improvements
 ## Modified
