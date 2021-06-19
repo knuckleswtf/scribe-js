@@ -113,6 +113,22 @@ function findServerStartCommand() {
     }
     return null;
 }
+function getFrameAtCallSite(exclude = ["decorator.js"]) {
+    const stackTrace = new Error().stack;
+    const frames = stackTrace.split("\n");
+    frames.shift();
+    exclude.push("tools.js", "node_modules");
+    while (exclude.some(file => frames[0].includes(file))) {
+        frames.shift();
+    }
+    return frames[0];
+}
+function getFilePathAndLineNumberFromCallStackFrame(callStackFrame) {
+    const [filePath, lineNumber, characterNumber] 
+    // Split by a colon followed by a number (file paths may have colons)
+    = callStackFrame.replace(/.+\(|\)/g, '').split(/:(?=\d)/);
+    return { filePath, lineNumber: Number(lineNumber) };
+}
 module.exports = {
     generateConfigFile,
     searchFileLazily,
@@ -123,5 +139,7 @@ module.exports = {
     inferApiName,
     findServerStartCommand,
     dumpExceptionIfVerbose,
+    getFrameAtCallSite,
+    getFilePathAndLineNumberFromCallStackFrame,
 };
 //# sourceMappingURL=tools.js.map

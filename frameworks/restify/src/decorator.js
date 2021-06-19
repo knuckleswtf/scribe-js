@@ -1,5 +1,7 @@
 'use strict';
 
+const tools = require("@knuckleswtf/scribe/dist/tools");
+
 module.exports = decorator;
 
 function decorator() {
@@ -19,7 +21,6 @@ function decorateRestifyRouter() {
 
     hook(['restify/lib/router'], function (exports, name, basedir) {
         if (decorator.decorated) {
-            console.log("already");
             return exports;
         }
 
@@ -31,10 +32,8 @@ function decorateRestifyRouter() {
                 const frames = stackTrace.split("\n");
                 frames.shift();
 
-                let frameAtCallSite = frames[2].replace(/.+\(|\)/g, '');
-                const [filePath, lineNumber, characterNumber]
-                    = frameAtCallSite.split(/:(?=\d)/);  // any colon followed by a number. This is important bc file paths may have colons
-
+                let frameAtCallSite = tools.getFrameAtCallSite();
+                const {filePath, lineNumber} = tools.getFilePathAndLineNumberFromCallStackFrame(frameAtCallSite);
                 decorator.allRoutes.push({
                     methods: [args[0].method],
                     handler: args[1][args[1].length - 1],

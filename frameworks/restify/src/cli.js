@@ -5,7 +5,6 @@ require('hard-rejection')();
 const fs = require("fs");
 const path = require("path");
 const program = require('commander');
-const EventEmitter = require("events").EventEmitter;
 
 const debug = require('debug')('lib:scribe:restify:cli');
 const tools = require("@knuckleswtf/scribe/dist/tools");
@@ -80,7 +79,9 @@ program
         configObject.strategies.urlParameters = (configObject.strategies.urlParameters || []).concat(path.join(__dirname, './strategies/url_parameters/restify_route_api'));
 
         const routes = decorator.allRoutes;
+        console.log(routes);
         const {generate} = require('@knuckleswtf/scribe');
+        console.log(generate);
         await generate(routes, configObject, 'restify', null, {overwriteMarkdownFiles: force});
 
         // Make sure to end process, in case server is still running

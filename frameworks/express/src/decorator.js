@@ -2,6 +2,7 @@
 
 const trim = require('lodash.trim');
 const rtrim = require('lodash.trimend');
+const tools = require("@knuckleswtf/scribe/dist/tools");
 
 module.exports = decorator;
 
@@ -53,25 +54,6 @@ function decorateExpress() {
     });
 }
 
-function getFrameAtCallSite() {
-    const stackTrace = new Error().stack;
-    const frames = stackTrace.split("\n");
-
-    frames.shift();
-    while (frames[0].includes("decorator.js") || frames[0].includes("node_modules")) {
-        frames.shift();
-    }
-
-    return frames[0];
-}
-
-function getFilePathAndLineNumberFromCallStackFrame(callStackFrame) {
-    const [filePath, lineNumber, characterNumber]
-        // Split by a colon followed by a number (file paths may have colons)
-        = callStackFrame.replace(/.+\(|\)/g, '').split(/:(?=\d)/);
-    return {filePath, lineNumber};
-}
-
 function addRouteToExpressApp(app, details) {
     let routesOnThisApp = decorator.subApps.get(app);
     if (!Array.isArray(routesOnThisApp)) {
@@ -116,14 +98,14 @@ function patchAppUseMethod(originalMethod) {
     };
 }
 
-function patchHttpVerbMethod(originalMethod, type, method) {
+function patchHttpVerbMethod(originalMethod) {
     return function (...args) {
         const returnVal = originalMethod.apply(this, args);
 
         const router = this.___router;
 
-        let frameAtCallSite = getFrameAtCallSite();
-        const {filePath, lineNumber} = getFilePathAndLineNumberFromCallStackFrame(frameAtCallSite);
+        let frameAtCallSite = tools.getFrameAtCallSite();
+        const {filePath, lineNumber} = tools.getFilePathAndLineNumberFromCallStackFrame(frameAtCallSite);
         const route = {
             methods: Object.keys(this.methods).map(m => m.toUpperCase()),
             uri: this.path,

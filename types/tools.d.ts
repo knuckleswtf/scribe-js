@@ -13,6 +13,11 @@ declare function success(input: any): void;
 declare function error(input: any): void;
 declare function dumpExceptionIfVerbose(error: any): void;
 declare function findServerStartCommand(): string;
+declare function getFrameAtCallSite(exclude?: string[]): string;
+declare function getFilePathAndLineNumberFromCallStackFrame(callStackFrame: any): {
+    filePath: any;
+    lineNumber: number;
+};
 declare const _default: {
     generateConfigFile: typeof generateConfigFile;
     searchFileLazily: typeof searchFileLazily;
@@ -23,5 +28,7 @@ declare const _default: {
     inferApiName: () => string;
     findServerStartCommand: typeof findServerStartCommand;
     dumpExceptionIfVerbose: typeof dumpExceptionIfVerbose;
+    getFrameAtCallSite: typeof getFrameAtCallSite;
+    getFilePathAndLineNumberFromCallStackFrame: typeof getFilePathAndLineNumberFromCallStackFrame;
 };
 export = _default;

@@ -1,5 +1,5 @@
 function isPortTaken(port) {
-// This doesn't seem to work rn
+    // This doesn't seem to work rn
     return new Promise((resolve, reject) => {
         const testServer = require('http')
             .createServer()
