@@ -1,6 +1,6 @@
 {
   "name": "@knuckleswtf/scribe",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "Generate API documentation for humans from your Node.js codebase.",
   "main": "dist/index.js",
   "scripts": {
