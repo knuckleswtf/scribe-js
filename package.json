@@ -6,7 +6,7 @@
   "scripts": {
     "test:unit": "jest",
     "test:feature": "jasmine --config=test/feature/jasmine.json",
-    "test": "@test:unit && @test:feature",
+    "test": "npm run test:unit && npm run test:feature",
     "version:all": "lerna version --no-push --force-publish=* --exact",
     "publish:all": "npm run publish:core && npm run publish:adonis && npm run publish:express && npm run publish:restify",
     "publish:core": "npm publish --access public",

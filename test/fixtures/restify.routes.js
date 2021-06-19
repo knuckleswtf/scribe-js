@@ -1,11 +1,9 @@
 const restify = require('restify');
-const plugins = require('restify').plugins;
 const server = restify.createServer();
+const handlers = require('./handlers');
 
-const handlers = [
-    (req, res) => {},
-    (req, res) => {}
-];
+// --- NB: if you reorder this file and the line numbers of the next two lines change,
+// update the feature tests or else they will fail!
 
 server.get('/get-string', handlers[0]);
 

@@ -4,7 +4,7 @@
   "description": "Generate API documentation for humans from your Restify codebase.",
   "main": "src/decorator.js",
   "bin": {
-    "scribe": "src/cli.js"
+    "scribe": "src/cli/index.js"
   },
   "files": [
     "src/**"

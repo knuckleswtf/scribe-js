@@ -2,24 +2,28 @@ const path = require("path");
 
 process.env.SCRIBE_GENERATE = "1";
 
+const sinon = require('sinon');
+const scribe = require('../../dist/index');
+const stub = sinon.stub(scribe, 'generate');
+
 it('can extract restify routes', async () => {
-    const decorator = require('../../frameworks/restify');
-    decorator();
+    const generate = require('../../frameworks/restify/src/cli/generate');
+    let restifyServerPath = path.resolve(__dirname, '../fixtures/restify.routes.js');
+    generate({config: path.resolve(__dirname, '../../config.js'), server: restifyServerPath});
 
-    let restifyServerPath = '../fixtures/restify.routes';
-    const handlers = require(restifyServerPath);
-
-    expect(decorator.allRoutes).toHaveSize(2);
-    expect(decorator.allRoutes[0]).toEqual({
-        uri: '/get-string',
-        methods: ['GET'],
-        handler: handlers[0],
-        declaredAt: [path.resolve(__dirname, restifyServerPath + '.js'), 10],
-    });
-    expect(decorator.allRoutes[1]).toEqual({
-        uri: '/post-object',
-        methods: ['POST'],
-        handler: handlers[1],
-        declaredAt: [path.resolve(__dirname, restifyServerPath + '.js'), 12],
-    });
+    const handlers = require('../fixtures/handlers');
+    expect(stub.calledOnceWith([
+        {
+            uri: '/get-string',
+            methods: ['GET'],
+            handler: handlers[0],
+            declaredAt: [restifyServerPath, 8],
+        },
+        {
+            uri: '/post-object',
+            methods: ['POST'],
+            handler: handlers[1],
+            declaredAt: [restifyServerPath, 10],
+        }
+    ])).toEqual(true);
 });
