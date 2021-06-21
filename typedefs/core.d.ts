@@ -73,9 +73,7 @@ export declare namespace scribe {
         handler: Function,
         docblock?: Partial<DocBlock>,
         auth?: string,
-        _adonis?: any,
-        _express?: any,
-        _restify?: any,
+        originalRoute?: any,
     }
 
     export type SupportedRouters = 'express' | 'adonis' | 'restify';

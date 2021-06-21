@@ -25,6 +25,7 @@ class Endpoint {
         this.methods = endpointDetails.methods;
         this.docblock = endpointDetails.docblock;
         this.handler = endpointDetails.handler;
+        this.originalRoute = endpointDetails.originalRoute;
     }
     add(stage, data) {
         if (data == null) {

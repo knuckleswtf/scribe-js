@@ -74,7 +74,7 @@ class GenerateDocumentation extends Command {
                 uri: r._route,
                 methods,
                 handler: null,
-                _adonis: r,
+                originalRoute: r,
             };
 
             if (typeof r.handler == 'string') {
@@ -99,6 +99,7 @@ class GenerateDocumentation extends Command {
 
             return endpoint;
         }));
+
         return endpoints;
     }
 }

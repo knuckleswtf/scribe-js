@@ -15,6 +15,7 @@ class Endpoint {
     responses: scribe.Response[] = [];
     responseFields: scribe.ResponseFields = {};
     docblock: Partial<scribe.DocBlock>;
+    originalRoute: any;
     boundUri = '';
     /**
      * Authentication info for this endpoint. In the form [{where}, {name}, {sample}]
@@ -32,6 +33,7 @@ class Endpoint {
         this.methods = endpointDetails.methods;
         this.docblock = endpointDetails.docblock;
         this.handler = endpointDetails.handler;
+        this.originalRoute = endpointDetails.originalRoute;
     }
 
     add(stage: string, data) {

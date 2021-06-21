@@ -2,10 +2,11 @@
 
 const fs = require("fs");
 const path = require("path");
+const trim = require('lodash.trim');
 
 const tools = require("@knuckleswtf/scribe/dist/tools");
 
-module.exports = async ({config, app, server, force, extraction, verbose}) => {
+module.exports = async ({config, app, server, force = false, extraction = true, verbose = false}) => {
     if (verbose) {
         // Needed to do this since enable() clears all previously enabled
         const namespacesToEnable = process.env.DEBUG ? (process.env.DEBUG + ',lib:scribe*') : 'lib:scribe*';
@@ -59,8 +60,13 @@ module.exports = async ({config, app, server, force, extraction, verbose}) => {
 
 function getRoutesFromOurDecorator(decorator) {
     // At this point, there should be only one router (the main router)
-    // and one app (routes added via sub-routers or sub-apps)
-    let allRoutes = [...decorator.subRouters.values()].concat([...decorator.subApps.values()]).flat(1);
+    let [allRoutes] = [...decorator.subRouters.values()];
+
+    // Clean up routes
+    allRoutes = allRoutes.map(r => {
+        r.uri = '/' + trim(r.uri, '/');
+        return r;
+    })
 
     return allRoutes;
 }

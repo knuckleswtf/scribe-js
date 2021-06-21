@@ -1,18 +1,17 @@
 language: node_js
-node_js:
-- "12.4.0"
-- "14"
 
 cache:
   directories:
   - node_modules
 
+matrix:
+  fast_finish: true
+  include:
+    - node_js: "12.4.0"
+    - node_js: "14"
+    - node_js: "16"
+
 install: npm i
 
-stages:
-- name: test
-
-jobs:
-  include:
-  - stage: test
-    script: npm run test
+script:
+- npm run test

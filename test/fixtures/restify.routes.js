@@ -8,5 +8,3 @@ const handlers = require('./handlers');
 server.get('/get-string', handlers[0]);
 
 server.post({path: '/post-object', name: 'sth'}, handlers[1]);
-
-module.exports = handlers;

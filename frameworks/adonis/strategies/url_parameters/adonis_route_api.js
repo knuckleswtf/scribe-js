@@ -3,14 +3,14 @@ const keyBy = require('lodash.keyby');
 const debug = require('debug')('lib:scribe:adonis:urlparams');
 
 function run(endpoint, config) {
-    const parameters = endpoint._adonis._keys;
+    const parameters = endpoint.originalRoute._keys;
     const urlParameters = parameters.map(p => {
         debug(`Processing Adonis URL parameter ` + JSON.stringify(p));
         let type = 'string';
         let usePattern = p.pattern;
 
         if (p.pattern === '[^\\/]+?') { // Adonis' default route pattern
-            // since basically anything matches this pattern, randexp gives a poor result, so we don't use the patternit
+            // Since basically anything matches this pattern, randexp gives a useless result
             usePattern = undefined;
 
             if (p.name === 'id') {

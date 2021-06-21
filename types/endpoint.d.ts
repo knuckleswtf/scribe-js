@@ -10,6 +10,7 @@ declare class Endpoint {
     responses: scribe.Response[];
     responseFields: scribe.ResponseFields;
     docblock: Partial<scribe.DocBlock>;
+    originalRoute: any;
     boundUri: string;
     /**
      * Authentication info for this endpoint. In the form [{where}, {name}, {sample}]

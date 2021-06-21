@@ -1,4 +1,5 @@
 const { ServiceProvider } = require.main.require('@adonisjs/fold');
+const tools = require("@knuckleswtf/scribe/dist/tools");
 
 class ScribeProvider extends ServiceProvider {
     register () {
@@ -24,18 +25,8 @@ class ScribeProvider extends ServiceProvider {
                     return original(route, handler);
                 }
 
-                const stackTrace = new Error().stack;
-                const frames = stackTrace.split("\n");
-                frames.shift();
-
-                let frameAtCallSite = frames[1];
-
-                if (frameAtCallSite.includes('node_modules')) {
-                    return original(route, handler);
-                }
-
-                frameAtCallSite = frames[1].replace(/.+\(|\)/g, '');
-                const [filePath, lineNumber, characterNumber]
+                const frameAtCallSite = tools.getFrameAtCallSite("ScribeProvider.js");
+                const [filePath, lineNumber]
                     = frameAtCallSite.split(/:(?=\d)/);  // any colon followed by a number. This is important bc file paths may have colons
 
                 const returnedRoute = original(route, handler);
