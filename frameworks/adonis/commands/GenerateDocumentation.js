@@ -52,7 +52,7 @@ class GenerateDocumentation extends Command {
         config.strategies.urlParameters = (config.strategies.urlParameters || []).concat(path.join(__dirname, '../strategies/url_parameters/adonis_route_api'));
 
         const { generate } = require('@knuckleswtf/scribe');
-        await generate(endpoints, config, 'adonis', path.resolve('server.js'), {
+        await generate(endpoints, config, 'adonis', `node ${path.resolve('server.js')}`, {
             overwriteMarkdownFiles: options.force || false,
             noExtraction: !options.extraction
         });
