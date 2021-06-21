@@ -35,7 +35,11 @@ class Scribe {
             return e;
         });
         const groupedEndpoints = groupBy(parsedEndpoints, 'metadata.groupName');
-        await writer.writeMarkdownAndHTMLDocs(this.config, groupedEndpoints, this.options.overwriteMarkdownFiles);
+        const Camel = require('./camel');
+        const camel = new Camel(this.config);
+        // await camel.writeEndpointsToDisk(groupedEndpoints);
+        await camel.extractAndWriteApiDetailsToDisk(this.options.overwriteMarkdownFiles);
+        // await writer.writeMarkdownAndHTMLDocs(this.config, groupedEndpoints, this.options.overwriteMarkdownFiles);
         if (this.config.postman.enabled) {
             await writer.writePostmanCollectionFile(this.config, groupedEndpoints);
         }

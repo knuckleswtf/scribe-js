@@ -1,98 +1,52 @@
-"use strict";
+'use strict';
 const fs = require("fs");
 const path = require("path");
-const slugify = require("slugify");
-const matcher = require("matcher");
 const tools = require("../tools");
 const Handlebars = require("../utils/handlebars");
 const util = require("util");
-function hasFileBeenModified(filePath, lastTimesWeModifiedTheseFiles) {
-    var _a;
-    if (!fs.existsSync(filePath)) {
-        return false;
-    }
-    const oldFileModificationTime = (_a = lastTimesWeModifiedTheseFiles[filePath]) !== null && _a !== void 0 ? _a : null;
-    if (oldFileModificationTime) {
-        const latestFileModifiedTime = getFileModificationTime(filePath);
-        const wasFileModifiedManually = latestFileModifiedTime > Number(oldFileModificationTime);
-        return wasFileModifiedManually;
-    }
-    return false;
+function hashContent(content) {
+    const crypto = require('crypto');
+    return crypto.createHash('md5').update(content).digest("hex");
 }
-function getFileModificationTime(filePath) {
-    try {
-        return Math.floor(fs.statSync(filePath).mtime.getTime() / 1000);
-    }
-    catch (e) {
-        // If we encounter a nonexistent file
-        return 0;
-    }
-}
-function writeModificationTimesTrackingFile(trackingFilePath, lastTimesWeModifiedTheseFiles) {
-    let content = "# GENERATED. YOU SHOULDN'T MODIFY OR DELETE THIS FILE.\n";
-    content += "# Scribe uses this file to know when you change something manually in your docs.\n";
-    content += Object.entries(lastTimesWeModifiedTheseFiles)
-        .map(([filePath, mtime]) => `${filePath}=${mtime}`).join("\n");
-    fs.writeFileSync(trackingFilePath, content);
-}
-function fetchLastTimeWeModifiedFilesFromTrackingFile(trackingFilePath) {
-    if (fs.existsSync(trackingFilePath)) {
-        const mtimeFileContent = fs.readFileSync(trackingFilePath, "utf8").trim().split("\n");
-        // First two lines are comments
-        mtimeFileContent.shift();
-        mtimeFileContent.shift();
-        return mtimeFileContent.reduce(function (all, line) {
-            const [filePath, modificationTime] = line.split("=");
-            all[filePath] = modificationTime;
-            return all;
-        }, {});
-    }
-    return {};
-}
-module.exports = (config) => {
-    let lastTimesWeModifiedTheseFiles = {};
-    let fileModificationTimesFile = path.resolve('public/docs/.filemtimes');
-    function writeDocs(groupedEndpoints, sourceOutputPath, shouldOverwriteMarkdownFiles) {
-        fileModificationTimesFile = path.join(sourceOutputPath, '/.filemtimes');
-        lastTimesWeModifiedTheseFiles = fetchLastTimeWeModifiedFilesFromTrackingFile(fileModificationTimesFile);
-        !fs.existsSync(sourceOutputPath) && fs.mkdirSync(sourceOutputPath, { recursive: true });
-        writeIndexMarkdownFile(sourceOutputPath, shouldOverwriteMarkdownFiles);
-        writeAuthMarkdownFile(sourceOutputPath, shouldOverwriteMarkdownFiles);
-        writeGroupMarkdownFiles(groupedEndpoints, sourceOutputPath, shouldOverwriteMarkdownFiles);
-        writeModificationTimesTrackingFile(fileModificationTimesFile, lastTimesWeModifiedTheseFiles);
+module.exports = (config, outputPath = '.scribe') => {
+    const trackingFilePath = path.resolve(path.join(outputPath, '/.filehashes'));
+    let lastKnownFileContentHashes = {};
+    function writeIntroAndAuthFiles() {
+        !fs.existsSync(outputPath) && fs.mkdirSync(outputPath, { recursive: true });
+        fetchFileHashesFromTrackingFile();
+        writeIntroMarkdownFile();
+        writeAuthMarkdownFile();
+        writeContentsTrackingFile();
     }
     function writeFile(filePath, content) {
         fs.writeFileSync(filePath, content);
-        // Using the time at a seconds precision, not milliseconds
-        // Because fs.stat's mtime always seems to be after the actual time here, even without modifications
-        // Seems to be overly-precise 🙂
-        lastTimesWeModifiedTheseFiles[filePath] = Math.floor(Date.now() / 1000);
+        lastKnownFileContentHashes[filePath] = hashContent(content);
     }
-    function writeIndexMarkdownFile(sourceOutputPath, shouldOverwriteMarkdownFiles = false) {
-        const indexMarkdownFile = path.join(sourceOutputPath, '/index.md');
-        if (hasFileBeenModified(indexMarkdownFile, lastTimesWeModifiedTheseFiles)) {
+    function writeIntroMarkdownFile(shouldOverwriteMarkdownFiles = false) {
+        const introMarkdownFile = outputPath + '/intro.md';
+        if (hasFileBeenModified(introMarkdownFile)) {
             if (shouldOverwriteMarkdownFiles) {
-                tools.warn(`Discarding manual changes for file ${indexMarkdownFile} because you specified --force`);
+                tools.warn(`Discarding manual changes for file ${introMarkdownFile} because you specified --force`);
             }
             else {
-                tools.warn(`Skipping modified file ${indexMarkdownFile}`);
+                tools.warn(`Skipping modified file ${introMarkdownFile}`);
                 return;
             }
         }
-        const template = Handlebars.compile(fs.readFileSync(path.resolve(__dirname, '../../resources/views/index.hbs'), 'utf8'));
+        const template = Handlebars.compile(fs.readFileSync(path.resolve(__dirname, '../../resources/views/intro.hbs'), 'utf8'));
         const markdown = template({
-            settings: config,
-            isInteractive: config.interactive,
             introText: config.introText,
             description: config.description,
             baseUrl: config.baseUrl.replace(/\/$/, ''),
+            settings: config,
+            isInteractive: config.interactive,
             scribeVersion: process.env.SCRIBE_VERSION
         });
-        writeFile(indexMarkdownFile, markdown);
+        writeFile(introMarkdownFile, markdown);
     }
-    function writeAuthMarkdownFile(sourceOutputPath, shouldOverwriteMarkdownFiles = false) {
-        const authMarkdownFile = path.join(sourceOutputPath, '/authentication.md');
-        if (hasFileBeenModified(authMarkdownFile, lastTimesWeModifiedTheseFiles)) {
+    function writeAuthMarkdownFile(shouldOverwriteMarkdownFiles = false) {
+        const authMarkdownFile = outputPath + '/auth.md';
+        if (hasFileBeenModified(authMarkdownFile)) {
             if (shouldOverwriteMarkdownFiles) {
                 tools.warn(`Discarding manual changes for file ${authMarkdownFile} because you specified --force`);
             }
@@ -101,7 +55,7 @@ module.exports = (config) => {
                 return;
             }
         }
-        const template = Handlebars.compile(fs.readFileSync(path.resolve(__dirname, '../../resources/views/authentication.hbs'), 'utf8'));
+        const template = Handlebars.compile(fs.readFileSync(path.resolve(__dirname, '../../resources/views/auth.hbs'), 'utf8'));
         const isAuthed = config.auth.enabled || false;
         let extraAuthInfo = '', authDescription = '';
         if (isAuthed) {
@@ -140,59 +94,41 @@ module.exports = (config) => {
         });
         writeFile(authMarkdownFile, markdown);
     }
-    function writeGroupMarkdownFiles(groupedEndpoints, sourceOutputPath, shouldOverwriteMarkdownFiles = false) {
-        const groupsPath = path.join(sourceOutputPath, '/groups');
-        !fs.existsSync(groupsPath) && fs.mkdirSync(groupsPath);
-        const groupFileNames = Object.entries(groupedEndpoints).map(function writeGroupFileAndReturnFileName([groupName, endpoints]) {
-            var _a, _b;
-            const template = Handlebars.compile(fs.readFileSync(path.resolve(__dirname, '../../resources/views/partials/group.hbs'), 'utf8'));
-            // Needed for Try It Out
-            const auth = config.auth;
-            if (auth.in === 'bearer' || auth.in === 'basic') {
-                auth.name = 'Authorization';
-                auth.location = 'header';
-                auth.prefix = auth.in === 'bearer' ? 'Bearer ' : 'Basic ';
-            }
-            else {
-                auth.location = auth.in;
-                auth.prefix = '';
-            }
-            const markdown = template({
-                settings: config,
-                auth,
-                endpoints,
-                groupName,
-                groupDescription: (_b = (_a = endpoints.find(e => Boolean(e.metadata.groupDescription))) === null || _a === void 0 ? void 0 : _a.metadata.groupDescription) !== null && _b !== void 0 ? _b : '',
-            }, { allowProtoPropertiesByDefault: true });
-            // @ts-ignore
-            const fileName = slugify(groupName, { lower: true });
-            const routeGroupMarkdownFile = sourceOutputPath + `/groups/${fileName}.md`;
-            if (hasFileBeenModified(routeGroupMarkdownFile, lastTimesWeModifiedTheseFiles)) {
-                if (shouldOverwriteMarkdownFiles) {
-                    tools.warn(`Discarding manual changes for file ${routeGroupMarkdownFile} because you specified --force`);
-                }
-                else {
-                    tools.warn(`Skipping modified file ${routeGroupMarkdownFile}`);
-                    return `${fileName}.md`;
-                }
-            }
-            writeFile(routeGroupMarkdownFile, markdown);
-            return `${fileName}.md`;
-        });
-        // Now, we need to delete any other Markdown files in the groups/ directory.
-        // Why? Because, if we don't, if a user renames a group, the old file will still exist,
-        // so the docs will have those endpoints repeated under the two groups.
-        const filesInGroupFolder = fs.readdirSync(sourceOutputPath + "/groups");
-        const filesNotPresentInThisRun = filesInGroupFolder.filter(fileName => !matcher.isMatch(groupFileNames, fileName));
-        filesNotPresentInThisRun.forEach(fileName => {
-            fs.unlinkSync(`${sourceOutputPath}/groups/${fileName}`);
-        });
+    function hasFileBeenModified(filePath) {
+        var _a;
+        if (!fs.existsSync(filePath)) {
+            return false;
+        }
+        const oldFileHash = (_a = lastKnownFileContentHashes[filePath]) !== null && _a !== void 0 ? _a : null;
+        if (oldFileHash) {
+            const currentFileHash = hashContent(fs.readFileSync(filePath, 'utf8'));
+            const wasFileModifiedManually = currentFileHash != oldFileHash;
+            return wasFileModifiedManually;
+        }
+        return false;
+    }
+    function writeContentsTrackingFile() {
+        let content = "# GENERATED. YOU SHOULDN'T MODIFY OR DELETE THIS FILE.\n";
+        content += "# Scribe uses this file to know when you change something manually in your docs.\n";
+        content += Object.entries(lastKnownFileContentHashes)
+            .map(([filePath, hash]) => `${filePath}=${hash}`).join("\n");
+        fs.writeFileSync(trackingFilePath, content);
+    }
+    function fetchFileHashesFromTrackingFile() {
+        if (fs.existsSync(trackingFilePath)) {
+            const lastKnownFileHashes = fs.readFileSync(trackingFilePath, "utf8").trim().split("\n");
+            // First two lines are comments
+            lastKnownFileHashes.shift();
+            lastKnownFileHashes.shift();
+            lastKnownFileContentHashes = lastKnownFileHashes.reduce(function (all, line) {
+                const [filePath, hash] = line.split("=");
+                all[filePath] = hash;
+                return all;
+            }, {});
+        }
     }
     return {
-        writeDocs,
-        writeIndexMarkdownFile,
-        writeAuthMarkdownFile,
-        writeGroupMarkdownFiles,
+        writeIntroAndAuthFiles,
     };
 };
 //# sourceMappingURL=markdown.js.map
