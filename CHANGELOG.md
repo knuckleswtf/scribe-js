@@ -13,6 +13,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Removals
 
 
+## 1.8.1 (Monday, 21 June 2021)
+### Modified
+- [Adonis] Start server correctly for response calls
+
 ## 1.8.0 (Monday, 21 June 2021)
 ### Modified
 - [Express] Improve route matching
