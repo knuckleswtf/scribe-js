@@ -35,7 +35,7 @@ function decorateRestifyRouter() {
                 let frameAtCallSite = tools.getFrameAtCallSite();
                 const {filePath, lineNumber} = tools.getFilePathAndLineNumberFromCallStackFrame(frameAtCallSite);
                 decorator.allRoutes.push({
-                    methods: [args[0].method],
+                    httpMethods: [args[0].method],
                     handler: args[1][args[1].length - 1],
                     uri: args[0].path,
                     declaredAt: [filePath, lineNumber],

@@ -72,7 +72,7 @@ class GenerateDocumentation extends Command {
 
             const endpoint = {
                 uri: r._route,
-                methods,
+                httpMethods: methods,
                 handler: null,
                 originalRoute: r,
             };

@@ -127,7 +127,7 @@ function patchHttpVerbMethod(originalMethod, method) {
         let frameAtCallSite = tools.getFrameAtCallSite();
         const {filePath, lineNumber} = tools.getFilePathAndLineNumberFromCallStackFrame(frameAtCallSite);
         const route = {
-            methods: [method.toUpperCase()],
+            httpMethods: [method.toUpperCase()],
             uri: this.path,
             declaredAt: [filePath, lineNumber],
             handler: args[args.length - 1]

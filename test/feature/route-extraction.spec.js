@@ -26,61 +26,61 @@ it('can extract Express routes', async () => {
     const expectedRoutes = [
         {
             uri: '/main-app',
-            methods: ['GET'],
+            httpMethods: ['GET'],
             handler: handlers[0],
             declaredAt: [expressAppPath, 8],
         },
         {
             uri: '/main-app',
-            methods: ['POST'],
+            httpMethods: ['POST'],
             handler: handlers[1],
             declaredAt: [expressAppPath, 9],
         },
         {
             uri: '/main-app-multi',
-            methods: ['GET'],
+            httpMethods: ['GET'],
             handler: handlers[0],
             declaredAt: [expressAppPath, 11],
         },
         {
             uri: '/main-app-multi',
-            methods: ['POST'],
+            httpMethods: ['POST'],
             handler: handlers[1],
             declaredAt: [expressAppPath, 12],
         },
         {
             uri: '/sub-app',
-            methods: ['GET'],
+            httpMethods: ['GET'],
             handler: handlers[0],
             declaredAt: [expressAppPath, 15],
         },
         {
             uri: '/sub-app/post',
-            methods: ['POST'],
+            httpMethods: ['POST'],
             handler: handlers[1],
             declaredAt: [expressAppPath, 16],
         },
         {
             uri: '/sub-app/sub-app',
-            methods: ['GET'],
+            httpMethods: ['GET'],
             handler: handlers[2],
             declaredAt: [expressAppPath, 19],
         },
         {
             uri: '/sub-router',
-            methods: ['GET'],
+            httpMethods: ['GET'],
             handler: handlers[0],
             declaredAt: [expressAppPath, 25],
         },
         {
             uri: '/sub-router/post',
-            methods: ['POST'],
+            httpMethods: ['POST'],
             handler: handlers[1],
             declaredAt: [expressAppPath, 26],
         },
         {
             uri: '/sub-router/sub-router',
-            methods: ['GET'],
+            httpMethods: ['GET'],
             handler: handlers[2],
             declaredAt: [expressAppPath, 29],
         },
@@ -100,13 +100,13 @@ it('can extract Restify routes', async () => {
     expect(stub.calledOnceWith([
         {
             uri: '/get-string',
-            methods: ['GET'],
+            httpMethods: ['GET'],
             handler: handlers[0],
             declaredAt: [restifyServerPath, 8],
         },
         {
             uri: '/post-object',
-            methods: ['POST'],
+            httpMethods: ['POST'],
             handler: handlers[1],
             declaredAt: [restifyServerPath, 10],
         }

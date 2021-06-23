@@ -43,7 +43,7 @@ afterAll(async (done) => {
 
 test('response_call strategy does not make call if rules forbid', async () => {
     let endpoint = {
-        methods: ['GET'],
+        httpMethods: ['GET'],
         responses: [],
     };
     const routeGroup = {
@@ -61,7 +61,7 @@ test('response_call strategy does not make call if rules forbid', async () => {
 
 test('response_call strategy does not make call if there is a 2xx response', async () => {
     let endpoint = {
-        methods: ['GET'],
+        httpMethods: ['GET'],
         responses: [
             {
                 status: 201,
@@ -85,7 +85,7 @@ test('response_call strategy makes correct HTTP request to server', async () => 
     let endpoint = {
         uri: '/test1/:param',
         boundUri: '/test1/12',
-        methods: ['GET'],
+        httpMethods: ['GET'],
         headers: {
             accept: 'application/json'
         },
@@ -127,7 +127,7 @@ test('response_call strategy makes correct HTTP request to server', async () => 
     endpoint = {
         uri: '/test1/:param',
         boundUri: '/test1/12',
-        methods: ['POST'],
+        httpMethods: ['POST'],
         headers: {},
         urlParameters: {},
         queryParameters: {},
@@ -164,7 +164,7 @@ test('response_call strategy handles file upload', async (done) => {
     let endpoint = {
         uri: '/test1/upload',
         boundUri: '/test1/upload',
-        methods: ['PUT'],
+        httpMethods: ['PUT'],
         headers: {},
         urlParameters: {},
         queryParameters: {},
