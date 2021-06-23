@@ -1,10 +1,11 @@
+```bash
 curl -X {{endpoint.methods.[0] }} \
     {{#eq endpoint.methods.[0] 'GET'}}-G {{/eq}}"{{ baseUrl }}{{ endpoint.boundUri }}{{#if endpoint.cleanQueryParameters.length}} {{{printQueryParamsAsString endpoint.cleanQueryParameters }}}{{/if}}" {{#if endpoint.headerslength }}\
 {{#each endpoint.headers }} \
     -H "{{@key}}: {{ escapeString this }}"
 {{/each}}
 {{/if}}
-{{#if (isNonEmptyObject endpoint.fileParameters) }}
+<% if  (utils.isNonEmptyObject(endpoint.fileParameters)) { %>
 {{#each endpoint.cleanBodyParameters }}
 {{#each (getParameterNamesAndValuesForFormData @key this) }} \
     -F "{{{@key}}}={{{this}}}"
@@ -15,7 +16,8 @@ curl -X {{endpoint.methods.[0] }} \
     -F "{{@key}}=@{{this}}"
 {{/each}}
 {{/each}}
-{{else if (isNonEmptyObject endpoint.cleanBodyParameters) }} \
+{{else if  (utils.isNonEmptyObject endpoint.cleanBodyParameters) }} \
     -d '{{{JSONstringify endpoint.cleanBodyParameters}}}'
 {{/if}}
 
+```

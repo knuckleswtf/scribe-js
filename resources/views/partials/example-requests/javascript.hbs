@@ -1,14 +1,15 @@
+```javascript
 const url = new URL(
     "{{ baseUrl }}{{ endpoint.boundUri }}"
 );
-{{#if (isNonEmptyObject endpoint.cleanQueryParameters) }}
+<% if  (utils.isNonEmptyObject(endpoint.cleanQueryParameters)) { %>
 
 let params = {{{ printQueryParamsAsKeyValue endpoint.cleanQueryParameters }}};
 Object.keys(params)
     .forEach(key => url.searchParams.append(key, params[key]));
 {{/if}}
 
-{{#if (isNonEmptyObject endpoint.headers) }}
+<% if  (utils.isNonEmptyObject(endpoint.headers)) { %>
 let headers = {
 {{#each endpoint.headers}}
     "{{@key}}": "{{this}}",
@@ -19,7 +20,7 @@ let headers = {
 };
 {{/if}}
 
-{{#if (isNonEmptyObject endpoint.fileParameters) }}
+<% if  (utils.isNonEmptyObject(endpoint.fileParameters)) { %>
 const body = new FormData();
 {{#each endpoint.cleanBodyParameters}}
 {{#each (getParameterNamesAndValuesForFormData @key this) }}
@@ -31,20 +32,21 @@ body.append('{{{ @key }}}', '{{{ this }}}');
 body.append('{{{ @key }}}', document.querySelector('input[name="{{{ @key }}}"]').files[0]);
 {{/each}}
 {{/each}}
-{{else if (isNonEmptyObject endpoint.cleanBodyParameters) }}
+{{else if  (utils.isNonEmptyObject endpoint.cleanBodyParameters) }}
 let body = {{{ JSONstringify endpoint.cleanBodyParameters 4 }}}
 {{/if}}
 
 fetch(url, {
     method: "{{endpoint.methods.[0]}}",
-{{#if (isNonEmptyObject endpoint.headers) }}
+<% if  (utils.isNonEmptyObject(endpoint.headers)) { %>
     headers: headers,
 {{/if}}
-{{#if (isNonEmptyObject endpoint.fileParameters) }}
+<% if  (utils.isNonEmptyObject(endpoint.fileParameters)) { %>
     body,
-{{else if (isNonEmptyObject endpoint.cleanBodyParameters) }}
+{{else if  (utils.isNonEmptyObject endpoint.cleanBodyParameters) }}
     body: JSON.stringify(body),
 {{/if}}
 })
 .then(response => response.json())
 .then(json => console.log(json));
+```

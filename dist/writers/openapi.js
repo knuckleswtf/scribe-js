@@ -353,7 +353,7 @@ module.exports = (config) => {
     }
     function generatePathsSpec(groupedEndpoints) {
         // flatten into a single array
-        const allEndpoints = collect(groupedEndpoints).flatten(1);
+        const allEndpoints = collect(groupedEndpoints).map(g => g.endpoints).flatten(1);
         // OpenAPI groups endpoints by path, then method
         const groupedByPath = allEndpoints.groupBy((endpoint) => {
             const path = endpoint.uri.replace(/(:.+)?\?/g, "$1"); // Remove optional parameters indicator in p
@@ -375,7 +375,7 @@ module.exports = (config) => {
                     // Make sure to exclude non-auth endpoints from auth
                     spec.security = [];
                 }
-                return [endpoint.methods[0].toLowerCase(), spec];
+                return [endpoint.httpMethods[0].toLowerCase(), spec];
             });
             const pathItem = operations;
             // Placing all URL parameters at the path level, since it's the same path anyway

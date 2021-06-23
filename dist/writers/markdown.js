@@ -2,30 +2,32 @@
 const fs = require("fs");
 const path = require("path");
 const tools = require("../tools");
-const Handlebars = require("../utils/handlebars");
 const util = require("util");
+const writing = require("../utils/writing");
 function hashContent(content) {
     const crypto = require('crypto');
     return crypto.createHash('md5').update(content).digest("hex");
 }
-module.exports = (config, outputPath = '.scribe') => {
+module.exports = (config, outputPath = '.scribe', preserveUserChanges = true) => {
     const trackingFilePath = path.resolve(path.join(outputPath, '/.filehashes'));
     let lastKnownFileContentHashes = {};
-    function writeIntroAndAuthFiles() {
+    async function writeIntroAndAuthFiles() {
         !fs.existsSync(outputPath) && fs.mkdirSync(outputPath, { recursive: true });
         fetchFileHashesFromTrackingFile();
-        writeIntroMarkdownFile();
-        writeAuthMarkdownFile();
+        await Promise.all([
+            writeIntroMarkdownFile(),
+            writeAuthMarkdownFile(),
+        ]);
         writeContentsTrackingFile();
     }
     function writeFile(filePath, content) {
         fs.writeFileSync(filePath, content);
         lastKnownFileContentHashes[filePath] = hashContent(content);
     }
-    function writeIntroMarkdownFile(shouldOverwriteMarkdownFiles = false) {
+    async function writeIntroMarkdownFile() {
         const introMarkdownFile = outputPath + '/intro.md';
         if (hasFileBeenModified(introMarkdownFile)) {
-            if (shouldOverwriteMarkdownFiles) {
+            if (!preserveUserChanges) {
                 tools.warn(`Discarding manual changes for file ${introMarkdownFile} because you specified --force`);
             }
             else {
@@ -33,21 +35,17 @@ module.exports = (config, outputPath = '.scribe') => {
                 return;
             }
         }
-        const template = Handlebars.compile(fs.readFileSync(path.resolve(__dirname, '../../resources/views/intro.hbs'), 'utf8'));
-        const markdown = template({
-            introText: config.introText,
+        const markdown = await writing.renderEjsTemplate('markdown/intro', {
             description: config.description,
+            introText: config.introText,
             baseUrl: config.baseUrl.replace(/\/$/, ''),
-            settings: config,
-            isInteractive: config.interactive,
-            scribeVersion: process.env.SCRIBE_VERSION
         });
         writeFile(introMarkdownFile, markdown);
     }
-    function writeAuthMarkdownFile(shouldOverwriteMarkdownFiles = false) {
+    async function writeAuthMarkdownFile() {
         const authMarkdownFile = outputPath + '/auth.md';
         if (hasFileBeenModified(authMarkdownFile)) {
-            if (shouldOverwriteMarkdownFiles) {
+            if (!preserveUserChanges) {
                 tools.warn(`Discarding manual changes for file ${authMarkdownFile} because you specified --force`);
             }
             else {
@@ -55,7 +53,6 @@ module.exports = (config, outputPath = '.scribe') => {
                 return;
             }
         }
-        const template = Handlebars.compile(fs.readFileSync(path.resolve(__dirname, '../../resources/views/auth.hbs'), 'utf8'));
         const isAuthed = config.auth.enabled || false;
         let extraAuthInfo = '', authDescription = '';
         if (isAuthed) {
@@ -87,7 +84,7 @@ module.exports = (config, outputPath = '.scribe') => {
             authDescription += '\n\nAll authenticated endpoints are marked with a `requires authentication` badge in the documentation below.';
             extraAuthInfo = config.auth.extraInfo || '';
         }
-        const markdown = template({
+        const markdown = await writing.renderEjsTemplate('markdown/auth', {
             isAuthed,
             authDescription,
             extraAuthInfo,

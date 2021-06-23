@@ -1,0 +1,10 @@
+<% groupedEndpoints.forEach(group => { %>
+    <h1 id="<%- utils.slugify(group.name) %>"><%- group.name %></h1>
+    <p>
+        <%- utils.markdown(group.description) %>
+    </p>
+
+    <% group.endpoints.forEach(endpoint => { %>
+        <%- include("endpoint", {group, endpoint}) %>
+    <% }); %>
+<% }); %>

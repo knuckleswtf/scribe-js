@@ -1,0 +1,6 @@
+<%- authenticated ?
+        include("base", {
+            colour: "darkred",
+            text: 'requires authentication'
+        }) : ''
+%>

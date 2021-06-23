@@ -3,7 +3,7 @@ const sortBy = require("lodash.sortby");
 class Endpoint {
     constructor(endpointDetails) {
         this.uri = '';
-        this.methods = [];
+        this.httpMethods = [];
         this.metadata = {};
         this.headers = {};
         this.urlParameters = {};
@@ -11,9 +11,6 @@ class Endpoint {
         this.bodyParameters = {};
         this.responses = [];
         this.responseFields = {};
-        // TODO move these to output only
-        this.boundUri = '';
-        this.nestedBodyParameters = {};
         /**
          * Authentication info for this endpoint. In the form [{where}, {name}, {sample}]
          * Example: ["queryParameters", "api_key", "njiuyiw97865rfyvgfvb1"]
@@ -23,10 +20,11 @@ class Endpoint {
         this.cleanBodyParameters = {};
         this.fileParameters = {};
         this.uri = endpointDetails.uri;
-        this.methods = endpointDetails.methods;
+        this.httpMethods = endpointDetails.httpMethods;
         this.docblock = endpointDetails.docblock;
         this.handler = endpointDetails.handler;
         this.originalRoute = endpointDetails.originalRoute;
+        this.boundUri = ''; // OutputEndpointData.getUrlWithBoundParameters(this.cleanUrlParameters, this.uri);
     }
     add(stage, data) {
         if (data == null) {
@@ -40,14 +38,6 @@ class Endpoint {
                 this[stage] = Object.assign({}, this[stage], data);
         }
     }
-    // Should be called before cleanUpUrlParams()
-    setBoundUrl() {
-        this.boundUri = Object.values(this.urlParameters)
-            .reduce((uri, p) => {
-            // Optional parameters with no value won't get substituted
-            return uri.replace(p.match, p.value == null ? '' : p.value);
-        }, this.uri);
-    }
     // Some URL parameters are written in an "ugly" way (eg /users/:id([a-z]+) )
     // We need to clean up the URL (to /users/:id)
     // match = string to match in URL string
@@ -60,15 +50,15 @@ class Endpoint {
         }, this.uri);
     }
     get endpointId() {
-        return this.methods[0] + this.uri.replace(/[/?{}:]/g, '-');
+        return this.httpMethods[0] + this.uri.replace(/[/?{}:]/g, '-');
     }
     forSerialisation() {
         const copy = Object.assign({}, this, {
             // Get rid of all duplicate data
             cleanQueryParameters: undefined,
             cleanUrlParameters: undefined,
-            fileParameters: undefined,
             cleanBodyParameters: undefined,
+            fileParameters: undefined,
             // and objects used only in extraction
             docblock: undefined,
             originalRoute: undefined,
@@ -81,4 +71,4 @@ class Endpoint {
     }
 }
 module.exports = Endpoint;
-//# sourceMappingURL=endpoint.js.map
+//# sourceMappingURL=Endpoint.js.map

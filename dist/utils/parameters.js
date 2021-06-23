@@ -74,7 +74,7 @@ function castValueToType(value, type = 'string') {
  * It also generates a full example for object parameters (and array of objects) using the fields. For instance, if there's a `details` field with type "object",
  * and `details.name` and `details.age` fields, this will return {details: {name: <value>, age: <value>}}
  */
-function removeEmptyOptionalParametersAndTransformToKeyExample(parameters = {}) {
+function cleanParams(parameters = {}) {
     const cleanParameters = {};
     for (let [name, parameter] of Object.entries(parameters)) {
         if (parameter.value === null && !parameter.required) {
@@ -169,7 +169,7 @@ function prettyPrintResponseIfJson(content) {
 module.exports = {
     getBaseType,
     getParameterExample,
-    removeEmptyOptionalParametersAndTransformToKeyExample,
+    cleanParams,
     castValueToType,
     normalizeTypeName,
     isArrayType,

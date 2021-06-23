@@ -1,0 +1,9 @@
+# Authenticating requests
+
+<% if (isAuthed) { %>
+<%- authDescription %>
+
+<%- extraAuthInfo %>
+<% } else { %>
+This API is not authenticated.
+<% } %>

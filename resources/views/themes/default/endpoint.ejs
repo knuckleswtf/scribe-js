@@ -1,0 +1,131 @@
+<h2 id="<%- utils.slugify(group.name) %>-<%- utils.slugify(endpoint.endpointId) %>"><%- endpoint.metadata.title || (endpoint.httpMethods[0] + " " + endpoint.uri) %></h2>
+
+<p>
+<%- include("components/badges/auth", {authenticated: endpoint.metadata.authenticated}) %>
+</p>
+
+<%- utils.markdown(endpoint.metadata.description || '') %>
+
+<blockquote>Example request</blockquote>
+
+<% metadata.exampleLanguages.forEach(language => { %>
+
+<%- utils.markdown(include(`partials/example-requests/${language}`)) %>
+
+<% }); %>
+
+<% if (endpoint.responses.length) { %>
+<% endpoint.responses.forEach(response => { %>
+<blockquote>Example response (<%= response.description || response.status %>):</blockquote>
+
+<% if  (utils.isNonEmptyObject(response.headers || {})) { %>
+<details class="annotation">
+    <summary>
+        <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+    </summary>
+    <pre>
+            <code class="language-http"><% for (header in response.headers) { %>
+<%- header %>: <%- response.headers[header].split('; ') %>
+<% } %> </code>
+            </pre>
+</details> <% } %>
+
+<pre>
+<code class="language-json">
+<% if (response.content.trim().startsWith("<<binary>>")) { %>
+[Binary data] - <%= response.content.replace("<<binary>>", "") %>
+<% } else if (response.status == 204) { %>
+[Empty response]
+<% } else { %>
+<% let parsed = null; try { parsed = JSON.parse(response.content); } catch (e) { } %>
+<!-- If response is a JSON string, prettify it. Otherwise, just print it -->
+<%- parsed != null ? JSON.stringify(parsed, null, 4) : response.content %>
+<% } %>
+</code>
+</pre>
+<% }); %>
+<% } %>
+<div id="execution-results-<%- endpoint.endpointId %>" hidden>
+    <blockquote>Received response<span id="execution-response-status-<%- endpoint.endpointId %>"></span>:</blockquote>
+    <pre class="json"><code id="execution-response-content-<%- endpoint.endpointId %>"></code></pre>
+</div>
+<div id="execution-error-<%- endpoint.endpointId %>" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-<%- endpoint.endpointId %>"></code></pre>
+</div>
+
+<form id="form-<%- endpoint.endpointId %>"
+      data-method="<%- endpoint.httpMethods[0] %>"
+      data-path="<%- endpoint.uri %>"
+      data-authed="<%- endpoint.metadata.authenticated ? 1 : 0 %>"
+      data-hasfiles="<%- endpoint.hasFiles() ? 1 : 0 %>"
+      data-headers='<%= JSON.stringify(endpoint.headers) %>'
+      onsubmit="event.preventDefault(); executeTryOut('<%- endpoint.endpointId %>', this);">
+<h3>
+    Request
+    <% if (metadata.tryItOut.enabled) { %>
+    <button
+            type="button"
+            style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+            id="btn-tryout-<%- endpoint.endpointId %>"
+            onclick="tryItOut('<%- endpoint.endpointId %>');">Try it out ⚡</button>
+    <button
+            type="button"
+            style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+            id="btn-canceltryout-<%- endpoint.endpointId %>"
+            onclick="cancelTryOut('<%- endpoint.endpointId %>');" hidden>Cancel</button>&nbsp;&nbsp;
+    <button
+            type="submit"
+            style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+            id="btn-executetryout-<%- endpoint.endpointId %>" hidden>Send Request 💥</button>
+    <% } %>
+</h3>
+<% endpoint.httpMethods.forEach(method => { %>
+<p>
+    <%- include("components/badges/http-method") %>
+    <b><code><%- endpoint.uri %></b></code>
+</p>
+<% }); %>
+<% if (endpoint.metadata.authenticated && metadata.auth.location == 'header') { %>
+<p>
+    <label id="auth-<%- endpoint.endpointId %>" hidden><%= metadata.auth.name  %> header:
+        <b><code><%= metadata.auth.prefix  %></code></b><input type="text"
+                                                               name="<%= metadata.auth.name %>"
+                                                               data-prefix="<%= metadata.auth.prefix %>"
+                                                               data-endpoint="<%= endpoint.endpointId %>"
+                                                               data-component="header"></label>
+</p>
+<% } %>
+<% if  (utils.isNonEmptyObject(endpoint.urlParameters)) { %>
+<h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+<% for (let attribute in endpoint.urlParameters) { %>
+<% let parameter = endpoint.urlParameters[attribute]; %>
+<p>
+<%- include("components/field-details", {...parameter, endpointId: endpoint.endpointId, component: 'url'}) %>
+</p>
+<% } %>
+<% } %>
+<% if  (utils.isNonEmptyObject(endpoint.queryParameters)) { %>
+<h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
+<% for (let attribute in endpoint.queryParameters) { %>
+<% let parameter = endpoint.queryParameters[attribute]; %>
+<p>
+<%- include("components/field-details", {...parameter, endpointId: endpoint.endpointId, component: 'query'}) %>
+</p>
+<% } %>
+<% } %>
+<% if  (utils.isNonEmptyObject(endpoint.nestedBodyParameters)) { %>
+<h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+<%- include("partials/body-parameters", {parameters: endpoint.nestedBodyParameters, endpointId: endpoint.endpointId}) %>
+<% } %>
+</form>
+
+<% if  (utils.isNonEmptyObject(endpoint.responseFields)) { %>
+<h4 class="fancy-heading-panel"><b>Response Fields</b></h4>
+<% for (let attribute in endpoint.responseFields) { %>
+<% let field = endpoint.responseFields[attribute]; %>
+<p>
+<%- include("components/field-details", {...field, required: true, isInput: false}) %>
+</p>
+<% } %>
+<% } %>

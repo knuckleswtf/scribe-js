@@ -11,8 +11,8 @@ function shouldMakeResponseCall(config, endpoint, routeGroupApply) {
         return false;
     }
     const allowedMethods = routeGroupApply.responseCalls.methods;
-    // @ts-ignore
-    return allowedMethods.includes('*') || allowedMethods.includes(endpoint.methods[0].toUpperCase());
+    return allowedMethods.includes('*') ||
+        allowedMethods.includes(endpoint.httpMethods[0].toUpperCase());
 }
 async function run(endpoint, config, routeGroupApply) {
     if (!shouldMakeResponseCall(config, endpoint, routeGroupApply)) {
@@ -26,11 +26,11 @@ function makeResponseCall(responseCallRules, endpoint) {
     const bodyParameters = Object.assign({}, endpoint.cleanBodyParameters || {}, responseCallRules.bodyParams || {});
     const queryParameters = Object.assign({}, endpoint.cleanQueryParameters || {}, responseCallRules.queryParams || {});
     const fileParameters = Object.assign({}, endpoint.fileParameters || {}, responseCallRules.fileParams || {});
-    debug("Hitting " + endpoint.methods[0] + " " + endpoint.uri);
+    debug("Hitting " + endpoint.httpMethods[0] + " " + endpoint.uri);
     const http = require('http');
     let responseContent;
     const requestOptions = {
-        method: endpoint.methods[0],
+        method: endpoint.httpMethods[0],
         headers: Object.assign({ 'user-agent': 'curl/7.22.0' }, endpoint.headers),
         path: endpoint.boundUri + (Object.keys(queryParameters).length ? `?` + qs.stringify(queryParameters) : ''),
     };

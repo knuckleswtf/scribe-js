@@ -22,12 +22,11 @@ module.exports = (config) => {
                 schema: `https://schema.getpostman.com/json/collection/v${POSTMAN_SCHEMA_VERSION}/collection.json`,
                 _postman_id: uuid.v4(),
             },
-            item: Object.entries(groupedEndpoints).map(([groupName, endpoints]) => {
-                var _a, _b;
+            item: groupedEndpoints.map(group => {
                 return {
-                    name: groupName,
-                    description: (_b = (_a = endpoints.find(e => e.metadata.groupDescription != null)) === null || _a === void 0 ? void 0 : _a.metadata.groupDescription) !== null && _b !== void 0 ? _b : '',
-                    item: endpoints.map(generateEndpointItem),
+                    name: group.name,
+                    description: group.description,
+                    item: group.endpoints.map(generateEndpointItem),
                 };
             }),
             auth: generateAuthObject(),
@@ -72,7 +71,7 @@ module.exports = (config) => {
             name: endpoint.metadata.title !== '' ? endpoint.metadata.title : endpoint.uri,
             request: {
                 url: generateUrlObject(endpoint),
-                method: endpoint.methods[0],
+                method: endpoint.httpMethods[0],
                 header: resolveHeadersForEndpoint(endpoint),
                 body: (Object.entries(endpoint.bodyParameters).length === 0) ? null : getBodyData(endpoint),
                 description: endpoint.metadata.description || null,
