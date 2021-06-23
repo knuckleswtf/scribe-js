@@ -1,0 +1,42 @@
+<% for (let name in parameters) { %>
+    <% let parameter = parameters[name]; %>
+    <% if (name === '[]') { %>
+        <p>
+            Body: <code><%- parameter.type %></code> <%- utils.markdown(parameter.description || '') %>
+        </p>
+        <% for (let subfieldName in parameter.__fields) { %>
+                <% let subfield = parameter.__fields[name]; %>
+                <% if (subfield.__fields) { %>
+                    <%- include("body-parameters", {parameters: {[subfieldName]: subfield}, endpointId}) %>
+                <% } else { %>
+        <p>
+            <%- include("field-details", {...subfield, endpointId, component: 'body', hasChildren: false, isInput: true}) %>
+        </p>
+        <% } %>
+        <% } %>
+        <% } else if (parameter.__fields) { %>
+            <p>
+            <details>
+                <summary>
+                    <%- include("field-details", {...parameter, endpointId, component: 'body', hasChildren: true, isInput: true}) %>
+                </summary>
+                <br>
+
+                <% for (let subfieldName in parameter.__fields) { %>
+                    <% let subfield = parameter.__fields[subfieldName]; %>
+                    <% if (subfield.__fields) { %>
+                        <%- include("body-parameters", {parameters: {[subfieldName]: subfield}, endpointId}) %>
+                    <% } else { %>
+                        <p>
+                            <%- include("field-details", {...subfield, endpointId, component: 'body', hasChildren: false, isInput: true}) %>
+                        </p>
+                    <% } %>
+                <% } %>
+            </details>
+            </p>
+        <% } else { %>
+            <p>
+                <%- include("field-details", {...parameter, endpointId, component: 'body', hasChildren: false}) %>
+            </p>
+        <% } %>
+<% } %>

@@ -17,7 +17,7 @@ class OutputEndpointData {
     responses: scribe.Response[] = [];
     responseFields: scribe.ResponseFields = {};
     boundUri = '';
-    nestedBodyParameters: Record<string, any> = {};
+    nestedBodyParameters: scribe.ParameterBag<scribe.BodyParameter> = {};
     cleanUrlParameters: Record<string, any> = {};
     cleanQueryParameters: Record<string, any> = {};
     cleanBodyParameters: Record<string, any> = {};

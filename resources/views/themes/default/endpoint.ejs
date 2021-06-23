@@ -1,7 +1,7 @@
 <h2 id="<%- utils.slugify(group.name) %>-<%- utils.slugify(endpoint.endpointId) %>"><%- endpoint.metadata.title || (endpoint.httpMethods[0] + " " + endpoint.uri) %></h2>
 
 <p>
-<%- include("components/badges/auth", {authenticated: endpoint.metadata.authenticated}) %>
+<%- include("../../components/badges/auth", {authenticated: endpoint.metadata.authenticated}) %>
 </p>
 
 <%- utils.markdown(endpoint.metadata.description || '') %>
@@ -10,7 +10,7 @@
 
 <% metadata.exampleLanguages.forEach(language => { %>
 
-<%- utils.markdown(include(`partials/example-requests/${language}`)) %>
+<%- utils.markdown(include(`../../partials/example-requests/${language}`, {endpoint})) %>
 
 <% }); %>
 
@@ -82,7 +82,7 @@
 </h3>
 <% endpoint.httpMethods.forEach(method => { %>
 <p>
-    <%- include("components/badges/http-method") %>
+    <%- include("../../components/badges/http-method", {method}) %>
     <b><code><%- endpoint.uri %></b></code>
 </p>
 <% }); %>
@@ -101,7 +101,7 @@
 <% for (let attribute in endpoint.urlParameters) { %>
 <% let parameter = endpoint.urlParameters[attribute]; %>
 <p>
-<%- include("components/field-details", {...parameter, endpointId: endpoint.endpointId, component: 'url'}) %>
+<%- include("../../components/field-details", {...parameter, endpointId: endpoint.endpointId, component: 'url'}) %>
 </p>
 <% } %>
 <% } %>
@@ -110,13 +110,13 @@
 <% for (let attribute in endpoint.queryParameters) { %>
 <% let parameter = endpoint.queryParameters[attribute]; %>
 <p>
-<%- include("components/field-details", {...parameter, endpointId: endpoint.endpointId, component: 'query'}) %>
+<%- include("../../components/field-details", {...parameter, endpointId: endpoint.endpointId, component: 'query'}) %>
 </p>
 <% } %>
 <% } %>
 <% if  (utils.isNonEmptyObject(endpoint.nestedBodyParameters)) { %>
 <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
-<%- include("partials/body-parameters", {parameters: endpoint.nestedBodyParameters, endpointId: endpoint.endpointId}) %>
+<%- include("../../components/body-parameters", {parameters: endpoint.nestedBodyParameters, endpointId: endpoint.endpointId}) %>
 <% } %>
 </form>
 
@@ -125,7 +125,7 @@
 <% for (let attribute in endpoint.responseFields) { %>
 <% let field = endpoint.responseFields[attribute]; %>
 <p>
-<%- include("components/field-details", {...field, required: true, isInput: false}) %>
+<%- include("../../components/field-details", {...field, required: true, isInput: false}) %>
 </p>
 <% } %>
 <% } %>

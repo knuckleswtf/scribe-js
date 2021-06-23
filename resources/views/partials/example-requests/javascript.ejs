@@ -1,0 +1,48 @@
+```javascript
+const url = new URL(
+    "<%- baseUrl %><%- endpoint.boundUri %>"
+);
+<% if (utils.isNonEmptyObject(endpoint.cleanQueryParameters)) { %>
+
+let params = <%- utils.printQueryParamsAsKeyValue(endpoint.cleanQueryParameters) %>;
+Object.keys(params)
+    .forEach(key => url.searchParams.append(key, params[key]));
+<% } %>
+
+<% if (utils.isNonEmptyObject(endpoint.headers)) { %>
+let headers = {<% for (let key in endpoint.headers) { %>
+    "<%- key %>": "<%- endpoint.headers[key] %>",<% } %>
+<% if (!endpoint.headers.Accept) { %>
+    "Accept": "application/json",<% } %>
+};
+<% } %>
+
+<% if (endpoint.hasFiles()) { %>
+const body = new FormData();
+<% for (let p in endpoint.cleanBodyParameters) { %>
+<% let params = utils.getParameterNamesAndValuesForFormData(p, endpoint.cleanBodyParameters[p]); %>
+<% for (let key in params) { %>
+body.append('<%- key %>', '<%- params[key] %>');
+<% } %>
+<% } %>
+<% for (let p in endpoint.fileParameters) { %>
+<% let params = utils.getParameterNamesAndValuesForFormData(p, endpoint.fileParameters[p]); %>
+<% for (let key in params) { %>
+body.append('<%- key %>', document.querySelector('input[name="<%- key %>"]').files[0]);
+<% } %>
+<% } %>
+<% } else if (utils.isNonEmptyObject(endpoint.cleanBodyParameters)) { %>
+let body = <%- JSON.stringify(endpoint.cleanBodyParameters, null, 4) %>
+<% } %>
+
+fetch(url, {
+    method: "<%- endpoint.httpMethods[0] %>",<% if (utils.isNonEmptyObject(endpoint.headers)) { %>
+    headers: headers,<% } %><% if (utils.isNonEmptyObject(endpoint.fileParameters)) { %>
+    body,
+<% } else if (utils.isNonEmptyObject(endpoint.cleanBodyParameters)) { %>
+    body: JSON.stringify(body),
+<% } %>
+})
+.then(response => response.json())
+.then(json => console.log(json));
+```
