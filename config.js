@@ -1,6 +1,9 @@
 module.exports = {
+
+    theme: 'default',
+
     /*
-     * The base URL to be used in examples.
+     * The base URL displayed in the docs.
      */
     baseUrl: "http://yourApi.dev",
 
@@ -19,15 +22,22 @@ module.exports = {
 
     /*
      * HTML documentation, assets and Postman collection will be generated to this folder.
-     * Source Markdown will still be in docs/.
      */
     outputPath: 'public/docs',
 
-    /**
-     * Add a Try It Out button to your endpoints so consumers can test endpoints right from their browser.
-     * Don't forget to enable CORS headers for your endpoints.
-     */
-    interactive: true,
+    tryItOut: {
+        /**
+         * Add a Try It Out button to your endpoints so consumers can test endpoints right from their browser.
+         * Don't forget to enable CORS headers for your endpoints.
+         */
+        enabled: true,
+
+        /**
+         * The base URL for the API tester to use (for example, you can set this to your staging URL).
+         * Leave as null to use the same URL displayed in the docs.
+         */
+        baseUrl: null,
+    },
 
     /*
      * How is your API authenticated? This information will be used in the displayed docs, generated examples and response calls.
@@ -98,7 +108,7 @@ module.exports = {
                  */
                 responseCalls: {
                     /*
-                     * The base URL to use when making requests. This should be the URL (+ port) you run on localhost.
+                     * The base URL to use when making response calls. This should be the URL (+ port) you run on localhost.
                      */
                     baseUrl: "http://localhost:3000",
                     /*

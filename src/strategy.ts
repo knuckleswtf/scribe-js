@@ -1,7 +1,7 @@
 'use strict';
 
 import {scribe} from "../typedefs/core";
-import Endpoint = require("./endpoint");
+import Endpoint = require("./camel/Endpoint");
 
 type StrategyReturnTypes =
     scribe.Metadata

@@ -12,12 +12,17 @@ import {
 import {URL} from "url";
 import uuid = require('uuid');
 import striptags = require('striptags');
+import Endpoint from "../camel/Endpoint";
 
 const POSTMAN_SCHEMA_VERSION = '2.1.0';
 export = (config: scribe.Config) => {
     const parsedUrl = new URL(config.baseUrl);
 
-    function makePostmanCollection(groupedEndpoints: { [groupName: string]: scribe.Route[] }) {
+    function makePostmanCollection(groupedEndpoints: {
+        name: string,
+        description?: string,
+        endpoints: Endpoint[],
+    }[]) {
         const collection: CollectionDefinition & { info: { description: string, schema: string, _postman_id: string } } = {
             variable: [
                 {
@@ -34,12 +39,11 @@ export = (config: scribe.Config) => {
                 schema: `https://schema.getpostman.com/json/collection/v${POSTMAN_SCHEMA_VERSION}/collection.json`,
                 _postman_id: uuid.v4(),
             },
-            item: Object.entries(groupedEndpoints).map(([groupName, endpoints]) => {
+            item: groupedEndpoints.map(group => {
                 return {
-                    name: groupName,
-                    description: endpoints.find(e => e.metadata.groupDescription != null)
-                        ?.metadata.groupDescription ?? '',
-                    item: endpoints.map(generateEndpointItem),
+                    name: group.name,
+                    description: group.description,
+                    item: group.endpoints.map(generateEndpointItem),
                 };
             }),
             auth: generateAuthObject(),
@@ -83,12 +87,12 @@ export = (config: scribe.Config) => {
         }
     }
 
-    function generateEndpointItem(endpoint: scribe.Route): ItemDefinition {
+    function generateEndpointItem(endpoint: Endpoint): ItemDefinition {
         return {
             name: endpoint.metadata.title !== '' ? endpoint.metadata.title : endpoint.uri,
             request: {
                 url: generateUrlObject(endpoint) as Url, // not really, but the typedef is wrong
-                method: endpoint.methods[0],
+                method: endpoint.httpMethods[0],
                 header: resolveHeadersForEndpoint(endpoint),
                 body: (Object.entries(endpoint.bodyParameters).length === 0) ? null : getBodyData(endpoint),
                 description: endpoint.metadata.description || null,
@@ -98,7 +102,7 @@ export = (config: scribe.Config) => {
         };
     }
 
-    function generateUrlObject(endpoint: scribe.Route): UrlDefinition {
+    function generateUrlObject(endpoint: Endpoint): UrlDefinition {
         // URL Parameters are collected by the `UrlParameters` strategies, but only make sense if they're in the route
         // definition. Filter out any URL parameters that don't appear in the URL.
         const urlParams = Object.entries(endpoint.urlParameters).filter(([key, data]) => endpoint.uri.includes(`:${key}`));
@@ -224,7 +228,7 @@ export = (config: scribe.Config) => {
         return body;
     }
 
-    function resolveHeadersForEndpoint(endpoint: scribe.Route): HeaderDefinition[] {
+    function resolveHeadersForEndpoint(endpoint: Endpoint): HeaderDefinition[] {
         const headers = Object.assign({}, endpoint.headers);
 
         const [where, authParam] = getAuthParamToExclude();

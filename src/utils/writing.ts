@@ -1,20 +1,31 @@
+'use strict';
 
-import trim = require('lodash.trim');
-import fs = require('fs');
-import path = require('path');
+import path = require("path");
+import rtrim = require("lodash.trimend");
+const ejs = require('ejs');
 
-import Handlebars = require("handlebars");
+function renderEjsTemplate(key: string, data: Record<string, any>): Promise<string> {
+    data.utils = getUtils();
+    return ejs.renderFile(path.join(__dirname, `/../../resources/views/${key}.ejs`), data);
+}
 
-require('handlebars-helpers')(['string', 'comparison', 'object'], {handlebars: Handlebars});
-registerPartialsInDirectory(path.join(__dirname, '../../resources/views/partials'));
-registerPartialsInDirectory(path.join(__dirname, '../../resources/views/partials/example-requests'));
-registerPartialsInDirectory(path.join(__dirname, '../../resources/views/components'));
-registerPartialsInDirectory(path.join(__dirname, '../../resources/views/components/badges'));
+function getUtils() {
+    const converter = new (require('showdown').Converter)();
+    return {
+        slugify: require("slugify"),
+        markdown: converter.makeHtml.bind(converter),
+        httpMethodToCssColour,
+        getInputTypeForField,
+        getFullNameForField,
+        isNonEmptyObject,
+        escapeString,
+        printQueryParamsAsString,
+        printQueryParamsAsKeyValue,
+        getParameterNamesAndValuesForFormData
+    };
+}
 
-Handlebars.registerHelper('objectWrap', (key, value) => ({[key]: value}));
-Handlebars.registerHelper('defaultValue', (value, defaultValue) => value || defaultValue);
-Handlebars.registerHelper('endsWith', (value: string, other: string) => value.endsWith(other));
-Handlebars.registerHelper('httpMethodToCssColour', function (method: string) {
+function httpMethodToCssColour(method: string) {
     const colours = {
         GET: 'green',
         HEAD: 'darkgreen',
@@ -23,28 +34,37 @@ Handlebars.registerHelper('httpMethodToCssColour', function (method: string) {
         PATCH: 'purple',
         DELETE: 'red',
     };
-    return new Handlebars.SafeString(colours[method.toUpperCase()]);
-});
-Handlebars.registerHelper('printQueryParamsAsString', printQueryParamsAsString);
-Handlebars.registerHelper('escapeString', escapeString);
-Handlebars.registerHelper('isNonEmptyObject', isNonEmptyObject);
-Handlebars.registerHelper('printQueryParamsAsKeyValue', printQueryParamsAsKeyValue);
-Handlebars.registerHelper('getParameterNamesAndValuesForFormData', getParameterNamesAndValuesForFormData);
-Handlebars.registerHelper('getInputTypeForField', getInputTypeForField);
-Handlebars.registerHelper('getFullNameForField', getFullNameForField);
+    return colours[method.toUpperCase()];
+}
 
-function registerPartialsInDirectory(partialPath: string) {
-    fs.readdirSync(partialPath).forEach((filename) => {
-        const matches = /^([^.]+).hbs$/.exec(filename);
-        if (!matches) {
-            return;
-        }
+function getFullNameForField(name: string, type?: string) {
+    name = name.replace('[]', '.0');
+    if (type.endsWith('[]')) {
+        // Ignore the first '[]': the frontend will take care of it
+        type = type.substr(0, type.length - 2);
+    }
+    while (type.endsWith('[]')) {
+        name += '.0';
+        type = type.substr(0, type.length - 2);
+    }
+    return name;
+}
 
-        // Convert name so we can reference with dot syntax in views
-        const name = partialPath.replace(/.*views(\/|\\)/g, '').replace(/\/|\\/g, '.') + `.${matches[1]}`;
-        const template = fs.readFileSync(path.join(partialPath, filename), 'utf8');
-        Handlebars.registerPartial(name, template);
-    });
+function getInputTypeForField(type: string) {
+    const baseType = type.replace('[]', '');
+    let inputType = '';
+    switch (baseType) {
+        case 'number':
+        case 'integer':
+            inputType = 'number';
+            break;
+        case 'file':
+            inputType = 'file';
+            break;
+        default:
+            inputType = 'text';
+    }
+    return inputType;
 }
 
 function printQueryParamsAsString(cleanQueryParams: Record<string, any>): string {
@@ -66,7 +86,7 @@ function printQueryParamsAsString(cleanQueryParams: Record<string, any>): string
         }
 
     }
-    return trim(qs, '&');
+    return rtrim(qs, '&');
 }
 
 function escapeString(string) {
@@ -168,34 +188,6 @@ function printQueryParamsAsKeyValue(cleanQueryParameters, opts = {}): string {
     return output + closing;
 }
 
-function getFullNameForField(name: string, type?: string) {
-    name = name.replace('[]', '.0');
-    if (type.endsWith('[]')) {
-        // Ignore the first '[]': the frontend will take care of it
-        type = type.substr(0, type.length - 2);
-    }
-    while (type.endsWith('[]')) {
-        name += '.0';
-        type = type.substr(0, type.length - 2);
-    }
-    return name;
-}
-
-function getInputTypeForField(type: string) {
-    const baseType = type.replace('[]', '');
-    let inputType = '';
-    switch (baseType) {
-        case 'number':
-        case 'integer':
-            inputType = 'number';
-            break;
-        case 'file':
-            inputType = 'file';
-            break;
-        default:
-            inputType = 'text';
-    }
-    return inputType;
-}
-
-export = Handlebars;
+export = {
+    renderEjsTemplate,
+};

@@ -5,6 +5,7 @@ import {
     ContentObject,
     OpenAPIObject, OperationObject, ParameterObject, RequestBodyObject, SchemaObject, SecuritySchemeObject
 } from "openapi3-ts";
+import Endpoint from "../camel/Endpoint";
 
 const collect = require('collect.js');
 
@@ -13,7 +14,11 @@ const EMPTY = {};
 
 export = (config: scribe.Config) => {
 
-    function makeOpenAPISpec(groupedEndpoints: { [groupName: string]: scribe.Route[] }) {
+    function makeOpenAPISpec(groupedEndpoints: {
+        name: string,
+        description?: string,
+        endpoints: Endpoint[],
+    }[]) {
         const spec: OpenAPIObject = Object.assign({
             openapi: OPENAPI_SCHEMA_VERSION,
             info: {
@@ -32,11 +37,15 @@ export = (config: scribe.Config) => {
         return spec;
     }
 
-    function generatePathsSpec(groupedEndpoints: { [groupName: string]: scribe.Route[] }) {
+    function generatePathsSpec(groupedEndpoints: {
+        name: string,
+        description?: string,
+        endpoints: Endpoint[],
+    }[]) {
         // flatten into a single array
-        const allEndpoints = collect(groupedEndpoints).flatten(1);
+        const allEndpoints = collect(groupedEndpoints).map(g => g.endpoints).flatten(1);
         // OpenAPI groups endpoints by path, then method
-        const groupedByPath = allEndpoints.groupBy((endpoint: scribe.Route) => {
+        const groupedByPath = allEndpoints.groupBy((endpoint: Endpoint) => {
             const path = endpoint.uri.replace(/(:.+)?\?/g, "$1"); // Remove optional parameters indicator in p
             return '/' + path.replace(/^\//, '');
         });
@@ -60,7 +69,7 @@ export = (config: scribe.Config) => {
                     spec.security = [];
                 }
 
-                return [endpoint.methods[0].toLowerCase(), spec];
+                return [endpoint.httpMethods[0].toLowerCase(), spec];
             });
 
             const pathItem = operations;
