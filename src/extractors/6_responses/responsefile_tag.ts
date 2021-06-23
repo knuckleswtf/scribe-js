@@ -3,7 +3,7 @@ import fs = require("fs");
 import path = require("path");
 import tools = require('../../tools');
 const { prettyPrintResponseIfJson } = require("../../utils/parameters");
-import Endpoint from "../../endpoint";
+import Endpoint from "../../camel/Endpoint";
 
 async function run(endpoint: Endpoint, config: scribe.Config) {
     const responseFileTags = endpoint.docblock.responseFile || [];

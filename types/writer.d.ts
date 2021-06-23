@@ -1,17 +1,17 @@
 import { scribe } from "../typedefs/core";
-import Endpoint from "./endpoint";
-declare const _default: {
-    writePostmanCollectionFile(config: scribe.Config, groupedEndpoints: Record<string, Endpoint[]>): Promise<void>;
-    writeOpenAPISpecFile(config: scribe.Config, groupedEndpoints: Record<string, Endpoint[]>): Promise<void>;
-    writeMarkdownAndHTMLDocs(config: scribe.Config, groupedEndpoints?: Record<string, Endpoint[]>, shouldOverwriteMarkdownFiles?: boolean): Promise<void>;
-    /**
-     * Transform body parameters such that object fields have a `fields` property containing a list of all subfields
-     * Subfields will be removed from the main parameter map
-     * For instance, if parameters is {dad: {}, 'dad.cars': {}, 'dad.age': {}},
-     * normalise this into {dad: {..., __fields: {'dad.cars': {}, {'dad.age': {}}}
-     *
-     * @param parameters
-     */
-    nestArrayAndObjectFields(parameters?: scribe.ParameterBag): scribe.ParameterBag<scribe.Parameter>;
+import OutputEndpointData from "./camel/OutputEndpointData";
+declare class Writer {
+    private config;
+    constructor(config: scribe.Config);
+    writeDocs(groupedEndpoints?: Group[]): Promise<void>;
+    writePostmanCollection(groupedEndpoints: Group[]): Promise<void>;
+    writeOpenAPISpec(groupedEndpoints: Group[]): Promise<void>;
+    writeHTMLDocs(groupedEndpoints: Group[]): Promise<void>;
+}
+export = Writer;
+declare type Group = {
+    name: string;
+    description?: string;
+    fileName?: string;
+    endpoints: OutputEndpointData[];
 };
-export = _default;

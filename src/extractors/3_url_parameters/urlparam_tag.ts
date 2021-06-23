@@ -1,5 +1,5 @@
 import {scribe} from "../../../typedefs/core";
-import Endpoint from "../../endpoint";
+import Endpoint from "../../camel/Endpoint";
 
 const {getParameterExample, castValueToType} = require("../../utils/parameters");
 

@@ -1,7 +1,7 @@
 import { scribe } from "../typedefs/core";
 declare class Endpoint {
     uri: string;
-    methods: string[];
+    httpMethods: string[];
     metadata: scribe.Metadata;
     headers: scribe.Headers;
     urlParameters: scribe.UrlParameters;
@@ -12,12 +12,12 @@ declare class Endpoint {
     docblock: Partial<scribe.DocBlock>;
     originalRoute: any;
     boundUri: string;
+    nestedBodyParameters: Record<string, any>;
     /**
      * Authentication info for this endpoint. In the form [{where}, {name}, {sample}]
      * Example: ["queryParameters", "api_key", "njiuyiw97865rfyvgfvb1"]
      */
     auth: [string, string, string];
-    nestedBodyParameters: Record<string, any>;
     cleanQueryParameters: Record<string, any>;
     cleanBodyParameters: Record<string, any>;
     fileParameters: Record<string, any>;
@@ -27,5 +27,14 @@ declare class Endpoint {
     setBoundUrl(): void;
     cleanUpUrlParams(): void;
     get endpointId(): string;
+    forSerialisation(): this & {
+        cleanQueryParameters: any;
+        cleanUrlParameters: any;
+        fileParameters: any;
+        cleanBodyParameters: any;
+        docblock: any;
+        originalRoute: any;
+        auth: any;
+    };
 }
 export = Endpoint;

@@ -1,5 +1,13 @@
 export declare namespace scribe {
 
+    export type HttpMethods = keyof {
+        'GET': 'GET',
+        'POST': 'POST',
+        'PUT': 'PUT',
+        'PATCH': 'PATCH',
+        'DELETE': 'DELETE',
+    };
+
     export interface ResponseField {
         name: string,
         description: string,
@@ -52,12 +60,13 @@ export declare namespace scribe {
         status: number,
         description?: string,
         content: string
+        headers?: Record<string, string[]>
     }
 
     export interface Route {
         uri: string,
         boundUri?: string,
-        methods: string[],
+        httpMethods: HttpMethods[],
         declaredAt: [string, number],
         metadata?: Metadata
         headers?: Headers
@@ -88,7 +97,7 @@ export declare namespace scribe {
 
     export interface ResponseCallRules {
         baseUrl: string,
-        methods: Array<'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | '*'>,
+        methods: Array<HttpMethods|'*'>,
         env: Record<string, any>,
         bodyParams: {},
         queryParams: {},
@@ -112,7 +121,11 @@ export declare namespace scribe {
         description: string,
         logo: false | string,
         outputPath: string,
-        interactive: boolean,
+        theme?: string,
+        tryItOut: {
+            enabled: boolean,
+            baseUrl: boolean,
+        },
         auth: {
             enabled: boolean,
             default: boolean,

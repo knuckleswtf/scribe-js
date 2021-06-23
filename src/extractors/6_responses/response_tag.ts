@@ -1,4 +1,4 @@
-import Endpoint from "../../endpoint";
+import Endpoint from "../../camel/Endpoint";
 
 async function run(endpoint: Endpoint, config) {
     const docblock = endpoint.docblock;

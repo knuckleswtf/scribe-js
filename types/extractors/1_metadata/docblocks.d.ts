@@ -1,5 +1,5 @@
 import { scribe } from "../../../typedefs/core";
-import Endpoint from "../../endpoint";
+import Endpoint from "../../camel/Endpoint";
 declare function run(endpoint: Endpoint, config: scribe.Config): Promise<{
     groupName: string;
     groupDescription: string;

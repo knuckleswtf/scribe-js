@@ -1,10 +1,13 @@
 import { scribe } from "../../typedefs/core";
 import { CollectionDefinition } from "postman-collection";
+import Endpoint from "../camel/Endpoint";
 declare const _default: (config: scribe.Config) => {
     VERSION: string;
     makePostmanCollection: (groupedEndpoints: {
-        [groupName: string]: scribe.Route[];
-    }) => CollectionDefinition & {
+        name: string;
+        description?: string;
+        endpoints: Endpoint[];
+    }[]) => CollectionDefinition & {
         info: {
             description: string;
             schema: string;

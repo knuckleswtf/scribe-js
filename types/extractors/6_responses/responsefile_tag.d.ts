@@ -1,5 +1,5 @@
 import { scribe } from "../../../typedefs/core";
-import Endpoint from "../../endpoint";
+import Endpoint from "../../camel/Endpoint";
 declare function run(endpoint: Endpoint, config: scribe.Config): Promise<any[]>;
 declare const _default: {
     routers: any[];

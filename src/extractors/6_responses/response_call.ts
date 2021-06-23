@@ -1,5 +1,5 @@
 import {scribe} from "../../../typedefs/core";
-import Endpoint from "../../endpoint";
+import Endpoint from "../../camel/Endpoint";
 
 import fs = require("fs");
 import path = require("path");
@@ -16,11 +16,8 @@ function shouldMakeResponseCall(config: scribe.Config, endpoint: Endpoint, route
     }
 
     const allowedMethods = routeGroupApply.responseCalls.methods;
-
-    // @ts-ignore
-    return allowedMethods.includes('*') || allowedMethods.includes(endpoint.methods[0].toUpperCase());
-
-
+    return allowedMethods.includes('*') ||
+        allowedMethods.includes(endpoint.httpMethods[0].toUpperCase() as Uppercase<scribe.HttpMethods>);
 }
 
 async function run(endpoint: Endpoint, config: scribe.Config, routeGroupApply: scribe.RouteGroupApply): Promise<scribe.Response[]> {
@@ -45,13 +42,13 @@ function makeResponseCall(responseCallRules: scribe.ResponseCallRules, endpoint:
     const fileParameters = Object.assign({}, endpoint.fileParameters || {}, responseCallRules.fileParams || {});
 
 
-    debug("Hitting " + endpoint.methods[0] + " " + endpoint.uri);
+    debug("Hitting " + endpoint.httpMethods[0] + " " + endpoint.uri);
 
     const http = require('http');
     let responseContent: string;
 
     const requestOptions = {
-        method: endpoint.methods[0],
+        method: endpoint.httpMethods[0],
         headers: Object.assign({'user-agent': 'curl/7.22.0'}, endpoint.headers),
         path: endpoint.boundUri + (Object.keys(queryParameters).length ? `?` + qs.stringify(queryParameters) : ''),
     };

@@ -1,5 +1,5 @@
 import { scribe } from "../typedefs/core";
-import Endpoint = require("./endpoint");
+import Endpoint = require("./camel/Endpoint");
 declare type StrategyReturnTypes = scribe.Metadata | scribe.Headers | scribe.UrlParameters | scribe.QueryParameters | scribe.BodyParameters | scribe.Response[] | scribe.ResponseFields;
 declare class Strategy<T extends StrategyReturnTypes> {
     private config;

@@ -15,7 +15,7 @@ declare function castValueToType(value: any, type?: string): any;
  * It also generates a full example for object parameters (and array of objects) using the fields. For instance, if there's a `details` field with type "object",
  * and `details.name` and `details.age` fields, this will return {details: {name: <value>, age: <value>}}
  */
-declare function removeEmptyOptionalParametersAndTransformToKeyExample(parameters?: scribe.ParameterBag): {};
+declare function cleanParams(parameters?: scribe.ParameterBag): {};
 declare function normalizeTypeName(typeName: string): string;
 declare function isArrayType(typeName: string): boolean;
 declare function getBaseType(typeName: string): string;
@@ -28,7 +28,7 @@ declare function prettyPrintResponseIfJson(content: string): string;
 declare const _default: {
     getBaseType: typeof getBaseType;
     getParameterExample: typeof getParameterExample;
-    removeEmptyOptionalParametersAndTransformToKeyExample: typeof removeEmptyOptionalParametersAndTransformToKeyExample;
+    cleanParams: typeof cleanParams;
     castValueToType: typeof castValueToType;
     normalizeTypeName: typeof normalizeTypeName;
     isArrayType: typeof isArrayType;

@@ -1,6 +1,6 @@
 import {scribe} from "../../../typedefs/core";
 import utils = require("../../utils/parameters");
-import Endpoint from "../../endpoint";
+import Endpoint from "../../camel/Endpoint";
 
 const { getParameterExample } = utils;
 
