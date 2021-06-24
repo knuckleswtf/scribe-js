@@ -70,6 +70,7 @@ function makeResponseCall(responseCallRules: scribe.ResponseCallRules, endpoint:
                     resolve({
                         status: Number(res.statusCode),
                         description: '',
+                        headers: res.headers,
                         content: responseContent
                     });
                 };

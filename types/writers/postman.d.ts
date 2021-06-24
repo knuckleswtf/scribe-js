@@ -1,12 +1,12 @@
 import { scribe } from "../../typedefs/core";
 import { CollectionDefinition } from "postman-collection";
-import Endpoint from "../camel/Endpoint";
+import OutputEndpointData from "../camel/OutputEndpointData";
 declare const _default: (config: scribe.Config) => {
     VERSION: string;
     makePostmanCollection: (groupedEndpoints: {
         name: string;
         description?: string;
-        endpoints: Endpoint[];
+        endpoints: OutputEndpointData[];
     }[]) => CollectionDefinition & {
         info: {
             description: string;

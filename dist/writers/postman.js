@@ -77,7 +77,8 @@ module.exports = (config) => {
                 description: endpoint.metadata.description || null,
                 auth: endpoint.metadata.authenticated ? undefined : { type: 'noauth' }
             },
-            response: [],
+            // @ts-ignore
+            response: getResponses(endpoint),
         };
     }
     function generateUrlObject(endpoint) {
@@ -224,6 +225,23 @@ module.exports = (config) => {
         else {
             return [config.auth.in, config.auth.name];
         }
+    }
+    function getResponses(endpoint) {
+        return endpoint.responses.map((response) => {
+            const headers = [];
+            for (let header in response.headers) {
+                headers.push({
+                    key: header,
+                    value: response.headers[header],
+                });
+            }
+            return {
+                header: headers,
+                code: response.status,
+                body: response.content,
+                name: response.description,
+            };
+        });
     }
     return {
         VERSION: POSTMAN_SCHEMA_VERSION,

@@ -12,7 +12,7 @@ import {
 import {URL} from "url";
 import uuid = require('uuid');
 import striptags = require('striptags');
-import Endpoint from "../camel/Endpoint";
+import OutputEndpointData from "../camel/OutputEndpointData";
 
 const POSTMAN_SCHEMA_VERSION = '2.1.0';
 export = (config: scribe.Config) => {
@@ -21,7 +21,7 @@ export = (config: scribe.Config) => {
     function makePostmanCollection(groupedEndpoints: {
         name: string,
         description?: string,
-        endpoints: Endpoint[],
+        endpoints: OutputEndpointData[],
     }[]) {
         const collection: CollectionDefinition & { info: { description: string, schema: string, _postman_id: string } } = {
             variable: [
@@ -87,7 +87,7 @@ export = (config: scribe.Config) => {
         }
     }
 
-    function generateEndpointItem(endpoint: Endpoint): ItemDefinition {
+    function generateEndpointItem(endpoint: OutputEndpointData): ItemDefinition {
         return {
             name: endpoint.metadata.title !== '' ? endpoint.metadata.title : endpoint.uri,
             request: {
@@ -98,11 +98,12 @@ export = (config: scribe.Config) => {
                 description: endpoint.metadata.description || null,
                 auth: endpoint.metadata.authenticated ? undefined : {type: 'noauth'}
             },
-            response: [],
+            // @ts-ignore
+            response: getResponses(endpoint),
         };
     }
 
-    function generateUrlObject(endpoint: Endpoint): UrlDefinition {
+    function generateUrlObject(endpoint: OutputEndpointData): UrlDefinition {
         // URL Parameters are collected by the `UrlParameters` strategies, but only make sense if they're in the route
         // definition. Filter out any URL parameters that don't appear in the URL.
         const urlParams = Object.entries(endpoint.urlParameters).filter(([key, data]) => endpoint.uri.includes(`:${key}`));
@@ -228,7 +229,7 @@ export = (config: scribe.Config) => {
         return body;
     }
 
-    function resolveHeadersForEndpoint(endpoint: Endpoint): HeaderDefinition[] {
+    function resolveHeadersForEndpoint(endpoint: OutputEndpointData): HeaderDefinition[] {
         const headers = Object.assign({}, endpoint.headers);
 
         const [where, authParam] = getAuthParamToExclude();
@@ -258,6 +259,25 @@ export = (config: scribe.Config) => {
         } else {
             return [config.auth.in, config.auth.name];
         }
+    }
+
+    function getResponses(endpoint: OutputEndpointData) {
+        return endpoint.responses.map((response) => {
+            const headers = [];
+            for (let header in response.headers) {
+                headers.push({
+                    key: header,
+                    value: response.headers[header],
+                });
+            }
+
+            return {
+                header: headers,
+                code: response.status,
+                body: response.content,
+                name: response.description,
+            };
+        });
     }
 
     return {

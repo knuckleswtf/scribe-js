@@ -24,10 +24,9 @@
         <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
     </summary>
     <pre>
-            <code class="language-http"><% for (header in response.headers) { %>
-<%- header %>: <%- response.headers[header].split('; ') %>
-<% } %> </code>
-            </pre>
+        <code class="language-http"><% for (header in response.headers) { %>
+<%- header %>: <%- response.headers[header] %><% } %>
+        </code></pre>
 </details> <% } %>
 
 <pre>

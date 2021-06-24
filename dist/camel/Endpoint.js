@@ -32,6 +32,29 @@ class Endpoint {
         }
         switch (stage) {
             case 'responses':
+                const hiddenHeaders = [
+                    'date',
+                    'Date',
+                    'etag',
+                    'ETag',
+                    'last-modified',
+                    'Last-Modified',
+                    'date',
+                    'Date',
+                    'content-length',
+                    'Content-Length',
+                    'connection',
+                    'Connection',
+                    'x-powered-by',
+                    'X-Powered-By',
+                ];
+                data.forEach(response => {
+                    if (response.headers) {
+                        hiddenHeaders.forEach(headerName => {
+                            delete response.headers[headerName];
+                        });
+                    }
+                });
                 this.responses = sortBy(this.responses.concat(data), 'status');
                 break;
             default:
