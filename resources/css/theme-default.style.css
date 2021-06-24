@@ -22,9 +22,12 @@ hgroup,
 main,
 menu,
 nav,
-section,
-summary {
+section {
     display: block
+}
+
+summary {
+    cursor: pointer;
 }
 
 audio,
@@ -218,16 +221,19 @@ th {
     padding: 0
 }
 
+body,
+html {
+    font-family: 'PT Sans', Helvetica Neue, Helvetica, Arial, Microsoft Yahei, 微软雅黑, STXihei, 华文细黑, sans-serif;
+    font-size: 16px;
+}
+
 .content h1,
 .content h2,
 .content h3,
 .content h4,
 .content h5,
-.content h6,
-body,
-html {
+.content h6 {
     font-family: 'PT Sans', Helvetica Neue, Helvetica, Arial, Microsoft Yahei, 微软雅黑, STXihei, 华文细黑, sans-serif;
-    font-size: 15px;
 }
 
 .content h1,
@@ -242,7 +248,7 @@ html {
 .content code,
 .content pre {
     font-family: Consolas, Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, serif;
-    font-size: 12px;
+    font-size: 14px;
     line-height: 1.5
 }
 
@@ -804,7 +810,6 @@ html {
 }
 
 .content code {
-    background-color: rgba(0, 0, 0, .05);
     padding: 3px;
     border-radius: 3px
 }
@@ -860,6 +865,24 @@ html {
     clear: right;
     box-sizing: border-box;
     text-shadow: 0 1px 2px rgba(0, 0, 0, .4)
+}
+
+.content .annotation {
+    background-color: #292929;
+    color: #fff;
+    padding: 0 28px;
+    margin: 0;
+    width: 50%;
+    float: right;
+    clear: right;
+    box-sizing: border-box;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, .4)
+}
+
+.content .annotation pre {
+    padding: 0 0;
+    width: 100%;
+    float: none;
 }
 
 .content blockquote>p,
@@ -926,8 +949,38 @@ html {
     .content ul {
         margin-right: 0
     }
+    .content>aside,
+    .content>details,
+    .content>dl,
+    .content>h1,
+    .content>h2,
+    .content>h3,
+    .content>h4,
+    .content>h5,
+    .content>h6,
+    .content>ol,
+    .content>p,
+    .content>table,
+    .content>ul,
+    .content>form>aside,
+    .content>form>details,
+    .content>form>h1,
+    .content>form>h2,
+    .content>form>h3,
+    .content>form>h4,
+    .content>form>h5,
+    .content>form>h6,
+    .content>form>p,
+    .content>form>table,
+    .content>form>ul {
+        margin-right: 0;
+    }
     .content blockquote,
     .content pre {
+        float: none;
+        width: auto
+    }
+    .content .annotation {
         float: none;
         width: auto
     }
