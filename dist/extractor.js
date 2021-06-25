@@ -132,7 +132,7 @@ class Extractor {
         return Object.fromEntries(stages.map(stage => {
             var _a;
             // Important to prepend it so docblock strategies can override framework-inferred
-            return [stage, union((_a = this.config.strategies[stage]) !== null && _a !== void 0 ? _a : []), defaultStrategies[stage]];
+            return [stage, union((_a = this.config.strategies[stage]) !== null && _a !== void 0 ? _a : [], defaultStrategies[stage])];
         }));
     }
     addAuthField(endpoint) {
