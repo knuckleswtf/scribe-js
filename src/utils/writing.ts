@@ -138,7 +138,7 @@ function getParameterNamesAndValuesForFormData(parameter: string, value: any) {
 }
 
 function isNonEmptyObject(value) {
-    return value != null && value.constructor === Object && Object.keys(value).length > 0;
+    return value != null && Object.keys(value).length > 0;
 }
 
 function printQueryParamsAsKeyValue(cleanQueryParameters, opts = {}): string {

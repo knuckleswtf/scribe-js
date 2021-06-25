@@ -18,6 +18,7 @@ declare function getFilePathAndLineNumberFromCallStackFrame(callStackFrame: any)
     filePath: any;
     lineNumber: number;
 };
+declare function set(object: any, path: string, value: any): any;
 declare const _default: {
     generateConfigFile: typeof generateConfigFile;
     searchFileLazily: typeof searchFileLazily;
@@ -26,6 +27,7 @@ declare const _default: {
     success: typeof success;
     error: typeof error;
     inferApiName: () => string;
+    set: typeof set;
     findServerStartCommand: typeof findServerStartCommand;
     dumpExceptionIfVerbose: typeof dumpExceptionIfVerbose;
     getFrameAtCallSite: typeof getFrameAtCallSite;

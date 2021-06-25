@@ -5,7 +5,7 @@
             Body: <code><%- parameter.type %></code> <%- utils.markdown(parameter.description || '') %>
         </p>
         <% for (let subfieldName in parameter.__fields) { %>
-                <% let subfield = parameter.__fields[name]; %>
+                <% let subfield = parameter.__fields[subfieldName]; %>
                 <% if (subfield.__fields) { %>
                     <%- include("body-parameters", {parameters: {[subfieldName]: subfield}, endpointId}) %>
                 <% } else { %>

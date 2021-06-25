@@ -150,6 +150,16 @@ function getFilePathAndLineNumberFromCallStackFrame(callStackFrame) {
     return {filePath, lineNumber: Number(lineNumber)};
 }
 
+function set(object, path: string, value) {
+    const lodashSet = require("lodash.set");
+    // lodash set doesnt work well with paths containing "[]" as a key
+    // For now, only handle it in initial position
+    if (path.startsWith("[].") && object["[]"] != null) {
+        return lodashSet(object["[]"], path.slice(3), value)
+    }
+    return lodashSet(object, path, value);
+}
+
 export = {
     generateConfigFile,
     searchFileLazily,
@@ -158,6 +168,7 @@ export = {
     success,
     error,
     inferApiName,
+    set,
     findServerStartCommand,
     dumpExceptionIfVerbose,
     getFrameAtCallSite,

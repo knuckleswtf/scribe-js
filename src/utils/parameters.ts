@@ -95,19 +95,38 @@ function castValueToType(value: any, type = 'string') {
  * and `details.name` and `details.age` fields, this will return {details: {name: <value>, age: <value>}}
  */
 function cleanParams(parameters: scribe.ParameterBag = {}) {
-    const cleanParameters = {};
+    let cleanParameters = {};
 
     for (let [name, parameter] of Object.entries(parameters)) {
         if (parameter.value === null && !parameter.required) {
             continue;
         }
 
-        if (name.includes('.')) { // Object field
+        if (name.startsWith('[].')) { // Entire body is an array
+            if (!parameters["[]"]) { // Make sure there's a parent
+                cleanParameters["[]"] = [{}, {}];
+                parameters["[]"] = {
+                    name: "[]",
+                    type: "object[]",
+                    description: "",
+                    required: true,
+                    value: {[name]: parameter.value},
+                };
+            }
+        }
+
+        if (name.includes('.')) { // Object field (or array of objects)
             setObject(cleanParameters, name, parameter.value, parameters, parameter.required);
         } else {
             cleanParameters[name] = parameter.value;
         }
     }
+
+    // Finally, if the body is an array, flatten it.
+    if (cleanParameters['[]']) {
+        cleanParameters = cleanParameters['[]'];
+    }
+
     return cleanParameters;
 }
 
@@ -162,6 +181,12 @@ function setObject(results: {}, path: string, value: any, source: {}, isRequired
             baseNameInOriginalParams = baseNameInOriginalParams.substr(0, baseNameInOriginalParams.length - 2);
         }
 
+        // When the body is an array, param names will be  "[].paramname",
+        // so baseNameInOriginalParams here will be empty
+        if (path.startsWith('[].')) {
+            baseNameInOriginalParams = '[]';
+        }
+
         const parentData = get(source, baseNameInOriginalParams);
         if (parentData) {
             // Path we use for lodash.set
@@ -171,14 +196,29 @@ function setObject(results: {}, path: string, value: any, source: {}, isRequired
                     set(results, lodashPath, value);
                 }
             } else if (parentData.type === 'object[]') {
-                if (get(results, lodashPath) === undefined) {
-                    set(results, lodashPath, value);
-                }
-                // If there's a second item in the array, set for that too.
-                if (get(results, baseName.replace('[]', '.1')) !== undefined) {
-                    // If value is optional, flip a coin on whether to set or not
-                    if (isRequired || [true, false][Math.floor(Math.random() * 2)]) {
-                        set(results, lodashPath.replace('.0', '.1'), value);
+                // When the body is an array, param names will be  "[].paramname", so dot paths won't work correctly with "[]"
+                if (path.startsWith('[].')) {
+                    const valueDotPath = lodashPath.slice(3); // Remove initial '.0.'
+                    if (0 in results['[]'] && get(results['[]'][0], valueDotPath) === undefined) {
+                        set(results['[]'][0], valueDotPath, value);
+                    }
+                    // If there's a second item in the array, set for that too.
+                    if (value !== null && 1 in results['[]']) {
+                        // If value is optional, flip a coin on whether to set or not
+                        if (isRequired || Math.random() < 0.5) {
+                            set(results['[]'][1], valueDotPath, value);
+                        }
+                    }
+                } else {
+                    if (get(results, lodashPath) === undefined) {
+                        set(results, lodashPath, value);
+                    }
+                    // If there's a second item in the array, set for that too.
+                    if (get(results, baseName.replace('[]', '.1')) !== undefined) {
+                        // If value is optional, flip a coin on whether to set or not
+                        if (isRequired || [true, false][Math.floor(Math.random() * 2)]) {
+                            set(results, lodashPath.replace('.0', '.1'), value);
+                        }
                     }
                 }
             }

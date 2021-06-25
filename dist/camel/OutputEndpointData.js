@@ -1,5 +1,5 @@
 'use strict';
-const set = require("lodash.set");
+const set = require("../tools").set;
 const p = require("../utils/parameters");
 class OutputEndpointData {
     constructor(endpoint) {
@@ -68,38 +68,54 @@ class OutputEndpointData {
                 const parts = name.split('.');
                 const fieldName = parts.pop();
                 // If the user didn't add a parent field, we'll conveniently add it for them
-                const parentName = parts.join('.').replace(/\[]$/g, '');
+                let parentName = parts.join('.').replace(/\[]$/g, '');
+                // When the body is an array, param names will be "[].paramname",
+                // so parentName is empty. Let's fix that.
+                if (!parentName) {
+                    parentName = '[]';
+                }
                 if (parameters[parentName] === undefined) {
                     normalisedParameters[parentName] = {
                         name: parentName,
-                        type: "object",
+                        type: parentName === '[]' ? "object[]" : "object",
                         description: "",
-                        required: false,
+                        required: true,
                         value: { [fieldName]: parameter.value },
                     };
                 }
             }
             normalisedParameters[name] = parameter;
         }
-        const finalParameters = {};
+        let finalParameters = {};
         for (let [name, parameter] of Object.entries(normalisedParameters)) {
             if (name.includes('.')) { // Likely an object field
                 // Get the various pieces of the name
                 const parts = name.split('.');
-                let [fieldName, ...parentPath] = parts.reverse();
+                let [fieldName, ...parentPath] = [...parts].reverse();
                 const baseName = parentPath.reverse().join('.__fields.');
                 // For subfields, the type is indicated in the source object
                 // eg test.items[].more and test.items.more would both have parent field with name `items` and containing __fields => more
                 // The difference would be in the parent field's `type` property (object[] vs object)
                 // So we can get rid of all [] to get the parent name
-                const dotPathToParent = baseName.replace('[]', '');
+                let dotPathToParent = baseName.replace('[]', '');
+                // When the body is an array, param names will be  "[].paramname",
+                // so parts is ['[]']
+                if (parts[0] == '[]') {
+                    dotPathToParent = '[]' + dotPathToParent;
+                }
                 const lodashPath = dotPathToParent + '.__fields.' + fieldName;
                 set(finalParameters, lodashPath, parameter);
             }
             else { // A regular field, not a subfield of anything
+                parameter.__fields = {};
                 finalParameters[name] = parameter;
             }
         }
+        // Finally, if the body is an array, remove any other items.
+        if (finalParameters['[]']) {
+            finalParameters = { "[]": finalParameters['[]'] };
+        }
+        // console.log(finalParameters);
         return finalParameters;
     }
     hasFiles() {
