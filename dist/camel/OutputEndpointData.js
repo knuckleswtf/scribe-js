@@ -115,7 +115,6 @@ class OutputEndpointData {
         if (finalParameters['[]']) {
             finalParameters = { "[]": finalParameters['[]'] };
         }
-        // console.log(finalParameters);
         return finalParameters;
     }
     hasFiles() {

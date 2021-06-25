@@ -116,6 +116,8 @@ function cleanParams(parameters: scribe.ParameterBag = {}) {
         }
 
         if (name.includes('.')) { // Object field (or array of objects)
+            // An important side effect of objects being passed by reference:
+            // The examples in nestedBodyParameters will also be updated (correctly) by this call
             setObject(cleanParameters, name, parameter.example, parameters, parameter.required);
         } else {
             cleanParameters[name] = parameter.example;

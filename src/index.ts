@@ -55,8 +55,8 @@ class Scribe {
 
         const userDefinedEndpoints = camel.loadUserDefinedEndpoints(camel.camelDir);
         groupedEndpoints = this.mergeUserDefinedEndpoints(groupedEndpoints, userDefinedEndpoints);
-       const writer = new Writer(this.config);
-       await writer.writeDocs(groupedEndpoints);
+        const writer = new Writer(this.config);
+        await writer.writeDocs(groupedEndpoints);
 
         if (Extractor.encounteredErrors) {
             tools.warn('Generated docs, but encountered some errors while processing routes.');

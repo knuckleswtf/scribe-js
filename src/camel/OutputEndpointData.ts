@@ -136,7 +136,6 @@ class OutputEndpointData {
             finalParameters = {"[]": finalParameters['[]']};
         }
 
-       // console.log(finalParameters);
         return finalParameters;
     }
 

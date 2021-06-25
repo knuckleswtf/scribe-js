@@ -33,6 +33,7 @@ declare class Endpoint {
         docblock: any;
         originalRoute: any;
         auth: any;
+        boundUri: any;
     };
 }
 export = Endpoint;

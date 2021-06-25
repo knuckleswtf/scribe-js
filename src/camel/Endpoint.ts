@@ -102,6 +102,7 @@ class Endpoint {
             docblock: undefined,
             originalRoute: undefined,
             auth: undefined,
+            boundUri: undefined,
         });
         copy.metadata = Object.assign({}, copy.metadata, {
             groupName: undefined, groupDescription: undefined
