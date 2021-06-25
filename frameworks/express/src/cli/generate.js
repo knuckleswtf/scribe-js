@@ -48,7 +48,6 @@ module.exports = async ({config, app, server, force = false, extraction = true, 
         [path.join(__dirname, '../strategies/url_parameters/express_route_api')].concat(
             configObject.strategies.urlParameters || []
         );
-    console.log( configObject.strategies.urlParameters);
 
     const endpoints = getRoutesFromOurDecorator(decorator);
 

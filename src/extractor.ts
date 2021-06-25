@@ -3,13 +3,10 @@
 
 import RouteGroupApply = scribe.RouteGroupApply;
 
-const url = require("url");
-const {spawn} = require("child_process");
 const union = require('lodash.union');
 const collect = require('collect.js');
 const {Listr} = require('listr2');
 
-const {isPortTaken} = require('./utils/response_calls');
 import p = require("./utils/parameters");
 import tools = require('./tools');
 import Endpoint = require("./camel/Endpoint");
@@ -56,7 +53,7 @@ class Extractor {
 
             return {
                 title: "Processing route " + endpoint.name(),
-                options: { persistentOutput: true },
+                options: { persistentOutput: true, },
                 task: async (ctx, task) => {
                     try {
                         await this.iterateOverStrategies('metadata', strategies.metadata, endpoint, rulesToApply);
@@ -103,15 +100,23 @@ class Extractor {
                         Extractor.encounteredErrors = true;
                         const originalErrMessage = e.message;
                         e.message = `Failed processing route: ${endpoint.name()} - Exception encountered:`;
-                        // todo When verbose, show full stack
-                        task.output = originalErrMessage + "\n" + e.stack.split("\n").slice(0, 4).join("\n");
+                        if (process.env.SCRIBE_VERBOSE) {
+                            task.output = originalErrMessage + "\n" + e.stack;
+                        } else {
+                            task.output = originalErrMessage + "\n" + e.stack.split("\n").slice(0, 2).join("\n")
+                                + "\n Run this again with --verbose for the full stack trace.";
+                        }
                         throw e;
                     }
                 },
             };
         });
 
-        const tasks = new Listr(taskList, {concurrent: true, exitOnError: false});
+        const tasks = new Listr(taskList, {
+            concurrent: true,
+            exitOnError: false,
+            rendererOptions: {formatOutput: 'wrap', removeEmptyLines: false }
+        });
         await tasks.run();
 
         setTimeout(() => {
