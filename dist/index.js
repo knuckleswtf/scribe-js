@@ -11,7 +11,7 @@ const Extractor = require("./extractor");
 const OutputEndpointData = require("./camel/OutputEndpointData");
 const camel = require("./camel/camel");
 const debug = require('debug')('lib:scribe');
-const defaultOptions = { overwriteMarkdownFiles: false, noExtraction: false };
+const defaultOptions = { force: false, noExtraction: false };
 process.env.SCRIBE_VERSION = process.env.SCRIBE_VERSION || require('../package.json').version;
 class Scribe {
     constructor(config, router, endpoints, serverStartCommand, options = defaultOptions) {
@@ -27,13 +27,13 @@ class Scribe {
             tools.warn("You can specify a server file with the `-s` flag.");
         }
         let groupedEndpoints = [];
-        if (this.options.overwriteMarkdownFiles) {
+        if (this.options.force) {
             groupedEndpoints = await this.extractEndpointsInfoAndWriteToDisk(false);
-            await this.extractAndWriteApiDetailsToDisk(!this.options.overwriteMarkdownFiles);
+            await this.extractAndWriteApiDetailsToDisk(!this.options.force);
         }
         else if (!this.options.noExtraction) {
             groupedEndpoints = await this.extractEndpointsInfoAndWriteToDisk(true);
-            await this.extractAndWriteApiDetailsToDisk(!this.options.overwriteMarkdownFiles);
+            await this.extractAndWriteApiDetailsToDisk(!this.options.force);
         }
         else {
             if (!fs.existsSync(camel.camelDir)) {

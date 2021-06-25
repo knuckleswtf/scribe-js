@@ -26,7 +26,7 @@ function run(endpoint, config) {
             // Simple parameter, no regex
             return {
                 name: parameter,
-                value: isOptional ? null : getParameterExample(),
+                example: isOptional ? null : getParameterExample(),
                 required: !isOptional,
                 type: 'string',
                 description: '',

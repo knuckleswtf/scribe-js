@@ -56,28 +56,29 @@ class Extractor {
                await this.iterateOverStrategies('metadata', strategies.metadata, endpoint, rulesToApply);
                await this.iterateOverStrategies('headers', strategies.headers, endpoint, rulesToApply);
                await this.iterateOverStrategies('urlParameters', strategies.urlParameters, endpoint, rulesToApply);
+               endpoint.cleanUrlParameters = p.cleanParams(endpoint.urlParameters);
 
-               endpoint.cleanUpUrlParams();
+               endpoint.cleanUpUrl();
 
                await this.iterateOverStrategies('queryParameters', strategies.queryParameters, endpoint, rulesToApply);
-               endpointDetails.cleanQueryParameters = p.cleanParams(endpointDetails.queryParameters);
+               endpoint.cleanQueryParameters = p.cleanParams(endpoint.queryParameters);
 
                await this.iterateOverStrategies('bodyParameters', strategies.bodyParameters, endpoint, rulesToApply);
-               let [files, regularParameters] = collect(endpointDetails.bodyParameters)
+               let [files, regularParameters] = collect(endpoint.bodyParameters)
                    .partition((param) => (p.getBaseType(param.type) == 'file'));
                files = files.all();
                regularParameters = regularParameters.all();
 
-               endpointDetails.cleanBodyParameters = p.cleanParams(regularParameters);
-               if (Object.keys(endpointDetails.cleanBodyParameters).length && !endpointDetails.headers['Content-Type']) {
+               endpoint.cleanBodyParameters = p.cleanParams(regularParameters);
+               if (Object.keys(endpoint.cleanBodyParameters).length && !endpoint.headers['Content-Type']) {
                    // Set content type if the user forgot to set it
-                   endpointDetails.headers['Content-Type'] = 'application/json';
+                   endpoint.headers['Content-Type'] = 'application/json';
                }
                if (Object.keys(files).length) {
                    // If there are files, content type has to change
-                   endpointDetails.headers['Content-Type'] = 'multipart/form-data';
+                   endpoint.headers['Content-Type'] = 'multipart/form-data';
                }
-               endpointDetails.fileParameters = p.cleanParams(files);
+               endpoint.fileParameters = p.cleanParams(files);
 
                this.addAuthField(endpoint);
 

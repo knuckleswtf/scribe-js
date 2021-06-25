@@ -18,12 +18,12 @@ declare class Endpoint {
     auth: [string, string, string];
     cleanQueryParameters: Record<string, any>;
     cleanBodyParameters: Record<string, any>;
+    cleanUrlParameters: Record<string, any>;
     fileParameters: Record<string, any>;
     handler: Function;
-    boundUri: string;
     constructor(endpointDetails: scribe.Route);
     add(stage: string, data: any): void;
-    cleanUpUrlParams(): void;
+    cleanUpUrl(): void;
     get endpointId(): string;
     forSerialisation(): this & {
         cleanQueryParameters: any;
@@ -33,7 +33,6 @@ declare class Endpoint {
         docblock: any;
         originalRoute: any;
         auth: any;
-        boundUri: any;
     };
 }
 export = Endpoint;

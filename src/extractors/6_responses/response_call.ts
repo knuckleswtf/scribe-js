@@ -4,6 +4,7 @@ import Endpoint from "../../camel/Endpoint";
 import fs = require("fs");
 import path = require("path");
 import qs = require("querystring");
+import OutputEndpointData = require("../../camel/OutputEndpointData");
 
 const debug = require('debug')('lib:scribe:responsecall');
 const tools = require('./../../tools');
@@ -32,6 +33,11 @@ export = {
     run
 };
 
+function getUrl(endpoint: Endpoint, queryParameters: Record<string, any>) {
+    const boundUri = OutputEndpointData.getUrlWithBoundParameters(endpoint.uri, endpoint.cleanUrlParameters);
+    return boundUri + (Object.keys(queryParameters).length ? `?` + qs.stringify(queryParameters) : '');
+}
+
 function makeResponseCall(responseCallRules: scribe.ResponseCallRules, endpoint: Endpoint) {
     configureEnvironment(responseCallRules);
 
@@ -50,7 +56,7 @@ function makeResponseCall(responseCallRules: scribe.ResponseCallRules, endpoint:
     const requestOptions = {
         method: endpoint.httpMethods[0],
         headers: Object.assign({'user-agent': 'curl/7.22.0'}, endpoint.headers),
-        path: endpoint.boundUri + (Object.keys(queryParameters).length ? `?` + qs.stringify(queryParameters) : ''),
+        path: getUrl(endpoint, queryParameters),
     };
     const promise = new Promise<scribe.Response>((resolve, reject) => {
         const req = http.request(responseCallRules.baseUrl,

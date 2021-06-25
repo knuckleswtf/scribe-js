@@ -18,13 +18,13 @@ class Endpoint {
         this.auth = null;
         this.cleanQueryParameters = {};
         this.cleanBodyParameters = {};
+        this.cleanUrlParameters = {};
         this.fileParameters = {};
         this.uri = endpointDetails.uri;
         this.httpMethods = endpointDetails.httpMethods;
         this.docblock = endpointDetails.docblock;
         this.handler = endpointDetails.handler;
         this.originalRoute = endpointDetails.originalRoute;
-        this.boundUri = ''; // OutputEndpointData.getUrlWithBoundParameters(this.cleanUrlParameters, this.uri);
     }
     add(stage, data) {
         if (data == null) {
@@ -66,7 +66,7 @@ class Endpoint {
     // match = string to match in URL string
     // placeholder = what to replace it with for docs
     // value = what to replace it with for examples
-    cleanUpUrlParams() {
+    cleanUpUrl() {
         this.uri = Object.values(this.urlParameters)
             .reduce((uri, p) => {
             return p.placeholder ? uri.replace(p.match, p.placeholder) : uri;
@@ -86,7 +86,6 @@ class Endpoint {
             docblock: undefined,
             originalRoute: undefined,
             auth: undefined,
-            boundUri: undefined,
         });
         copy.metadata = Object.assign({}, copy.metadata, {
             groupName: undefined, groupDescription: undefined

@@ -38,7 +38,7 @@ class OutputEndpointData {
         this.cleanBodyParameters = p.cleanParams(this.bodyParameters);
         this.cleanQueryParameters = p.cleanParams(this.queryParameters);
         this.cleanUrlParameters = p.cleanParams(this.urlParameters);
-        this.boundUri = OutputEndpointData.getUrlWithBoundParameters(this.cleanUrlParameters, this.uri);
+        this.boundUri = OutputEndpointData.getUrlWithBoundParameters(this.uri, this.cleanUrlParameters);
 
         // let [files, regularParameters] = collect(this.cleanBodyParameters)
         //     .partition((param) => (p.getBaseType(param.type) == 'file'));
@@ -54,9 +54,8 @@ class OutputEndpointData {
         return new OutputEndpointData(endpoint);
     }
 
-    // TODO check that this works
-    static getUrlWithBoundParameters(cleanUrlParameters: Record<string,any>, uri: string) {
-        return Object.values(cleanUrlParameters)
+    static getUrlWithBoundParameters(uri: string, cleanUrlParameters: Record<string,any>) {
+        return Object.entries(cleanUrlParameters)
             .reduce((uri, [name, example]) => {
                 return uri.replace(`:${name}`, example);
             }, uri);

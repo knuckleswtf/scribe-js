@@ -24,9 +24,9 @@ class Endpoint {
     auth: [string, string, string] = null;
     cleanQueryParameters: Record<string, any> = {};
     cleanBodyParameters: Record<string, any> = {};
+    cleanUrlParameters: Record<string, any> = {};
     fileParameters: Record<string, any> = {};
     handler: Function;
-    boundUri: string;
 
     constructor(endpointDetails: scribe.Route) {
         this.uri = endpointDetails.uri;
@@ -34,7 +34,6 @@ class Endpoint {
         this.docblock = endpointDetails.docblock;
         this.handler = endpointDetails.handler;
         this.originalRoute = endpointDetails.originalRoute;
-        this.boundUri = ''; // OutputEndpointData.getUrlWithBoundParameters(this.cleanUrlParameters, this.uri);
     }
 
     add(stage: string, data) {
@@ -80,11 +79,11 @@ class Endpoint {
     // match = string to match in URL string
     // placeholder = what to replace it with for docs
     // value = what to replace it with for examples
-    cleanUpUrlParams() {
+    cleanUpUrl() {
         this.uri = Object.values(this.urlParameters)
             .reduce((uri, p) => {
                 return p.placeholder ? uri.replace(p.match, p.placeholder) : uri;
-            }, this.uri)
+            }, this.uri);
     }
 
     get endpointId(): string {
@@ -102,7 +101,6 @@ class Endpoint {
             docblock: undefined,
             originalRoute: undefined,
             auth: undefined,
-            boundUri: undefined,
         });
         copy.metadata = Object.assign({}, copy.metadata, {
             groupName: undefined, groupDescription: undefined

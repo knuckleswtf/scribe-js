@@ -63,26 +63,14 @@ export declare namespace scribe {
         headers?: Record<string, string[]>
     }
 
+    /** The data returned from route matchers */
     export interface Route {
         uri: string,
-        boundUri?: string,
         httpMethods: HttpMethods[],
         declaredAt: [string, number],
-        metadata?: Metadata
-        headers?: Headers
-        urlParameters?: UrlParameters
-        queryParameters?: QueryParameters
-        bodyParameters?: BodyParameters
-        nestedBodyParameters?: ParameterBag<BodyParameter>
-        cleanQueryParameters?: Record<string, any>
-        cleanBodyParameters?: Record<string, any>
-        fileParameters?: Record<string, any>
-        responses?: Response[]
-        responseFields?: ResponseFields
         handler: Function,
-        docblock?: Partial<DocBlock>,
-        auth?: string,
         originalRoute?: any,
+        docblock?: Partial<DocBlock>,
     }
 
     export type SupportedRouters = 'express' | 'adonis' | 'restify';

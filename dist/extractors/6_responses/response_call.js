@@ -2,6 +2,7 @@
 const fs = require("fs");
 const path = require("path");
 const qs = require("querystring");
+const OutputEndpointData = require("../../camel/OutputEndpointData");
 const debug = require('debug')('lib:scribe:responsecall');
 const tools = require('./../../tools');
 const { prettyPrintResponseIfJson } = require("../../utils/parameters");
@@ -20,6 +21,10 @@ async function run(endpoint, config, routeGroupApply) {
     }
     return makeResponseCall(routeGroupApply.responseCalls, endpoint);
 }
+function getUrl(endpoint, queryParameters) {
+    const boundUri = OutputEndpointData.getUrlWithBoundParameters(endpoint.uri, endpoint.cleanUrlParameters);
+    return boundUri + (Object.keys(queryParameters).length ? `?` + qs.stringify(queryParameters) : '');
+}
 function makeResponseCall(responseCallRules, endpoint) {
     configureEnvironment(responseCallRules);
     setAuthFieldProperly(endpoint);
@@ -32,7 +37,7 @@ function makeResponseCall(responseCallRules, endpoint) {
     const requestOptions = {
         method: endpoint.httpMethods[0],
         headers: Object.assign({ 'user-agent': 'curl/7.22.0' }, endpoint.headers),
-        path: endpoint.boundUri + (Object.keys(queryParameters).length ? `?` + qs.stringify(queryParameters) : ''),
+        path: getUrl(endpoint, queryParameters),
     };
     const promise = new Promise((resolve, reject) => {
         const req = http.request(responseCallRules.baseUrl, requestOptions, (res) => {
