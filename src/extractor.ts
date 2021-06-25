@@ -163,7 +163,8 @@ class Extractor {
         };
 
         return Object.fromEntries(stages.map(stage => {
-            return [stage, union(defaultStrategies[stage], this.config.strategies[stage] ?? [])];
+            // Important to prepend it so docblock strategies can override framework-inferred
+            return [stage, union(this.config.strategies[stage] ?? []), defaultStrategies[stage]];
         })) as Record<scribe.Stage, string[]>;
     }
 

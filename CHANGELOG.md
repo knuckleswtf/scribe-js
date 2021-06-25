@@ -13,6 +13,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Removals
 
 
+## 1.8.2 (Friday, 25 June 2021)
+### Fixed
+- Fix docblocks being ignored
+
 ## 1.8.1 (Monday, 21 June 2021)
 ### Modified
 - [Adonis] Start server correctly for response calls
