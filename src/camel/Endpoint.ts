@@ -107,6 +107,10 @@ class Endpoint {
         });
         return copy;
     }
+
+    name() {
+        return `[${this.httpMethods.join(',')}] ${this.uri}`;
+    }
 }
 
 export = Endpoint;

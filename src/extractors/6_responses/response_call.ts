@@ -1,25 +1,17 @@
 import {scribe} from "../../../typedefs/core";
 import Endpoint from "../../camel/Endpoint";
-
 import fs = require("fs");
 import path = require("path");
 import qs = require("querystring");
+import url = require("url");
+const { spawn } = require("child_process");
+const { isPortTaken } = require('../../utils/response_calls');
 import OutputEndpointData = require("../../camel/OutputEndpointData");
-
 const debug = require('debug')('lib:scribe:responsecall');
 const tools = require('./../../tools');
 const { prettyPrintResponseIfJson } = require("../../utils/parameters");
 
-function shouldMakeResponseCall(config: scribe.Config, endpoint: Endpoint, routeGroupApply: scribe.RouteGroupApply) {
-    // If there's already a success response, don't make a response call
-    if (endpoint.responses.find(r => r.status >= 200 && r.status <= 300)) {
-        return false;
-    }
-
-    const allowedMethods = routeGroupApply.responseCalls.methods;
-    return allowedMethods.includes('*') ||
-        allowedMethods.includes(endpoint.httpMethods[0].toUpperCase() as Uppercase<scribe.HttpMethods>);
-}
+let appProcess;
 
 async function run(endpoint: Endpoint, config: scribe.Config, routeGroupApply: scribe.RouteGroupApply): Promise<scribe.Response[]> {
     if (!shouldMakeResponseCall(config, endpoint, routeGroupApply)) {
@@ -33,12 +25,41 @@ export = {
     run
 };
 
+function shouldMakeResponseCall(config: scribe.Config, endpoint: Endpoint, routeGroupApply: scribe.RouteGroupApply) {
+    // If there's already a success response, don't make a response call
+    if (endpoint.responses.find(r => r.status >= 200 && r.status <= 300)) {
+        return false;
+    }
+
+    const allowedMethods = routeGroupApply.responseCalls.methods;
+    return allowedMethods.includes('*') ||
+        allowedMethods.includes(endpoint.httpMethods[0].toUpperCase() as Uppercase<scribe.HttpMethods>);
+}
+
 function getUrl(endpoint: Endpoint, queryParameters: Record<string, any>) {
     const boundUri = OutputEndpointData.getUrlWithBoundParameters(endpoint.uri, endpoint.cleanUrlParameters);
     return boundUri + (Object.keys(queryParameters).length ? `?` + qs.stringify(queryParameters) : '');
 }
 
-function makeResponseCall(responseCallRules: scribe.ResponseCallRules, endpoint: Endpoint) {
+async function makeSureAppIsRunning(responseCallRules: scribe.ResponseCallRules) {
+    // Using a single global app process here to avoid premature kills
+    const taken = await isPortTaken(url.parse(responseCallRules.baseUrl).port);
+    if (!taken) {
+        try {
+            tools.info(`Starting your app (\`${responseCallRules.serverStartCommand}\`) for response calls...`);
+            const [command, ...args] = responseCallRules.serverStartCommand.split(" ");
+            appProcess = spawn(command, args, {stdio: 'ignore', cwd: process.cwd()});
+            await new Promise(resolve => {
+                // Delay for 2s to give the app time to start
+                setTimeout(resolve, 2000);
+            });
+        } catch (e) {
+            // do nothing; app is probably running already
+        }
+    }
+}
+
+async function makeResponseCall(responseCallRules: scribe.ResponseCallRules, endpoint: Endpoint) {
     configureEnvironment(responseCallRules);
 
     setAuthFieldProperly(endpoint);
@@ -48,6 +69,7 @@ function makeResponseCall(responseCallRules: scribe.ResponseCallRules, endpoint:
     const fileParameters = Object.assign({}, endpoint.fileParameters || {}, responseCallRules.fileParams || {});
 
 
+    await makeSureAppIsRunning(responseCallRules);
     debug("Hitting " + endpoint.httpMethods[0] + " " + endpoint.uri);
 
     const http = require('http');

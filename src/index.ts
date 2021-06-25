@@ -55,6 +55,10 @@ class Scribe {
 
         const userDefinedEndpoints = camel.loadUserDefinedEndpoints(camel.camelDir);
         groupedEndpoints = this.mergeUserDefinedEndpoints(groupedEndpoints, userDefinedEndpoints);
+
+        console.log();
+        tools.info(`Done with extracting API details; now writing docs...`);
+
         const writer = new Writer(this.config);
         await writer.writeDocs(groupedEndpoints);
 
@@ -65,7 +69,7 @@ class Scribe {
         }
 
         console.log();
-        tools.info(`You can view your docs locally by opening ${path.resolve(this.config.outputPath, 'index.html')} in your browser`)
+        tools.info(`Done. Your docs are in ${path.resolve(this.config.outputPath)}`)
     }
 
     async getRoutesToDocument() {

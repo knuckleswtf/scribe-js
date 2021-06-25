@@ -2,21 +2,33 @@
 const path = require("path");
 const fs = require("fs");
 const set = require("lodash.set");
+const { Listr } = require('listr2');
 const tools = require("./tools");
 class Writer {
     constructor(config) {
         this.config = config;
     }
     async writeDocs(groupedEndpoints) {
-        await this.writeHTMLDocs(groupedEndpoints);
-        await this.writePostmanCollection(groupedEndpoints);
-        await this.writeOpenAPISpec(groupedEndpoints);
+        const taskList = [
+            {
+                title: `Writing HTML docs`,
+                task: () => this.writeHTMLDocs(groupedEndpoints)
+            },
+            {
+                title: `Writing Postman collection`,
+                task: () => this.writePostmanCollection(groupedEndpoints),
+                skip: !this.config.postman.enabled,
+            },
+            {
+                title: `Writing OpenAPI spec`,
+                task: () => this.writeOpenAPISpec(groupedEndpoints),
+                skip: !this.config.openapi.enabled,
+            }
+        ];
+        const tasks = new Listr(taskList);
+        await tasks.run();
     }
     async writePostmanCollection(groupedEndpoints) {
-        if (!this.config.postman.enabled) {
-            return;
-        }
-        tools.info(`Writing Postman collection to ${path.resolve(this.config.outputPath)}...`);
         const postman = require("./writers/postman")(this.config);
         const collection = postman.makePostmanCollection(groupedEndpoints);
         const overrides = this.config.postman.overrides || {};
@@ -31,10 +43,6 @@ class Writer {
         tools.success("Postman collection generated.");
     }
     async writeOpenAPISpec(groupedEndpoints) {
-        if (!this.config.openapi.enabled) {
-            return;
-        }
-        tools.info(`Writing OpenAPI spec to ${path.resolve(this.config.outputPath)}...`);
         const openapi = require("./writers/openapi")(this.config);
         const spec = openapi.makeOpenAPISpec(groupedEndpoints);
         const overrides = this.config.openapi.overrides || {};

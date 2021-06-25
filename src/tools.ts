@@ -60,38 +60,33 @@ async function searchFileLazily(filePath, content) {
 }
 
 const kleur = require('kleur')
-kleur.enabled = process.env.NO_ANSI === 'false'
+if (process.env.NO_ANSI === 'false')
+    kleur.enabled = false;
 
 function icon(type) {
-    const iconsMain = {
-        info: kleur.cyan('ℹ'),
+    const icons = {
+        info: kleur.cyan('ⓘ'),
         success: kleur.green('✔'),
         warn: kleur.yellow('⚠'),
         error: kleur.red('✖')
     }
-    const iconsForWindows = {
-        info: kleur.cyan('i'),
-        success: kleur.green('√'),
-        warn: kleur.yellow('‼'),
-        error: kleur.red('×')
-    }
-    return process.platform === 'win32' ? iconsForWindows[type] : iconsMain[type]
+    return icons[type];
 }
 
 function info(input) {
-    console.log(kleur.cyan(input))
+    console.log(icon('info') + ' ' + kleur.cyan(input))
 }
 
 function warn(input) {
-    console.warn(icon('warn') + kleur.yellow(' ' + input));
+    console.warn(icon('warn') + ' ' + kleur.yellow(input));
 }
 
 function success(input) {
-    console.log(icon('success') + kleur.green(' ' + input))
+    console.log(icon('success') + ' ' + kleur.green(input))
 }
 
 function error(input) {
-    console.error(icon('error') + kleur.red(' ' + input));
+    console.error(icon('error') + ' ' + kleur.red(input));
 }
 
 function dumpExceptionIfVerbose(error) {

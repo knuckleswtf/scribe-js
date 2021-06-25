@@ -7,6 +7,7 @@ const url = require("url");
 const {spawn} = require("child_process");
 const union = require('lodash.union');
 const collect = require('collect.js');
+const {Listr} = require('listr2');
 
 const {isPortTaken} = require('./utils/response_calls');
 import p = require("./utils/parameters");
@@ -17,6 +18,7 @@ import Strategy  = require("./strategy");
 import {scribe} from "../typedefs/core";
 import OutputEndpointData = require("./camel/OutputEndpointData");
 import camel = require("./camel/camel");
+import {ListrTask} from "listr2";
 
 class Extractor {
     static encounteredErrors = false;
@@ -46,81 +48,74 @@ class Extractor {
 
         const strategies = this.getStrategies();
 
-        let appProcess;
-
         const parsedEndpoints: Endpoint[] = [];
-        await Promise.all(routesToDocument.map(async ([endpointDetails, rulesToApply]) => {
-           try {
-               let endpoint = new Endpoint(endpointDetails);
 
-               await this.iterateOverStrategies('metadata', strategies.metadata, endpoint, rulesToApply);
-               await this.iterateOverStrategies('headers', strategies.headers, endpoint, rulesToApply);
-               await this.iterateOverStrategies('urlParameters', strategies.urlParameters, endpoint, rulesToApply);
-               endpoint.cleanUrlParameters = p.cleanParams(endpoint.urlParameters);
+        const taskList = routesToDocument.map(([endpointDetails, rulesToApply]): ListrTask => {
+            let endpoint = new Endpoint(endpointDetails);
+            rulesToApply.responseCalls.serverStartCommand = this.serverStartCommand;
 
-               endpoint.cleanUpUrl();
+            return {
+                title: "Processing route " + endpoint.name(),
+                options: { persistentOutput: true },
+                task: async (ctx, task) => {
+                    try {
+                        await this.iterateOverStrategies('metadata', strategies.metadata, endpoint, rulesToApply);
+                        await this.iterateOverStrategies('headers', strategies.headers, endpoint, rulesToApply);
+                        await this.iterateOverStrategies('urlParameters', strategies.urlParameters, endpoint, rulesToApply);
+                        endpoint.cleanUrlParameters = p.cleanParams(endpoint.urlParameters);
 
-               await this.iterateOverStrategies('queryParameters', strategies.queryParameters, endpoint, rulesToApply);
-               endpoint.cleanQueryParameters = p.cleanParams(endpoint.queryParameters);
+                        endpoint.cleanUpUrl();
 
-               await this.iterateOverStrategies('bodyParameters', strategies.bodyParameters, endpoint, rulesToApply);
-               let [files, regularParameters] = collect(endpoint.bodyParameters)
-                   .partition((param) => (p.getBaseType(param.type) == 'file'));
-               files = files.all();
-               regularParameters = regularParameters.all();
+                        await this.iterateOverStrategies('queryParameters', strategies.queryParameters, endpoint, rulesToApply);
+                        endpoint.cleanQueryParameters = p.cleanParams(endpoint.queryParameters);
 
-               endpoint.cleanBodyParameters = p.cleanParams(regularParameters);
-               if (Object.keys(endpoint.cleanBodyParameters).length && !endpoint.headers['Content-Type']) {
-                   // Set content type if the user forgot to set it
-                   endpoint.headers['Content-Type'] = 'application/json';
-               }
-               if (Object.keys(files).length) {
-                   // If there are files, content type has to change
-                   endpoint.headers['Content-Type'] = 'multipart/form-data';
-               }
-               endpoint.fileParameters = p.cleanParams(files);
+                        await this.iterateOverStrategies('bodyParameters', strategies.bodyParameters, endpoint, rulesToApply);
+                        let [files, regularParameters] = collect(endpoint.bodyParameters)
+                            .partition((param) => (p.getBaseType(param.type) == 'file'));
+                        files = files.all();
+                        regularParameters = regularParameters.all();
 
-               this.addAuthField(endpoint);
+                        endpoint.cleanBodyParameters = p.cleanParams(regularParameters);
+                        if (Object.keys(endpoint.cleanBodyParameters).length && !endpoint.headers['Content-Type']) {
+                            // Set content type if the user forgot to set it
+                            endpoint.headers['Content-Type'] = 'application/json';
+                        }
+                        if (Object.keys(files).length) {
+                            // If there are files, content type has to change
+                            endpoint.headers['Content-Type'] = 'multipart/form-data';
+                        }
+                        endpoint.fileParameters = p.cleanParams(files);
 
-               if (this.serverStartCommand && !appProcess) {
-                   // Using a single global app process here to avoid premature kills
-                   const taken = await isPortTaken(url.parse(rulesToApply.responseCalls.baseUrl).port);
-                   if (!taken) {
-                       try {
-                           tools.info(`Starting your app (\`${this.serverStartCommand}\`) for response calls...`);
-                           const [command, ...args] = this.serverStartCommand.split(" ");
-                           appProcess = spawn(command, args, {stdio: 'ignore', cwd: process.cwd()});
-                           await new Promise(resolve => {
-                               // Delay for 2s to give the app time to start
-                               setTimeout(resolve, 2000);
-                           });
-                       } catch (e) {
-                           // do nothing; app is probably running already
-                       }
-                   }
-               }
+                        this.addAuthField(endpoint);
 
-               await this.iterateOverStrategies('responses', strategies.responses, endpoint, rulesToApply);
-               await this.iterateOverStrategies('responseFields', strategies.responseFields, endpoint, rulesToApply);
+                        await this.iterateOverStrategies('responses', strategies.responses, endpoint, rulesToApply);
+                        await this.iterateOverStrategies('responseFields', strategies.responseFields, endpoint, rulesToApply);
 
-               let index;
-               // If latest data is different from cached data, merge latest into current
-               [endpoint, index] = this.mergeAnyEndpointDataUpdates(endpoint, cachedEndpoints, latestEndpointsData, groups);
-               // We need to preserve order of endpoints, in case user did custom sorting
-               parsedEndpoints.push(endpoint);
-               if (index !== null) {
-                   this.endpointGroupIndexes[endpoint.endpointId] = index;
-               }
-           } catch (e) {
-               Extractor.encounteredErrors = true;
-               tools.error(`Failed processing route: ${endpointDetails.httpMethods} ${endpointDetails.uri} - Exception encountered.`);
-               tools.error(e.message);
-               tools.error(e.stack.split("\n").slice(0, 4).join("\n"));
-           }
-        }));
+                        let index;
+                        // If latest data is different from cached data, merge latest into current
+                        [endpoint, index] = this.mergeAnyEndpointDataUpdates(endpoint, cachedEndpoints, latestEndpointsData, groups);
+                        // We need to preserve order of endpoints, in case user did custom sorting
+                        parsedEndpoints.push(endpoint);
+                        if (index !== null) {
+                            this.endpointGroupIndexes[endpoint.endpointId] = index;
+                        }
+                    } catch (e) {
+                        Extractor.encounteredErrors = true;
+                        const originalErrMessage = e.message;
+                        e.message = `Failed processing route: ${endpoint.name()} - Exception encountered:`;
+                        // todo When verbose, show full stack
+                        task.output = originalErrMessage + "\n" + e.stack.split("\n").slice(0, 4).join("\n");
+                        throw e;
+                    }
+                },
+            };
+        });
 
+        const tasks = new Listr(taskList, {concurrent: true, exitOnError: false});
+        await tasks.run();
 
         setTimeout(() => {
+            const appProcess = require("./extractors/6_responses/response_call").appProcess;
             if (appProcess) {
                 tools.info("Stopping app server...");
                 appProcess.kill();

@@ -2,10 +2,20 @@
 const fs = require("fs");
 const path = require("path");
 const qs = require("querystring");
+const url = require("url");
+const { spawn } = require("child_process");
+const { isPortTaken } = require('../utils/response_calls');
 const OutputEndpointData = require("../../camel/OutputEndpointData");
 const debug = require('debug')('lib:scribe:responsecall');
 const tools = require('./../../tools');
 const { prettyPrintResponseIfJson } = require("../../utils/parameters");
+let appProcess;
+async function run(endpoint, config, routeGroupApply) {
+    if (!shouldMakeResponseCall(config, endpoint, routeGroupApply)) {
+        return [];
+    }
+    return makeResponseCall(routeGroupApply.responseCalls, endpoint);
+}
 function shouldMakeResponseCall(config, endpoint, routeGroupApply) {
     // If there's already a success response, don't make a response call
     if (endpoint.responses.find(r => r.status >= 200 && r.status <= 300)) {
@@ -15,22 +25,35 @@ function shouldMakeResponseCall(config, endpoint, routeGroupApply) {
     return allowedMethods.includes('*') ||
         allowedMethods.includes(endpoint.httpMethods[0].toUpperCase());
 }
-async function run(endpoint, config, routeGroupApply) {
-    if (!shouldMakeResponseCall(config, endpoint, routeGroupApply)) {
-        return [];
-    }
-    return makeResponseCall(routeGroupApply.responseCalls, endpoint);
-}
 function getUrl(endpoint, queryParameters) {
     const boundUri = OutputEndpointData.getUrlWithBoundParameters(endpoint.uri, endpoint.cleanUrlParameters);
     return boundUri + (Object.keys(queryParameters).length ? `?` + qs.stringify(queryParameters) : '');
 }
-function makeResponseCall(responseCallRules, endpoint) {
+async function makeSureAppIsRunning(responseCallRules) {
+    // Using a single global app process here to avoid premature kills
+    const taken = await isPortTaken(url.parse(responseCallRules.baseUrl).port);
+    if (!taken) {
+        try {
+            tools.info(`Starting your app (\`${responseCallRules.serverStartCommand}\`) for response calls...`);
+            const [command, ...args] = responseCallRules.serverStartCommand.split(" ");
+            appProcess = spawn(command, args, { stdio: 'ignore', cwd: process.cwd() });
+            await new Promise(resolve => {
+                // Delay for 2s to give the app time to start
+                setTimeout(resolve, 2000);
+            });
+        }
+        catch (e) {
+            // do nothing; app is probably running already
+        }
+    }
+}
+async function makeResponseCall(responseCallRules, endpoint) {
     configureEnvironment(responseCallRules);
     setAuthFieldProperly(endpoint);
     const bodyParameters = Object.assign({}, endpoint.cleanBodyParameters || {}, responseCallRules.bodyParams || {});
     const queryParameters = Object.assign({}, endpoint.cleanQueryParameters || {}, responseCallRules.queryParams || {});
     const fileParameters = Object.assign({}, endpoint.fileParameters || {}, responseCallRules.fileParams || {});
+    await makeSureAppIsRunning(responseCallRules);
     debug("Hitting " + endpoint.httpMethods[0] + " " + endpoint.uri);
     const http = require('http');
     let responseContent;

@@ -43,6 +43,7 @@
     "inquirer": "^7.3.3",
     "js-yaml": "^3.14.0",
     "kleur": "^4.0.3",
+    "listr2": "^3.10.0",
     "lodash.findlastindex": "^4.6.0",
     "lodash.get": "^4.4.2",
     "lodash.groupby": "^4.6.0",

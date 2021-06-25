@@ -90,6 +90,7 @@ export declare namespace scribe {
         bodyParams: {},
         queryParams: {},
         fileParams: {},
+        serverStartCommand?: string;
     }
 
     export interface RouteGroupApply {

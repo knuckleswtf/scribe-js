@@ -2,6 +2,7 @@ import {scribe} from "../typedefs/core";
 import path = require("path");
 import fs = require("fs");
 import set = require("lodash.set");
+const {Listr} = require('listr2');
 import tools = require('./tools');
 import OutputEndpointData from "./camel/OutputEndpointData";
 
@@ -11,17 +12,27 @@ class Writer {
     }
 
     async writeDocs(groupedEndpoints?: Group[]) {
-        await this.writeHTMLDocs(groupedEndpoints);
-        await this.writePostmanCollection(groupedEndpoints);
-        await this.writeOpenAPISpec(groupedEndpoints);
+        const taskList = [
+            {
+                title: `Writing HTML docs`,
+                task: () => this.writeHTMLDocs(groupedEndpoints)
+            },
+            {
+                title: `Writing Postman collection`,
+                task: () => this.writePostmanCollection(groupedEndpoints),
+                skip: !this.config.postman.enabled,
+            },
+            {
+                title: `Writing OpenAPI spec`,
+                task: () => this.writeOpenAPISpec(groupedEndpoints),
+                skip: !this.config.openapi.enabled,
+            }
+        ];
+        const tasks = new Listr(taskList);
+        await tasks.run();
     }
 
     async writePostmanCollection(groupedEndpoints: Group[]) {
-        if (!this.config.postman.enabled) {
-            return;
-        }
-
-        tools.info(`Writing Postman collection to ${path.resolve(this.config.outputPath)}...`);
 
         const postman = require("./writers/postman")(this.config);
         const collection = postman.makePostmanCollection(groupedEndpoints);
@@ -41,12 +52,6 @@ class Writer {
     }
 
     async writeOpenAPISpec(groupedEndpoints: Group[]) {
-        if (!this.config.openapi.enabled) {
-            return;
-        }
-
-        tools.info(`Writing OpenAPI spec to ${path.resolve(this.config.outputPath)}...`);
-
         const openapi = require("./writers/openapi")(this.config);
         const spec = openapi.makeOpenAPISpec(groupedEndpoints);
 

@@ -92,6 +92,9 @@ class Endpoint {
         });
         return copy;
     }
+    name() {
+        return `[${this.httpMethods.join(',')}] ${this.uri}`;
+    }
 }
 module.exports = Endpoint;
 //# sourceMappingURL=Endpoint.js.map

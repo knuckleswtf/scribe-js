@@ -34,5 +34,6 @@ declare class Endpoint {
         originalRoute: any;
         auth: any;
     };
+    name(): string;
 }
 export = Endpoint;
