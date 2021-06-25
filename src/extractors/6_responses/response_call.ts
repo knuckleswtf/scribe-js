@@ -7,7 +7,6 @@ import url = require("url");
 const { spawn } = require("child_process");
 const { isPortTaken } = require('../../utils/response_calls');
 import OutputEndpointData = require("../../camel/OutputEndpointData");
-const debug = require('debug')('lib:scribe:responsecall');
 const tools = require('./../../tools');
 const { prettyPrintResponseIfJson } = require("../../utils/parameters");
 
@@ -70,7 +69,7 @@ async function makeResponseCall(responseCallRules: scribe.ResponseCallRules, end
 
 
     await makeSureAppIsRunning(responseCallRules);
-    debug("Hitting " + endpoint.httpMethods[0] + " " + endpoint.uri);
+    tools.debug("Fetching response from " + endpoint.httpMethods[0] + " " + endpoint.uri);
 
     const http = require('http');
     let responseContent: string;
@@ -150,10 +149,6 @@ async function makeResponseCall(responseCallRules: scribe.ResponseCallRules, end
 
     return promise.then(response => {
         return [response];
-    }).catch((err) => {
-        tools.warn("Error encountered during response call.");
-        tools.dumpExceptionIfVerbose(err);
-        return [];
     });
 }
 

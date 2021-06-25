@@ -1,20 +1,19 @@
 'use strict';
 
 
+import p = require("./utils/parameters");
+import tools = require('./tools');
+import Endpoint = require("./camel/Endpoint");
+import Strategy = require("./strategy");
+import OutputEndpointData = require("./camel/OutputEndpointData");
+import camel = require("./camel/camel");
 import RouteGroupApply = scribe.RouteGroupApply;
 
 const union = require('lodash.union');
 const collect = require('collect.js');
 const {Listr} = require('listr2');
 
-import p = require("./utils/parameters");
-import tools = require('./tools');
-import Endpoint = require("./camel/Endpoint");
-import Strategy  = require("./strategy");
-
 import {scribe} from "../typedefs/core";
-import OutputEndpointData = require("./camel/OutputEndpointData");
-import camel = require("./camel/camel");
 import {ListrTask} from "listr2";
 
 class Extractor {
@@ -47,15 +46,30 @@ class Extractor {
 
         const parsedEndpoints: Endpoint[] = [];
 
+        const originalConsoleLog = console.log.bind(console);
+        const originalConsoleError = console.error.bind(console);
+        const originalConsoleInfo = console.info.bind(console);
+        const originalConsoleWarn = console.warn.bind(console);
         const taskList = routesToDocument.map(([endpointDetails, rulesToApply]): ListrTask => {
             let endpoint = new Endpoint(endpointDetails);
             rulesToApply.responseCalls.serverStartCommand = this.serverStartCommand;
 
             return {
                 title: "Processing route " + endpoint.name(),
-                options: { persistentOutput: true, },
+                options: {persistentOutput: true,},
                 task: async (ctx, task) => {
                     try {
+                        // console.log() and friends don't play well with Listr's updating output
+                        console.error = console.info = console.log = (text) => {
+                            if (task.output === undefined) {
+                                task.output = '';
+                            }
+                            if (text === undefined) {
+                                text = '';
+                            }
+                            task.output += (text + '\n');
+                        }
+
                         await this.iterateOverStrategies('metadata', strategies.metadata, endpoint, rulesToApply);
                         await this.iterateOverStrategies('headers', strategies.headers, endpoint, rulesToApply);
                         await this.iterateOverStrategies('urlParameters', strategies.urlParameters, endpoint, rulesToApply);
@@ -98,14 +112,11 @@ class Extractor {
                         }
                     } catch (e) {
                         Extractor.encounteredErrors = true;
-                        const originalErrMessage = e.message;
-                        e.message = `Failed processing route: ${endpoint.name()} - Exception encountered:`;
-                        if (process.env.SCRIBE_VERBOSE) {
-                            task.output = originalErrMessage + "\n" + e.stack;
-                        } else {
-                            task.output = originalErrMessage + "\n" + e.stack.split("\n").slice(0, 2).join("\n")
-                                + "\n Run this again with --verbose for the full stack trace.";
-                        }
+                        // Listr needs us to throw an error for it to mark a task as failed
+                        // But it will also print the error message, leading to double printing
+                        let errorMessage = `Failed processing route: ${endpoint.name()} - Error encountered: `;
+                        errorMessage += "\n" + tools.formatErrorMessageForListr(e);
+                        e.message = errorMessage;
                         throw e;
                     }
                 },
@@ -115,9 +126,14 @@ class Extractor {
         const tasks = new Listr(taskList, {
             concurrent: true,
             exitOnError: false,
-            rendererOptions: {formatOutput: 'wrap', removeEmptyLines: false }
+            rendererOptions: {formatOutput: 'wrap', removeEmptyLines: false}
         });
         await tasks.run();
+
+        console.log = originalConsoleLog;
+        console.error = originalConsoleError;
+        console.info = originalConsoleInfo;
+        console.warn = originalConsoleWarn;
 
         setTimeout(() => {
             const appProcess = require("./extractors/6_responses/response_call").appProcess;

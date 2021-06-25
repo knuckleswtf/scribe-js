@@ -3,7 +3,6 @@ const path = require("path");
 const fs = require("fs");
 const set = require("lodash.set");
 const { Listr } = require('listr2');
-const tools = require("./tools");
 class Writer {
     constructor(config) {
         this.config = config;
@@ -40,7 +39,6 @@ class Writer {
         const content = JSON.stringify(collection, null, 4);
         const outputPath = path.resolve(this.config.outputPath);
         fs.writeFileSync(outputPath + '/collection.json', content);
-        tools.success("Postman collection generated.");
     }
     async writeOpenAPISpec(groupedEndpoints) {
         const openapi = require("./writers/openapi")(this.config);
@@ -59,13 +57,11 @@ class Writer {
         });
         const outputPath = path.resolve(this.config.outputPath);
         fs.writeFileSync(outputPath + '/openapi.yaml', content);
-        tools.success("OpenAPI spec generated.");
     }
     async writeHTMLDocs(groupedEndpoints) {
         const HtmlWriter = require("./writers/html");
         const html = new HtmlWriter(this.config);
         await html.generate(groupedEndpoints);
-        tools.success(`Generated documentation to ${path.resolve(this.config.outputPath)}.`);
     }
 }
 module.exports = Writer;

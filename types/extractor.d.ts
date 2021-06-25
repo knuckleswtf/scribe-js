@@ -1,7 +1,7 @@
-import RouteGroupApply = scribe.RouteGroupApply;
 import Endpoint = require("./camel/Endpoint");
-import { scribe } from "../typedefs/core";
 import OutputEndpointData = require("./camel/OutputEndpointData");
+import RouteGroupApply = scribe.RouteGroupApply;
+import { scribe } from "../typedefs/core";
 declare class Extractor {
     config: scribe.Config;
     router: scribe.SupportedRouters;

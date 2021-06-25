@@ -47,8 +47,6 @@ class Writer {
         const content = JSON.stringify(collection, null, 4)
         const outputPath = path.resolve(this.config.outputPath);
         fs.writeFileSync(outputPath + '/collection.json', content);
-
-        tools.success("Postman collection generated.");
     }
 
     async writeOpenAPISpec(groupedEndpoints: Group[]) {
@@ -70,15 +68,12 @@ class Writer {
         });
         const outputPath = path.resolve(this.config.outputPath);
         fs.writeFileSync(outputPath + '/openapi.yaml', content);
-
-        tools.success("OpenAPI spec generated.");
     }
 
     async writeHTMLDocs(groupedEndpoints: Group[]) {
         const HtmlWriter = require("./writers/html");
         const html = new HtmlWriter(this.config);
         await html.generate(groupedEndpoints);
-        tools.success(`Generated documentation to ${path.resolve(this.config.outputPath)}.`);
     }
 }
 

@@ -6,7 +6,6 @@ const url = require("url");
 const { spawn } = require("child_process");
 const { isPortTaken } = require('../../utils/response_calls');
 const OutputEndpointData = require("../../camel/OutputEndpointData");
-const debug = require('debug')('lib:scribe:responsecall');
 const tools = require('./../../tools');
 const { prettyPrintResponseIfJson } = require("../../utils/parameters");
 let appProcess;
@@ -54,7 +53,7 @@ async function makeResponseCall(responseCallRules, endpoint) {
     const queryParameters = Object.assign({}, endpoint.cleanQueryParameters || {}, responseCallRules.queryParams || {});
     const fileParameters = Object.assign({}, endpoint.fileParameters || {}, responseCallRules.fileParams || {});
     await makeSureAppIsRunning(responseCallRules);
-    debug("Hitting " + endpoint.httpMethods[0] + " " + endpoint.uri);
+    tools.debug("Fetching response from " + endpoint.httpMethods[0] + " " + endpoint.uri);
     const http = require('http');
     let responseContent;
     const requestOptions = {
@@ -126,10 +125,6 @@ async function makeResponseCall(responseCallRules, endpoint) {
     });
     return promise.then(response => {
         return [response];
-    }).catch((err) => {
-        tools.warn("Error encountered during response call.");
-        tools.dumpExceptionIfVerbose(err);
-        return [];
     });
 }
 function configureEnvironment(responseCallRules) {

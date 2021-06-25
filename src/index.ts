@@ -17,9 +17,7 @@ import Extractor = require("./extractor");
 import OutputEndpointData = require("./camel/OutputEndpointData");
 import camel = require('./camel/camel');
 
-const debug = require('debug')('lib:scribe');
-
-const defaultOptions = {force: false, noExtraction: false};
+const defaultOptions = {force: false, noExtraction: false, verbose: false};
 process.env.SCRIBE_VERSION = process.env.SCRIBE_VERSION || require('../package.json').version;
 
 class Scribe {
@@ -30,34 +28,41 @@ class Scribe {
         private serverStartCommand?: string,
         private options = defaultOptions
     ) {
+        tools.setVerbosity(options.verbose);
     }
 
     async generate() {
-        if (this.router === 'express' && !this.serverStartCommand) {
+        if (this.router === 'express' && !this.serverStartCommand && !this.options.noExtraction) {
             tools.warn("We couldn't find a way to run your API. This means response calls won't work.");
             tools.warn("You can specify a server file with the `-s` flag.");
         }
 
         let groupedEndpoints: Group[] = [];
         if (this.options.force) {
+            tools.info(`Extracting API details...`);
             groupedEndpoints = await this.extractEndpointsInfoAndWriteToDisk(false);
             await this.extractAndWriteApiDetailsToDisk(!this.options.force);
+            tools.info(`Done.`);
         } else if (!this.options.noExtraction) {
+            tools.info(`Extracting API details...`);
             groupedEndpoints = await this.extractEndpointsInfoAndWriteToDisk(true);
             await this.extractAndWriteApiDetailsToDisk(!this.options.force);
+            tools.info(`Done.`);
         } else {
             if (!fs.existsSync(camel.camelDir)) {
-                tools.error(`Can't use --no-extraction because there are no endpoints in the ${camel.camelDir} directory.`);
+                tools.error(`Can't use --no-extraction because there's no data in the ${camel.camelDir} directory.`);
                 process.exit(1);
             }
+            tools.info(`Loading API details from .scribe folder...`);
             groupedEndpoints = camel.loadEndpointsIntoGroups(camel.camelDir);
+            tools.success("Done.");
         }
 
         const userDefinedEndpoints = camel.loadUserDefinedEndpoints(camel.camelDir);
         groupedEndpoints = this.mergeUserDefinedEndpoints(groupedEndpoints, userDefinedEndpoints);
 
         console.log();
-        tools.info(`Done with extracting API details; now writing docs...`);
+        tools.info(`Writing docs...`);
 
         const writer = new Writer(this.config);
         await writer.writeDocs(groupedEndpoints);
@@ -69,7 +74,7 @@ class Scribe {
         }
 
         console.log();
-        tools.info(`Done. Your docs are in ${path.resolve(this.config.outputPath)}`)
+        tools.success(`Done. Your docs are in ${path.resolve(this.config.outputPath)}`)
     }
 
     async getRoutesToDocument() {

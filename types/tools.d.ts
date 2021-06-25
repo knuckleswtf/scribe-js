@@ -11,7 +11,8 @@ declare function info(input: any): void;
 declare function warn(input: any): void;
 declare function success(input: any): void;
 declare function error(input: any): void;
-declare function dumpExceptionIfVerbose(error: any): void;
+declare function debug(input: any): void;
+declare function formatErrorMessageForListr(error: any): string;
 declare function findServerStartCommand(): string;
 declare function getFrameAtCallSite(exclude?: string[]): string;
 declare function getFilePathAndLineNumberFromCallStackFrame(callStackFrame: any): {
@@ -19,6 +20,8 @@ declare function getFilePathAndLineNumberFromCallStackFrame(callStackFrame: any)
     lineNumber: number;
 };
 declare function set(object: any, path: string, value: any): any;
+declare function setVerbosity(state: boolean): void;
+declare function isVerbose(): boolean;
 declare const _default: {
     generateConfigFile: typeof generateConfigFile;
     searchFileLazily: typeof searchFileLazily;
@@ -26,11 +29,14 @@ declare const _default: {
     warn: typeof warn;
     success: typeof success;
     error: typeof error;
+    debug: typeof debug;
     inferApiName: () => string;
     set: typeof set;
     findServerStartCommand: typeof findServerStartCommand;
-    dumpExceptionIfVerbose: typeof dumpExceptionIfVerbose;
+    formatErrorMessageForListr: typeof formatErrorMessageForListr;
     getFrameAtCallSite: typeof getFrameAtCallSite;
     getFilePathAndLineNumberFromCallStackFrame: typeof getFilePathAndLineNumberFromCallStackFrame;
+    setVerbosity: typeof setVerbosity;
+    isVerbose: typeof isVerbose;
 };
 export = _default;

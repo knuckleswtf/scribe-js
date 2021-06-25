@@ -1,12 +1,12 @@
 'use strict';
-const union = require('lodash.union');
-const collect = require('collect.js');
-const { Listr } = require('listr2');
 const p = require("./utils/parameters");
 const tools = require("./tools");
 const Endpoint = require("./camel/Endpoint");
 const OutputEndpointData = require("./camel/OutputEndpointData");
 const camel = require("./camel/camel");
+const union = require('lodash.union');
+const collect = require('collect.js');
+const { Listr } = require('listr2');
 class Extractor {
     constructor(config, router, serverStartCommand) {
         this.config = config;
@@ -19,6 +19,10 @@ class Extractor {
         require('./utils/faker')(this.config.fakerSeed);
         const strategies = this.getStrategies();
         const parsedEndpoints = [];
+        const originalConsoleLog = console.log.bind(console);
+        const originalConsoleError = console.error.bind(console);
+        const originalConsoleInfo = console.info.bind(console);
+        const originalConsoleWarn = console.warn.bind(console);
         const taskList = routesToDocument.map(([endpointDetails, rulesToApply]) => {
             let endpoint = new Endpoint(endpointDetails);
             rulesToApply.responseCalls.serverStartCommand = this.serverStartCommand;
@@ -27,6 +31,16 @@ class Extractor {
                 options: { persistentOutput: true, },
                 task: async (ctx, task) => {
                     try {
+                        // console.log() and friends don't play well with Listr's updating output
+                        console.error = console.info = console.log = (text) => {
+                            if (task.output === undefined) {
+                                task.output = '';
+                            }
+                            if (text === undefined) {
+                                text = '';
+                            }
+                            task.output += (text + '\n');
+                        };
                         await this.iterateOverStrategies('metadata', strategies.metadata, endpoint, rulesToApply);
                         await this.iterateOverStrategies('headers', strategies.headers, endpoint, rulesToApply);
                         await this.iterateOverStrategies('urlParameters', strategies.urlParameters, endpoint, rulesToApply);
@@ -63,15 +77,11 @@ class Extractor {
                     }
                     catch (e) {
                         Extractor.encounteredErrors = true;
-                        const originalErrMessage = e.message;
-                        e.message = `Failed processing route: ${endpoint.name()} - Exception encountered:`;
-                        if (process.env.SCRIBE_VERBOSE) {
-                            task.output = originalErrMessage + "\n" + e.stack;
-                        }
-                        else {
-                            task.output = originalErrMessage + "\n" + e.stack.split("\n").slice(0, 2).join("\n")
-                                + "\n Run this again with --verbose for the full stack trace.";
-                        }
+                        // Listr needs us to throw an error for it to mark a task as failed
+                        // But it will also print the error message, leading to double printing
+                        let errorMessage = `Failed processing route: ${endpoint.name()} - Error encountered: `;
+                        errorMessage += "\n" + tools.formatErrorMessageForListr(e);
+                        e.message = errorMessage;
                         throw e;
                     }
                 },
@@ -83,6 +93,10 @@ class Extractor {
             rendererOptions: { formatOutput: 'wrap', removeEmptyLines: false }
         });
         await tasks.run();
+        console.log = originalConsoleLog;
+        console.error = originalConsoleError;
+        console.info = originalConsoleInfo;
+        console.warn = originalConsoleWarn;
         setTimeout(() => {
             const appProcess = require("./extractors/6_responses/response_call").appProcess;
             if (appProcess) {

@@ -2,6 +2,7 @@
 const fs = require("fs");
 const path = require("path");
 const readline = require("readline");
+let verbose = false;
 const inferApiName = () => {
     // Basically ucwords (folderName)
     return path.basename(path.resolve('./')).split(/[-_\s]+/)
@@ -55,13 +56,14 @@ async function searchFileLazily(filePath, content) {
 const kleur = require('kleur');
 if (process.env.NO_ANSI === 'false')
     kleur.enabled = false;
+const icons = {
+    info: kleur.cyan('ⓘ'),
+    success: kleur.green('✔'),
+    warn: kleur.yellow('⚠'),
+    error: kleur.red('✖'),
+    debug: kleur.magenta('⚒')
+};
 function icon(type) {
-    const icons = {
-        info: kleur.cyan('ⓘ'),
-        success: kleur.green('✔'),
-        warn: kleur.yellow('⚠'),
-        error: kleur.red('✖')
-    };
     return icons[type];
 }
 function info(input) {
@@ -76,13 +78,17 @@ function success(input) {
 function error(input) {
     console.error(icon('error') + ' ' + kleur.red(input));
 }
-function dumpExceptionIfVerbose(error) {
-    if (require('debug').enabled('lib:scribe')) {
-        require('debug')('lib:scribe')(error);
+function debug(input) {
+    if (verbose) {
+        console.log(icon('debug') + ' ' + kleur.magenta(input));
+    }
+}
+function formatErrorMessageForListr(error) {
+    if (verbose) {
+        return kleur.red(error.stack);
     }
     else {
-        warn("Error: " + error.message);
-        warn("Run this again with the --verbose flag to see the full stack trace.");
+        return kleur.red(error.message + "\nRun this again with --verbose to see the full stack trace.");
     }
 }
 function findServerStartCommand() {
@@ -133,6 +139,12 @@ function set(object, path, value) {
     }
     return lodashSet(object, path, value);
 }
+function setVerbosity(state) {
+    verbose = state;
+}
+function isVerbose() {
+    return verbose;
+}
 module.exports = {
     generateConfigFile,
     searchFileLazily,
@@ -140,11 +152,14 @@ module.exports = {
     warn,
     success,
     error,
+    debug,
     inferApiName,
     set,
     findServerStartCommand,
-    dumpExceptionIfVerbose,
+    formatErrorMessageForListr,
     getFrameAtCallSite,
     getFilePathAndLineNumberFromCallStackFrame,
+    setVerbosity,
+    isVerbose,
 };
 //# sourceMappingURL=tools.js.map

@@ -7,11 +7,7 @@ const trim = require('lodash.trim');
 const tools = require("@knuckleswtf/scribe/dist/tools");
 
 module.exports = async ({config, app, server, force = false, extraction = true, verbose = false}) => {
-    if (verbose) {
-        // Needed to do this since enable() clears all previously enabled
-        const namespacesToEnable = process.env.DEBUG ? (process.env.DEBUG + ',lib:scribe*') : 'lib:scribe*';
-        require('debug').enable(namespacesToEnable);
-    }
+    tools.setVerbosity(verbose);
 
     const configFile = path.resolve(config);
     const appFile = path.resolve(app);
@@ -29,7 +25,8 @@ module.exports = async ({config, app, server, force = false, extraction = true, 
 
         const {generate} = require('@knuckleswtf/scribe');
         await generate(null, configObject, 'express', null, {
-            noExtraction: !extraction,
+            noExtraction: true,
+            verbose,
         });
         return;
     }
@@ -52,7 +49,7 @@ module.exports = async ({config, app, server, force = false, extraction = true, 
     const endpoints = getRoutesFromOurDecorator(decorator);
 
     const {generate} = require('@knuckleswtf/scribe');
-    await generate(endpoints, configObject, 'express', serverStartCommand, {force});
+    await generate(endpoints, configObject, 'express', serverStartCommand, {force, verbose});
 
     // Make sure to end process, in case server is still running
     // Wrapping in a timeout because it seems sometimes ncp/pastel fails to copy over all assets in time

@@ -20,13 +20,9 @@ class GenerateDocumentation extends Command {
     }
 
     async handle (args, options) {
-        if (options.verbose) {
-            // Needed to do this since enable() clears all previously enabled
-            const namespacesToEnable = process.env.DEBUG ? (process.env.DEBUG + ',lib:scribe*') : 'lib:scribe*';
-            require('debug').enable(namespacesToEnable);
-        }
-
         const tools = require("@knuckleswtf/scribe/dist/tools");
+        tools.setVerbosity(options.verbose);
+
         const Env = use('Env');
 
         const configFilePath = path.resolve('.scribe.config.js')
@@ -45,6 +41,17 @@ class GenerateDocumentation extends Command {
         tools.info("Generating docs...");
         console.log();
 
+        if (!options.extraction) {
+            const { generate } = require('@knuckleswtf/scribe');
+            await generate(endpoints, config, 'adonis', `node ${path.resolve('server.js')}`, {
+                force: options.force || false,
+                noExtraction: true,
+                verbose: options.verbose
+            });
+            setTimeout(() => process.exit(0), 1300);
+            return;
+        }
+
         const endpoints = await this.getEndpoints(tools);
 
         const config = require(configFilePath);
@@ -58,7 +65,7 @@ class GenerateDocumentation extends Command {
         const { generate } = require('@knuckleswtf/scribe');
         await generate(endpoints, config, 'adonis', `node ${path.resolve('server.js')}`, {
             force: options.force || false,
-            noExtraction: !options.extraction
+            verbose: options.verbose
         });
 
         // Make sure to end process, in case server is still running
@@ -67,6 +74,7 @@ class GenerateDocumentation extends Command {
 
     async getEndpoints(tools) {
         const Route = use('Route');
+        tools.debug('Fetching routes from the Adonis router...');
         const endpoints = await Promise.all(Route.list().map(async r => {
             let methods = r.verbs;
             const indexOfHEAD = methods.indexOf('HEAD');
