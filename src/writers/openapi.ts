@@ -82,7 +82,7 @@ export = (config: scribe.Config) => {
                         in: 'path',
                         name: name,
                         description: details.description || '',
-                        example: details.value || null,
+                        example: details.example || null,
                         // Currently, Swagger requires path parameters to be required
                         required: true,
                         schema: {
@@ -102,7 +102,7 @@ export = (config: scribe.Config) => {
                         if (parameterData.example !== null) {
                             parameterData.examples.present = {
                                 summary: 'When the value is present',
-                                value: parameterData['example'],
+                                value: parameterData.example,
                             };
                         }
 
@@ -185,7 +185,7 @@ function generateEndpointParametersSpec(endpoint: scribe.Route) {
                 in: 'query',
                 name: name,
                 description: details.description || '',
-                example: details.value || null,
+                example: details.example || null,
                 required: details.required || false,
                 schema: generateFieldData(details),
             };
@@ -373,7 +373,7 @@ function generateEndpointRequestBodySpec(endpoint: scribe.Route): RequestBodyObj
         content: {},
     };
 
-    const schema: SchemaObject = {
+    let schema: SchemaObject = {
         type: 'object',
         properties: {},
     };
@@ -381,11 +381,18 @@ function generateEndpointRequestBodySpec(endpoint: scribe.Route): RequestBodyObj
     let hasRequiredParameter = false;
     let hasFileParameter = false;
 
-    Object.entries(endpoint.nestedBodyParameters).forEach(([name, details]) => {
+    for (let name in endpoint.nestedBodyParameters) {
+        let details = endpoint.nestedBodyParameters[name];
+        if (name === "[]") { // Request body is an array
+            hasRequiredParameter = true;
+            schema = generateFieldData(details);
+            break;
+        }
+
         if (details.required) {
             hasRequiredParameter = true;
             // Don't declare this earlier.
-            // Can't have an empty `required` array. Must have something there.
+            // OAS does not support an empty `required` array. Must have something there.
             schema.required = (schema.required || []).concat(name);
         }
 
@@ -397,7 +404,7 @@ function generateEndpointRequestBodySpec(endpoint: scribe.Route): RequestBodyObj
         fieldData = generateFieldData(details);
 
         schema.properties[name] = fieldData;
-    });
+    }
 
     body.required = hasRequiredParameter;
 
@@ -445,31 +452,40 @@ function generateFieldData(field: scribe.Parameter): SchemaObject {
         };
     } else if (p.isArrayType(field.type)) {
         const baseType = p.getBaseTypeFromArrayType(field.type);
+        const baseItem = (baseType === 'file') ? {
+            type: 'string',
+            format: 'binary',
+        } : {type: baseType};
+
         const fieldData: SchemaObject = {
             type: 'array',
             description: field.description ?? '',
-            example: field.value ?? null,
+            example: field.example ?? null,
             items: p.isArrayType(baseType)
                 ? generateFieldData({
                     name: '',
                     type: baseType,
-                    value: (field.value ?? [null])[0]
+                    example: (field.example ?? [null])[0]
                 })
-                : {type: baseType,},
+                : baseItem,
         };
+        if (field.type.replace(/\[]/g, "") === 'file') {
+            // Don't include example for file params in OAS; it's hard to translate it correctly
+            delete fieldData.example;
+        }
 
         if (baseType === 'object' && field.__fields) {
-            Object.entries(field.__fields).forEach(([subfieldSimpleName, subfield]) => {
+            // @ts-ignore
+            if (fieldData.items.type === 'object') {
                 // @ts-ignore
-                if (fieldData.items.type === 'object') {
-                    // @ts-ignore
-                    fieldData.items.properties = {};
-                }
+                fieldData.items.properties = {};
+            }
+            Object.entries(field.__fields).forEach(([subfieldSimpleName, subfield]) => {
                 // @ts-ignore
                 fieldData.items.properties[subfieldSimpleName] = generateFieldData(subfield);
                 if (subfield.required) {
                     // @ts-ignore
-                    fieldData.items.required = (fieldData.items.required || []).push(subfieldSimpleName);
+                    fieldData.items.required = (fieldData.items.required || []).concat(subfieldSimpleName);
                 }
             });
         }
@@ -479,7 +495,7 @@ function generateFieldData(field: scribe.Parameter): SchemaObject {
         return {
             type: 'object',
             description: field.description ?? '',
-            example: field.value ?? null,
+            example: field.example ?? null,
             properties: collect(Object.entries(field.__fields)).mapWithKeys(([subfieldSimpleName, subfield]) => {
                 return [subfieldSimpleName, generateFieldData(subfield)];
             }).all(),
@@ -488,7 +504,7 @@ function generateFieldData(field: scribe.Parameter): SchemaObject {
         return {
             type: p.normalizeTypeName(field.type),
             description: field.description ?? '',
-            example: field.value ?? null,
+            example: field.example ?? null,
         };
     }
 }

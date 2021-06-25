@@ -292,6 +292,10 @@ function generateFieldData(field) {
     }
     else if (p.isArrayType(field.type)) {
         const baseType = p.getBaseTypeFromArrayType(field.type);
+        const baseItem = (baseType === 'file') ? {
+            type: 'string',
+            format: 'binary',
+        } : { type: baseType };
         const fieldData = {
             type: 'array',
             description: (_b = field.description) !== null && _b !== void 0 ? _b : '',
@@ -302,8 +306,12 @@ function generateFieldData(field) {
                     type: baseType,
                     example: ((_d = field.example) !== null && _d !== void 0 ? _d : [null])[0]
                 })
-                : { type: baseType, },
+                : baseItem,
         };
+        if (field.type.replace(/\[]/g, "") === 'file') {
+            // Don't include example for file params in OAS; it's hard to translate it correctly
+            delete fieldData.example;
+        }
         if (baseType === 'object' && field.__fields) {
             // @ts-ignore
             if (fieldData.items.type === 'object') {
