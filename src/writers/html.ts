@@ -43,8 +43,12 @@ class HtmlWriter {
 
         // Copy assets
         const assetsFolder = path.join(__dirname, '/../../resources');
-        if (!fs.existsSync(destinationFolder + "/js")) {
-            fs.mkdirSync(destinationFolder + "/js");
+        // Prune older versioned assets
+        if (fs.existsSync(destinationFolder + "/css")) {
+            fs.rmdirSync(destinationFolder + '/css', {recursive: true});
+        }
+        if (fs.existsSync(destinationFolder + "/js")) {
+            fs.rmdirSync(destinationFolder + '/js', {recursive: true});
         }
         await copyDirectory(`${assetsFolder}/images/`, `${destinationFolder}/images`);
 
