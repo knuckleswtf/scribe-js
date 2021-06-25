@@ -10,8 +10,8 @@ const { Command } = require.main.require('@adonisjs/ace')
 class GenerateDocumentation extends Command {
     static get signature () {
         return `scribe:generate 
-            {--force : Discard any changes you've made to the Markdown files}
-            {--no-extraction : Skip extraction of route info and just transform the Markdown files}
+            {--force : Discard any changes you've made to the YAML or Markdown files}
+            {--no-extraction : Skip extraction of route and API info and just transform the YAML and Markdown files into HTML}
             {--verbose : Enable debug logging}`
     }
 
@@ -53,7 +53,7 @@ class GenerateDocumentation extends Command {
 
         const { generate } = require('@knuckleswtf/scribe');
         await generate(endpoints, config, 'adonis', `node ${path.resolve('server.js')}`, {
-            overwriteMarkdownFiles: options.force || false,
+            force: options.force || false,
             noExtraction: !options.extraction
         });
 

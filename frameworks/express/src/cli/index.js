@@ -26,12 +26,12 @@ program
     )
     .option(
         '-f, --force',
-        "Discard any changes you've made to the source Markdown files",
+        "Discard any changes you've made to the YAML or Markdown files",
         false,
     )
     .option(
         '--no-extraction',
-        "Skip extraction of route info and just transform the Markdown files",
+        "Skip extraction of route and API info and just transform the YAML and Markdown files into HTML",
         false,
     )
     .option(

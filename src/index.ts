@@ -19,7 +19,7 @@ import camel = require('./camel/camel');
 
 const debug = require('debug')('lib:scribe');
 
-const defaultOptions = {overwriteMarkdownFiles: false, noExtraction: false};
+const defaultOptions = {force: false, noExtraction: false};
 process.env.SCRIBE_VERSION = process.env.SCRIBE_VERSION || require('../package.json').version;
 
 class Scribe {
@@ -39,12 +39,12 @@ class Scribe {
         }
 
         let groupedEndpoints: Group[] = [];
-        if (this.options.overwriteMarkdownFiles) {
+        if (this.options.force) {
             groupedEndpoints = await this.extractEndpointsInfoAndWriteToDisk(false);
-            await this.extractAndWriteApiDetailsToDisk(!this.options.overwriteMarkdownFiles);
+            await this.extractAndWriteApiDetailsToDisk(!this.options.force);
         } else if (!this.options.noExtraction) {
             groupedEndpoints = await this.extractEndpointsInfoAndWriteToDisk(true);
-            await this.extractAndWriteApiDetailsToDisk(!this.options.overwriteMarkdownFiles);
+            await this.extractAndWriteApiDetailsToDisk(!this.options.force);
         } else {
             if (!fs.existsSync(camel.camelDir)) {
                 tools.error(`Can't use --no-extraction because there are no endpoints in the ${camel.camelDir} directory.`);

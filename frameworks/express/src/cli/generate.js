@@ -51,7 +51,7 @@ module.exports = async ({config, app, server, force = false, extraction = true, 
     const endpoints = getRoutesFromOurDecorator(decorator);
 
     const {generate} = require('@knuckleswtf/scribe');
-    await generate(endpoints, configObject, 'express', serverStartCommand, {overwriteMarkdownFiles: force});
+    await generate(endpoints, configObject, 'express', serverStartCommand, {force});
 
     // Make sure to end process, in case server is still running
     // Wrapping in a timeout because it seems sometimes ncp/pastel fails to copy over all assets in time
