@@ -2,34 +2,38 @@
 
 <%- required ? '' : "<i>optional</i>" %>
 
-<% if ((isInput !== false) && !(hasChildren === null ? false : hasChildren)) { %>
-<% if (type == 'boolean') { %>
-    <label data-endpoint="<%- endpointId %>" hidden>
-        <input type="radio" name="<%- utils.getFullNameForField(name, type) %>"
-               value="<%- component == 'body' ? 'true' : 1 %>"
-               data-endpoint="<%- endpointId %>" data-component="<%- component %>" <%- required ? 'required' : '' %>
-               <code>true</code>
-    </label>
-    <label data-endpoint="<%- endpointId %>" hidden>
-        <input type="radio" name="<%- utils.getFullNameForField(name, type) %>"
-               value="<%- component == 'body' ? 'false' : 0 %>"
-               data-endpoint="<%- endpointId %>" data-component="<%- component %>" <%- required ? 'required' : '' %>
-               <code>false</code>
-    </label>
+<% if (isInput && !hasChildren) { %>
+    <% if (type === 'boolean') { %>
+        <label data-endpoint="<%- endpointId %>" hidden>
+            <input type="radio" name="<%- utils.getFullNameForField(name, type) %>"
+                   value="<%- component === 'body' ? 'true' : 1 %>"
+                   data-endpoint="<%- endpointId %>"
+                   data-component="<%- component %>" <%- required ? 'required' : '' %>
+            >
+            <code>true</code>
+        </label>
+        <label data-endpoint="<%- endpointId %>" hidden>
+            <input type="radio" name="<%- utils.getFullNameForField(name, type) %>"
+                   value="<%- component === 'body' ? 'false' : 0 %>"
+                   data-endpoint="<%- endpointId %>"
+                   data-component="<%- component %>" <%- required ? 'required' : '' %>
+            >
+            <code>false</code>
+        </label>
     <% } else if (type.endsWith('[]')) { %>
-    <input type="<%- utils.getInputTypeForField(type) %>"
-           name="<%- utils.getFullNameForField(name, type) + `.0` %>"
-           data-endpoint="<%- endpointId %>"
-           data-component="<%- component %>" <%- required ? required : '' %> hidden>
-    <input type="<%- utils.getInputTypeForField(type) %>"
-           name="<%- utils.getFullNameForField(name, type) + `.1` %>"
-           data-endpoint="<%- endpointId %>"
-           data-component="<%- component %>" hidden>
+        <input type="<%- utils.getInputTypeForField(type) %>"
+               name="<%- utils.getFullNameForField(name, type) + `.0` %>"
+               data-endpoint="<%- endpointId %>"
+               data-component="<%- component %>" <%- required ? required : '' %> hidden>
+        <input type="<%- utils.getInputTypeForField(type) %>"
+               name="<%- utils.getFullNameForField(name, type) + `.1` %>"
+               data-endpoint="<%- endpointId %>"
+               data-component="<%- component %>" hidden>
     <% } else { %>
-    <input type="<%- utils.getInputTypeForField(type) %>"
-           name="<%- utils.getFullNameForField(name, type) %>"
-           data-endpoint="<%- endpointId %>" d
-           ata-component="<%- component %>" <%- required ? required : '' %>hidden>
+        <input type="<%- utils.getInputTypeForField(type) %>"
+               name="<%- utils.getFullNameForField(name, type) %>"
+               data-endpoint="<%- endpointId %>"
+               data-component="<%- component %>" <%- required ? required : '' %> hidden>
     <% } %>
 <% } %>
 <br>

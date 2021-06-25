@@ -82,7 +82,7 @@
 <% endpoint.httpMethods.forEach(method => { %>
 <p>
     <%- include("../../components/badges/http-method", {method}) %>
-    <b><code><%- endpoint.uri %></b></code>
+    <b><code><%- endpoint.uri %></code></b>
 </p>
 <% }); %>
 <% if (endpoint.metadata.authenticated && metadata.auth.location == 'header') { %>
@@ -100,7 +100,7 @@
 <% for (let attribute in endpoint.urlParameters) { %>
 <% let parameter = endpoint.urlParameters[attribute]; %>
 <p>
-<%- include("../../components/field-details", {...parameter, endpointId: endpoint.endpointId, component: 'url'}) %>
+<%- include("../../components/field-details", {...parameter, endpointId: endpoint.endpointId, component: 'url', isInput: true, hasChildren: false}) %>
 </p>
 <% } %>
 <% } %>
@@ -109,7 +109,7 @@
 <% for (let attribute in endpoint.queryParameters) { %>
 <% let parameter = endpoint.queryParameters[attribute]; %>
 <p>
-<%- include("../../components/field-details", {...parameter, endpointId: endpoint.endpointId, component: 'query'}) %>
+<%- include("../../components/field-details", {...parameter, endpointId: endpoint.endpointId, component: 'query', isInput: true, hasChildren: false}) %>
 </p>
 <% } %>
 <% } %>
@@ -124,7 +124,7 @@
 <% for (let attribute in endpoint.responseFields) { %>
 <% let field = endpoint.responseFields[attribute]; %>
 <p>
-<%- include("../../components/field-details", {...field, required: true, isInput: false}) %>
+<%- include("../../components/field-details", {...field, required: true, isInput: false, hasChildren: false}) %>
 </p>
 <% } %>
 <% } %>

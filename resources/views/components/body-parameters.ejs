@@ -35,7 +35,7 @@
             </p>
         <% } else { %>
             <p>
-                <%- include("field-details", {...parameter, endpointId, component: 'body', hasChildren: false}) %>
+                <%- include("field-details", {...parameter, endpointId, component: 'body', hasChildren: false, isInput: true}) %>
             </p>
         <% } %>
 <% } %>
