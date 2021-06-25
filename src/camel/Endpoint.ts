@@ -36,7 +36,7 @@ class Endpoint {
         this.originalRoute = endpointDetails.originalRoute;
     }
 
-    add(stage: string, data) {
+    add(stage: scribe.Stage, data) {
         if (data == null) {
             return;
         }

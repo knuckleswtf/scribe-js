@@ -22,7 +22,7 @@ declare class Endpoint {
     fileParameters: Record<string, any>;
     handler: Function;
     constructor(endpointDetails: scribe.Route);
-    add(stage: string, data: any): void;
+    add(stage: scribe.Stage, data: any): void;
     cleanUpUrl(): void;
     get endpointId(): string;
     forSerialisation(): this & {

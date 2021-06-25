@@ -44,9 +44,11 @@ module.exports = async ({config, app, server, force = false, extraction = true, 
     const configObject = require(configFile);
     configObject.strategies = configObject.strategies || {};
     configObject.strategies.urlParameters =
-        (configObject.strategies.urlParameters || []).concat(
-            path.join(__dirname, '../strategies/url_parameters/express_route_api')
+        // Important to prepend it so docblock strategies can override this
+        [path.join(__dirname, '../strategies/url_parameters/express_route_api')].concat(
+            configObject.strategies.urlParameters || []
         );
+    console.log( configObject.strategies.urlParameters);
 
     const endpoints = getRoutesFromOurDecorator(decorator);
 
