@@ -36,7 +36,7 @@ function run(endpoint, config) {
 
         return {
             name: parameter,
-            value: isOptional ? null : getParameterExample('string', parameterRegexPattern[1]),
+            example: isOptional ? null : getParameterExample('string', parameterRegexPattern[1]),
             required: !isOptional,
             description: '',
             type: 'string',
