@@ -31,7 +31,7 @@ class Writer {
         tools.success("Postman collection generated.");
     }
     async writeOpenAPISpec(groupedEndpoints) {
-        if (this.config.openapi.enabled) {
+        if (!this.config.openapi.enabled) {
             return;
         }
         tools.info(`Writing OpenAPI spec to ${path.resolve(this.config.outputPath)}...`);

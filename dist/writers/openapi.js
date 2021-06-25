@@ -55,7 +55,7 @@ function generateEndpointParametersSpec(endpoint) {
                 in: 'query',
                 name: name,
                 description: details.description || '',
-                example: details.value || null,
+                example: details.example || null,
                 required: details.required || false,
                 schema: generateFieldData(details),
             };
@@ -225,17 +225,23 @@ function generateEndpointRequestBodySpec(endpoint) {
     const body = {
         content: {},
     };
-    const schema = {
+    let schema = {
         type: 'object',
         properties: {},
     };
     let hasRequiredParameter = false;
     let hasFileParameter = false;
-    Object.entries(endpoint.nestedBodyParameters).forEach(([name, details]) => {
+    for (let name in endpoint.nestedBodyParameters) {
+        let details = endpoint.nestedBodyParameters[name];
+        if (name === "[]") { // Request body is an array
+            hasRequiredParameter = true;
+            schema = generateFieldData(details);
+            break;
+        }
         if (details.required) {
             hasRequiredParameter = true;
             // Don't declare this earlier.
-            // Can't have an empty `required` array. Must have something there.
+            // OAS does not support an empty `required` array. Must have something there.
             schema.required = (schema.required || []).concat(name);
         }
         let fieldData = {};
@@ -244,7 +250,7 @@ function generateEndpointRequestBodySpec(endpoint) {
         }
         fieldData = generateFieldData(details);
         schema.properties[name] = fieldData;
-    });
+    }
     body.required = hasRequiredParameter;
     let contentType = '';
     if (hasFileParameter) {
@@ -289,27 +295,27 @@ function generateFieldData(field) {
         const fieldData = {
             type: 'array',
             description: (_b = field.description) !== null && _b !== void 0 ? _b : '',
-            example: (_c = field.value) !== null && _c !== void 0 ? _c : null,
+            example: (_c = field.example) !== null && _c !== void 0 ? _c : null,
             items: p.isArrayType(baseType)
                 ? generateFieldData({
                     name: '',
                     type: baseType,
-                    value: ((_d = field.value) !== null && _d !== void 0 ? _d : [null])[0]
+                    example: ((_d = field.example) !== null && _d !== void 0 ? _d : [null])[0]
                 })
                 : { type: baseType, },
         };
         if (baseType === 'object' && field.__fields) {
-            Object.entries(field.__fields).forEach(([subfieldSimpleName, subfield]) => {
+            // @ts-ignore
+            if (fieldData.items.type === 'object') {
                 // @ts-ignore
-                if (fieldData.items.type === 'object') {
-                    // @ts-ignore
-                    fieldData.items.properties = {};
-                }
+                fieldData.items.properties = {};
+            }
+            Object.entries(field.__fields).forEach(([subfieldSimpleName, subfield]) => {
                 // @ts-ignore
                 fieldData.items.properties[subfieldSimpleName] = generateFieldData(subfield);
                 if (subfield.required) {
                     // @ts-ignore
-                    fieldData.items.required = (fieldData.items.required || []).push(subfieldSimpleName);
+                    fieldData.items.required = (fieldData.items.required || []).concat(subfieldSimpleName);
                 }
             });
         }
@@ -319,7 +325,7 @@ function generateFieldData(field) {
         return {
             type: 'object',
             description: (_e = field.description) !== null && _e !== void 0 ? _e : '',
-            example: (_f = field.value) !== null && _f !== void 0 ? _f : null,
+            example: (_f = field.example) !== null && _f !== void 0 ? _f : null,
             properties: collect(Object.entries(field.__fields)).mapWithKeys(([subfieldSimpleName, subfield]) => {
                 return [subfieldSimpleName, generateFieldData(subfield)];
             }).all(),
@@ -329,7 +335,7 @@ function generateFieldData(field) {
         return {
             type: p.normalizeTypeName(field.type),
             description: (_g = field.description) !== null && _g !== void 0 ? _g : '',
-            example: (_h = field.value) !== null && _h !== void 0 ? _h : null,
+            example: (_h = field.example) !== null && _h !== void 0 ? _h : null,
         };
     }
 }
@@ -386,7 +392,7 @@ module.exports = (config) => {
                         in: 'path',
                         name: name,
                         description: details.description || '',
-                        example: details.value || null,
+                        example: details.example || null,
                         // Currently, Swagger requires path parameters to be required
                         required: true,
                         schema: {
@@ -405,7 +411,7 @@ module.exports = (config) => {
                         if (parameterData.example !== null) {
                             parameterData.examples.present = {
                                 summary: 'When the value is present',
-                                value: parameterData['example'],
+                                value: parameterData.example,
                             };
                         }
                         // Can't have `example` and `examples`

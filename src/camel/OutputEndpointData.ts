@@ -90,13 +90,13 @@ class OutputEndpointData {
                     parentName = '[]';
                 }
 
-                if (parameters[parentName] === undefined) {
+                if (normalisedParameters[parentName] === undefined) {
                     normalisedParameters[parentName] = {
                         name: parentName,
                         type: parentName === '[]' ? "object[]" : "object",
                         description: "",
                         required: true,
-                        value: {[fieldName]: parameter.value},
+                        example: {[fieldName]: parameter.example},
                     };
                 }
             }

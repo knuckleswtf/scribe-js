@@ -16,7 +16,7 @@ function run(endpoint) {
         allParams[name] = {
             name,
             type: 'string',
-            value: getParameterExample('string'),
+            example: getParameterExample('string'),
             required: true,
             description: '',
         };

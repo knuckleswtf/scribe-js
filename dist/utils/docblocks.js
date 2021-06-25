@@ -133,7 +133,7 @@ function parseParameterTagContent(tagContent) {
         type: normalizeTypeName(type),
         required: required ? required.includes('required') : false,
         description: description || null,
-        value: value ? value.trim() : null,
+        example: value ? value.trim() : null,
     };
 }
 function parseResponseFieldTagContent(tagContent) {

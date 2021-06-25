@@ -24,7 +24,7 @@ function run(endpoint: Endpoint): scribe.BodyParameters {
         allParams[name] = {
             name,
             type: 'string',
-            value: getParameterExample('string'),
+            example: getParameterExample('string'),
             required: true,
             description: '',
         };

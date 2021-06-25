@@ -85,7 +85,7 @@ function castValueToType(value: any, type = 'string') {
  * It takes in an array with rich details about a parameter eg
  *   {age: {
  *     description: 'The age',
- *     value: 12,
+ *     example: 12,
  *     required: false,
  *   }}
  * And transforms them into key-example pairs : {age: 12}
@@ -98,7 +98,7 @@ function cleanParams(parameters: scribe.ParameterBag = {}) {
     let cleanParameters = {};
 
     for (let [name, parameter] of Object.entries(parameters)) {
-        if (parameter.value === null && !parameter.required) {
+        if (parameter.example === null && !parameter.required) {
             continue;
         }
 
@@ -110,15 +110,15 @@ function cleanParams(parameters: scribe.ParameterBag = {}) {
                     type: "object[]",
                     description: "",
                     required: true,
-                    value: {[name]: parameter.value},
+                    example: {[name]: parameter.example},
                 };
             }
         }
 
         if (name.includes('.')) { // Object field (or array of objects)
-            setObject(cleanParameters, name, parameter.value, parameters, parameter.required);
+            setObject(cleanParameters, name, parameter.example, parameters, parameter.required);
         } else {
-            cleanParameters[name] = parameter.value;
+            cleanParameters[name] = parameter.example;
         }
     }
 

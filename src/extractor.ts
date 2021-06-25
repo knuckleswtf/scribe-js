@@ -216,7 +216,7 @@ class Extractor {
                 endpoint.auth = ['cleanQueryParameters', parameterName, valueToUse || token];
                 endpoint.queryParameters[parameterName] = {
                     name: parameterName,
-                    value: valueToDisplay || token,
+                    example: valueToDisplay || token,
                     type: 'string',
                     description: '',
                     required: true,
@@ -226,7 +226,7 @@ class Extractor {
                 endpoint.auth = ['cleanBodyParameters', parameterName, valueToUse || token];
                 endpoint.bodyParameters[parameterName] = {
                     name: parameterName,
-                    value: valueToDisplay || token,
+                    example: valueToDisplay || token,
                     type: 'string',
                     description: '',
                     required: true,

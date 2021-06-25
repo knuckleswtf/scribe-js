@@ -6,7 +6,7 @@ declare function castValueToType(value: any, type?: string): any;
  * It takes in an array with rich details about a parameter eg
  *   {age: {
  *     description: 'The age',
- *     value: 12,
+ *     example: 12,
  *     required: false,
  *   }}
  * And transforms them into key-example pairs : {age: 12}

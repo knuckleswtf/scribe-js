@@ -19,7 +19,7 @@ function run(endpoint, config) {
 
         return {
             name: parameter,
-            value: isOptional ? null : getParameterExample(),
+            example: isOptional ? null : getParameterExample(),
             required: !isOptional,
             type: 'string',
             description: '',

@@ -18,7 +18,7 @@ export declare namespace scribe {
         name: string,
         description?: string | null,
         required?: boolean,
-        value?: any,
+        example?: any,
         type?: string,
         __fields?: Record<string, scribe.Parameter>
     }

@@ -41,7 +41,7 @@ class Writer {
     }
 
     async writeOpenAPISpec(groupedEndpoints: Group[]) {
-        if (this.config.openapi.enabled) {
+        if (!this.config.openapi.enabled) {
             return;
         }
 

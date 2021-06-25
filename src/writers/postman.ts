@@ -125,35 +125,35 @@ export = (config: scribe.Config) => {
             if (parameterData.type.endsWith('[]')) {
                 // Node.js's querystring module parses array query parameters as filters=name&filters=age
                 // See https://nodejs.org/api/querystring.html#querystring_querystring_parse_str_sep_eq_options
-                const values = parameterData.value || [];
-                values.forEach((value) => {
+                const examples = parameterData.example || [];
+                examples.forEach((value) => {
                     query.push({
                         key: encodeURIComponent(name),
                         value: encodeURIComponent(value),
                         description: striptags(parameterData.description),
                         // Default query params to disabled if they aren't required and have empty values
-                        disabled: (parameterData.required == false) && parameterData.value == null,
+                        disabled: (parameterData.required == false) && parameterData.example == null,
                     });
                 });
             } else if (parameterData.type === 'object') {
                 // No guarantee this will actually be parsed by the API
-                const values = parameterData.value || {};
-                Object.entries(values).forEach(([key, value]) => {
+                const examples = parameterData.example || {};
+                Object.entries(examples).forEach(([key, value]) => {
                     query.push({
                         key: encodeURIComponent(`${key}[${name}]`),
                         value: encodeURIComponent(value as string),
                         description: striptags(parameterData.description),
                         // Default query params to disabled if they aren't required and have empty values
-                        disabled: (parameterData.required == false) && parameterData.value == null,
+                        disabled: (parameterData.required == false) && parameterData.example == null,
                     });
                 });
             } else {
                 query.push({
                     key: name,
-                    value: encodeURIComponent(parameterData.value),
+                    value: encodeURIComponent(parameterData.example),
                     description: striptags(parameterData.description),
                     // Default query params to disabled if they aren't required and have empty values
-                    disabled: (parameterData.required == false) && parameterData.value == null,
+                    disabled: (parameterData.required == false) && parameterData.example == null,
                 });
             }
         });
@@ -174,7 +174,7 @@ export = (config: scribe.Config) => {
             return {
                 id: name,
                 key: name,
-                value: encodeURIComponent(parameter.value),
+                value: encodeURIComponent(parameter.example),
                 description: parameter.description,
             };
         });
