@@ -1,6 +1,6 @@
 {
   "name": "@knuckleswtf/scribe-express",
-  "version": "1.8.3",
+  "version": "1.8.4",
   "description": "Generate API documentation for humans from your Express.js codebase.",
   "main": "src/decorator.js",
   "bin": {
@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/knuckleswtf/scribe-js#readme",
   "dependencies": {
-    "@knuckleswtf/scribe": "1.8.3",
+    "@knuckleswtf/scribe": "1.8.4",
     "commander": "^5.1.0",
     "hard-rejection": "^2.1.0",
     "lodash.findlastindex": "^4.6.0",
