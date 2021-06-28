@@ -53,7 +53,7 @@ async function searchFileLazily(filePath, content) {
     return false;
 }
 const kleur = require('kleur');
-kleur.enabled = process.env.NO_ANSI === 'false';
+kleur.enabled = true;
 function icon(type) {
     const iconsMain = {
         info: kleur.cyan('ℹ'),
