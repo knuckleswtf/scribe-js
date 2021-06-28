@@ -43,8 +43,9 @@ class Endpoint {
     setBoundUrl() {
         this.boundUri = Object.values(this.urlParameters)
             .reduce((uri, p) => {
+            let match = p.match ? p.match : new RegExp(`:${p.name}(\\(.*\\))?(?=\\/|$)`);
             // Optional parameters with no value won't get substituted
-            return uri.replace(p.match, p.value == null ? '' : p.value);
+            return uri.replace(match, p.value == null ? '' : p.value);
         }, this.uri);
     }
     // Some URL parameters are written in an "ugly" way (eg /users/:id([a-z]+) )
@@ -55,7 +56,9 @@ class Endpoint {
     cleanUpUrlParams() {
         this.uri = Object.values(this.urlParameters)
             .reduce((uri, p) => {
-            return p.placeholder ? uri.replace(p.match, p.placeholder) : uri;
+            let match = p.match ? p.match : new RegExp(`:${p.name}(\\(.*\\))?(?=\\/|$)`);
+            let placeholder = p.placeholder ? p.placeholder : (p.required ? `:${p.name}` : `:${p.name}?`);
+            return uri.replace(match, placeholder);
         }, this.uri);
     }
     get endpointId() {
