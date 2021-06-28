@@ -13,6 +13,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Removals
 
 
+## 1.8.5 (Monday, 28 June 2021)
+### Fixed
+- Enable coloured CLI output
+
 ## 1.8.4 (Monday, 28 June 2021)
 ### Fixed
 - Set example URL properly
