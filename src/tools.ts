@@ -5,7 +5,7 @@ import readline = require('readline');
 let verbose = false;
 
 const inferApiName = () => {
-    // Basically ucwords (folderName)
+    // Basically ucwords(folderName)
     return path.basename(path.resolve('./')).split(/[-_\s]+/)
         .map(word => word[0].toUpperCase() + word.slice(1)).join(' ')
         .replace(/\bApi\b/, 'API');
