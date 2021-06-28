@@ -1,4 +1,5 @@
 "use strict";
+const TestingFile = require("./TestingFile");
 const set = require('lodash.set');
 const get = require('lodash.get');
 function getParameterExample(type = 'string', regex = null) {
@@ -23,7 +24,7 @@ function getParameterExample(type = 'string', regex = null) {
         case 'object':
             return {};
         case 'file':
-            return faker.system.filePath();
+            return new TestingFile;
         case 'string':
         default:
             if (!regex) {
@@ -70,15 +71,24 @@ function castValueToType(value, type = 'string') {
  *   }}
  * And transforms them into key-example pairs : {age: 12}
  * It also filters out parameters which have null values and have 'required' as false.
- * It converts all file params that have string examples to actual files (instances of UploadedFile).
+ * It converts all file params that have string examples to actual files (instances of TestingFile).
  * It also generates a full example for object parameters (and array of objects) using the fields. For instance, if there's a `details` field with type "object",
  * and `details.name` and `details.age` fields, this will return {details: {name: <value>, age: <value>}}
  */
 function cleanParams(parameters = {}) {
     let cleanParameters = {};
     for (let [name, parameter] of Object.entries(parameters)) {
+        // Remove params which have no examples and are optional.
         if (parameter.example === null && !parameter.required) {
             continue;
+        }
+        if (parameter.type === 'file') {
+            if (typeof parameter.example === 'string') {
+                parameter.example = TestingFile.fromPath(parameter.example);
+            }
+            else if (parameter.example == null) {
+                parameter.example = new TestingFile;
+            }
         }
         if (name.startsWith('[].')) { // Entire body is an array
             if (!parameters["[]"]) { // Make sure there's a parent

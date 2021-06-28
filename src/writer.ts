@@ -15,21 +15,34 @@ class Writer {
         const taskList = [
             {
                 title: `Writing HTML docs`,
-                task: () => this.writeHTMLDocs(groupedEndpoints)
+                options: {persistentOutput: true},
+                task: (ctx, task) => {
+                    tools.spoofConsoleLogForTask(task);
+                    return this.writeHTMLDocs(groupedEndpoints)
+                }
             },
             {
                 title: `Writing Postman collection`,
-                task: () => this.writePostmanCollection(groupedEndpoints),
+                options: {persistentOutput: true},
+                task: (ctx, task) => {
+                    tools.spoofConsoleLogForTask(task);
+                    return this.writePostmanCollection(groupedEndpoints)
+                },
                 skip: !this.config.postman.enabled,
             },
             {
                 title: `Writing OpenAPI spec`,
-                task: () => this.writeOpenAPISpec(groupedEndpoints),
+                options: {persistentOutput: true},
+                task: (ctx, task) => {
+                    tools.spoofConsoleLogForTask(task);
+                    return this.writeOpenAPISpec(groupedEndpoints)
+                },
                 skip: !this.config.openapi.enabled,
             }
         ];
-        const tasks = new Listr(taskList);
+        const tasks = new Listr(taskList, {concurrent: false});
         await tasks.run();
+        tools.restoreConsoleMethods();
     }
 
     async writePostmanCollection(groupedEndpoints: Group[]) {

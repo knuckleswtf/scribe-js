@@ -1,6 +1,5 @@
 'use strict';
 
-
 import p = require("./utils/parameters");
 import tools = require('./tools');
 import Endpoint = require("./camel/Endpoint");
@@ -15,6 +14,7 @@ const {Listr} = require('listr2');
 
 import {scribe} from "../typedefs/core";
 import {ListrTask} from "listr2";
+import TestingFile = require("./utils/TestingFile");
 
 class Extractor {
     static encounteredErrors = false;
@@ -46,10 +46,6 @@ class Extractor {
 
         const parsedEndpoints: Endpoint[] = [];
 
-        const originalConsoleLog = console.log.bind(console);
-        const originalConsoleError = console.error.bind(console);
-        const originalConsoleInfo = console.info.bind(console);
-        const originalConsoleWarn = console.warn.bind(console);
         const taskList = routesToDocument.map(([endpointDetails, rulesToApply]): ListrTask => {
             let endpoint = new Endpoint(endpointDetails);
             rulesToApply.responseCalls.serverStartCommand = this.serverStartCommand;
@@ -60,15 +56,7 @@ class Extractor {
                 task: async (ctx, task) => {
                     try {
                         // console.log() and friends don't play well with Listr's updating output
-                        console.error = console.info = console.log = (text) => {
-                            if (task.output === undefined) {
-                                task.output = '';
-                            }
-                            if (text === undefined) {
-                                text = '';
-                            }
-                            task.output += (text + '\n');
-                        }
+                        tools.spoofConsoleLogForTask(task);
 
                         await this.iterateOverStrategies('metadata', strategies.metadata, endpoint, rulesToApply);
                         await this.iterateOverStrategies('headers', strategies.headers, endpoint, rulesToApply);
@@ -81,21 +69,24 @@ class Extractor {
                         endpoint.cleanQueryParameters = p.cleanParams(endpoint.queryParameters);
 
                         await this.iterateOverStrategies('bodyParameters', strategies.bodyParameters, endpoint, rulesToApply);
-                        let [files, regularParameters] = collect(endpoint.bodyParameters)
-                            .partition((param) => (p.getBaseType(param.type) == 'file'));
-                        files = files.all();
-                        regularParameters = regularParameters.all();
+                        endpoint.cleanBodyParameters = p.cleanParams(endpoint.bodyParameters);
 
-                        endpoint.cleanBodyParameters = p.cleanParams(regularParameters);
+                        let [files, regularParameters] = collect(endpoint.cleanBodyParameters)
+                            .partition(param => {
+                                return param instanceof TestingFile
+                                    || (Array.isArray(param) && param[0] instanceof TestingFile);
+                            });
+                        endpoint.fileParameters = files.all();
+                        endpoint.cleanBodyParameters = regularParameters.all();
+
                         if (Object.keys(endpoint.cleanBodyParameters).length && !endpoint.headers['Content-Type']) {
                             // Set content type if the user forgot to set it
                             endpoint.headers['Content-Type'] = 'application/json';
                         }
-                        if (Object.keys(files).length) {
+                        if (Object.keys(endpoint.fileParameters).length) {
                             // If there are files, content type has to change
                             endpoint.headers['Content-Type'] = 'multipart/form-data';
                         }
-                        endpoint.fileParameters = p.cleanParams(files);
 
                         this.addAuthField(endpoint);
 
@@ -130,10 +121,7 @@ class Extractor {
         });
         await tasks.run();
 
-        console.log = originalConsoleLog;
-        console.error = originalConsoleError;
-        console.info = originalConsoleInfo;
-        console.warn = originalConsoleWarn;
+        tools.restoreConsoleMethods();
 
         setTimeout(() => {
             const appProcess = require("./extractors/6_responses/response_call").appProcess;

@@ -1,16 +1,9 @@
 ```bash
 curl --request <%- endpoint.httpMethods[0] %> \
     <%- endpoint.httpMethods[0] === 'GET' ? "--get " : '' %>"<%- baseUrl %><%- endpoint.boundUri %><%- utils.isNonEmptyObject(endpoint.cleanQueryParameters) ? utils.printQueryParamsAsString(endpoint.cleanQueryParameters) : '' %>" <% for (let key in (endpoint.headers || {})) { %> \
-    --header "<%- key %>: <%- utils.escapeString(endpoint.headers[key]) %>"<% } %><% if (utils.isNonEmptyObject(endpoint.fileParameters)) { %>
-<% for (let p in endpoint.cleanBodyParameters) { %>
-<% let params = utils.getParameterNamesAndValuesForFormData(p, endpoint.cleanBodyParameters[p]); %>
-<% for (let key in params) { %> \
-    --form "<%- key %>=<%- params[key] %>"<% } %>
-<% } %><% for (let p in endpoint.fileParameters) { %>
-<% let params = utils.getParameterNamesAndValuesForFormData(p, endpoint.fileParameters[p]); %>
-<% for (let key in params) { %> \
-    --form "<%- key %>=@<%- params[key] %>"<% } %>
-<% } %><% } else if (utils.isNonEmptyObject(endpoint.cleanBodyParameters)) { %> \
+    --header "<%- key %>: <%- utils.escapeString(endpoint.headers[key]) %>"<% } %><% if (utils.isNonEmptyObject(endpoint.fileParameters)) { %><% for (let p in endpoint.cleanBodyParameters) { %><% let params = utils.getParameterNamesAndValuesForFormData(p, endpoint.cleanBodyParameters[p]); %><% for (let key in params) { %> \
+    --form "<%- key %>=<%- params[key] %>"<% } %><% } %><% for (let p in endpoint.fileParameters) { %><% let params = utils.getParameterNamesAndValuesForFormData(p, endpoint.fileParameters[p]); %><% for (let key in params) { %> \
+    --form "<%- key %>=@<%- params[key] %>"<% } %><% } %><% } else if (utils.isNonEmptyObject(endpoint.cleanBodyParameters)) { %> \
     --data '<%- JSON.stringify(endpoint.cleanBodyParameters, null, 4) %>'<% } %>
 
 ```

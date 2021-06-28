@@ -14,7 +14,7 @@
         </p>
         <% } %>
         <% } %>
-        <% } else if (parameter.__fields) { %>
+        <% } else if (utils.isNonEmptyObject(parameter.__fields)) { %>
             <p>
             <details>
                 <summary style="padding-bottom: 10px;">

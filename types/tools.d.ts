@@ -22,6 +22,8 @@ declare function getFilePathAndLineNumberFromCallStackFrame(callStackFrame: any)
 declare function set(object: any, path: string, value: any): any;
 declare function setVerbosity(state: boolean): void;
 declare function isVerbose(): boolean;
+declare function spoofConsoleLogForTask(task: any): void;
+declare function restoreConsoleMethods(): void;
 declare const _default: {
     generateConfigFile: typeof generateConfigFile;
     searchFileLazily: typeof searchFileLazily;
@@ -38,5 +40,7 @@ declare const _default: {
     getFilePathAndLineNumberFromCallStackFrame: typeof getFilePathAndLineNumberFromCallStackFrame;
     setVerbosity: typeof setVerbosity;
     isVerbose: typeof isVerbose;
+    spoofConsoleLogForTask: typeof spoofConsoleLogForTask;
+    restoreConsoleMethods: typeof restoreConsoleMethods;
 };
 export = _default;

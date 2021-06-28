@@ -1,6 +1,7 @@
 'use strict';
 const set = require("../tools").set;
 const p = require("../utils/parameters");
+const collect = require("collect.js");
 class OutputEndpointData {
     constructor(endpoint) {
         this.uri = '';
@@ -32,13 +33,22 @@ class OutputEndpointData {
         this.cleanQueryParameters = p.cleanParams(this.queryParameters);
         this.cleanUrlParameters = p.cleanParams(this.urlParameters);
         this.boundUri = OutputEndpointData.getUrlWithBoundParameters(this.uri, this.cleanUrlParameters);
-        // let [files, regularParameters] = collect(this.cleanBodyParameters)
-        //     .partition((param) => (p.getBaseType(param.type) == 'file'));
-        // files = files.all();
-        // regularParameters = regularParameters.all();
-        //
-        // this.cleanBodyParameters = regularParameters.all();
-        // this.fileParameters = files.all();
+        let [files, regularParameters] = collect(this.cleanBodyParameters)
+            .partition(param => {
+            return '___filePath' in param || (Array.isArray(param) && '___filePath' in param[0]);
+        });
+        this.cleanBodyParameters = regularParameters.all();
+        this.fileParameters = files.all();
+        // Replace file objects with strings for easy use in output templates
+        this.fileParameters = Object.fromEntries(Object.entries(this.fileParameters).map(function fileObjectToString([key, value]) {
+            if ('___filePath' in value) {
+                return [key, value.___filePath];
+            }
+            if (Array.isArray(value)) {
+                return [key, value.map(v => fileObjectToString(['', v])[1])];
+            }
+            return [key, value];
+        }));
     }
     static fromExtractedEndpointObject(endpoint) {
         return new OutputEndpointData(endpoint);

@@ -6,6 +6,7 @@ const url = require("url");
 const { spawn } = require("child_process");
 const { isPortTaken } = require('../../utils/response_calls');
 const OutputEndpointData = require("../../camel/OutputEndpointData");
+const TestingFile = require("../../utils/TestingFile");
 const tools = require('./../../tools');
 const { prettyPrintResponseIfJson } = require("../../utils/parameters");
 let appProcess;
@@ -91,20 +92,24 @@ async function makeResponseCall(responseCallRules, endpoint) {
         if (Object.keys(fileParameters).length) {
             const FormData = require('form-data');
             const form = new FormData();
-            const tmp = require('tmp-promise');
             for (let [name, value] of Object.entries(fileParameters)) {
                 while (Array.isArray(value)) { // For arrays of files, just send the first one
                     name += '[]';
                     value = value[0];
                 }
-                if (!fs.existsSync(value)) { // The user may have passed in an actual file path
-                    if (fs.existsSync(path.resolve(value))) {
-                        value = path.resolve(value);
+                if (typeof value === 'string') {
+                    // The user may have passed in an actual file path
+                    if (!fs.existsSync(value)) { // abs path
+                        if (fs.existsSync(path.resolve(value))) { // relative path
+                            value = path.resolve(value);
+                        }
+                        else {
+                            value = (new TestingFile).___filePath;
+                        }
                     }
-                    else {
-                        const tempFile = tmp.fileSync();
-                        value = tempFile.name;
-                    }
+                }
+                else {
+                    value = (new TestingFile).___filePath;
                 }
                 const readStream = fs.createReadStream(value);
                 form.append(name, readStream);

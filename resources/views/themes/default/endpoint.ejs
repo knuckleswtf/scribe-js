@@ -18,7 +18,7 @@
 <% endpoint.responses.forEach(response => { %>
 <blockquote>Example response (<%= response.description || response.status %>):</blockquote>
 
-<% if  (utils.isNonEmptyObject(response.headers || {})) { %>
+<% if (utils.isNonEmptyObject(response.headers || {})) { %>
 <details class="annotation">
     <summary>
         <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
@@ -95,7 +95,7 @@
                                                                data-component="header"></label>
 </p>
 <% } %>
-<% if  (utils.isNonEmptyObject(endpoint.urlParameters)) { %>
+<% if (utils.isNonEmptyObject(endpoint.urlParameters)) { %>
 <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
 <% for (let attribute in endpoint.urlParameters) { %>
 <% let parameter = endpoint.urlParameters[attribute]; %>
@@ -104,7 +104,7 @@
 </p>
 <% } %>
 <% } %>
-<% if  (utils.isNonEmptyObject(endpoint.queryParameters)) { %>
+<% if (utils.isNonEmptyObject(endpoint.queryParameters)) { %>
 <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
 <% for (let attribute in endpoint.queryParameters) { %>
 <% let parameter = endpoint.queryParameters[attribute]; %>
@@ -113,13 +113,13 @@
 </p>
 <% } %>
 <% } %>
-<% if  (utils.isNonEmptyObject(endpoint.nestedBodyParameters)) { %>
+<% if (utils.isNonEmptyObject(endpoint.nestedBodyParameters)) { %>
 <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
 <%- include("../../components/body-parameters", {parameters: endpoint.nestedBodyParameters, endpointId: endpoint.endpointId}) %>
 <% } %>
 </form>
 
-<% if  (utils.isNonEmptyObject(endpoint.responseFields)) { %>
+<% if (utils.isNonEmptyObject(endpoint.responseFields)) { %>
 <h4 class="fancy-heading-panel"><b>Response Fields</b></h4>
 <% for (let attribute in endpoint.responseFields) { %>
 <% let field = endpoint.responseFields[attribute]; %>

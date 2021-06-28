@@ -167,8 +167,35 @@ function set(object, path: string, value) {
 function setVerbosity(state: boolean) {
     verbose = state;
 }
+
 function isVerbose(): boolean {
     return verbose;
+}
+
+const originalConsole = {
+    log: console.log.bind(console),
+    error: console.error.bind(console),
+    info: console.info.bind(console),
+    warn: console.warn.bind(console),
+}
+
+function spoofConsoleLogForTask(task) {
+    console.error = console.info = console.warn = console.log = (text) => {
+        if (task.output == null) {
+            task.output = '';
+        }
+        if (text === undefined) {
+            text = '';
+        }
+        task.output += (text + '\n');
+    }
+}
+
+function restoreConsoleMethods() {
+    console.log = originalConsole.log;
+    console.error = originalConsole.error;
+    console.info = originalConsole.info;
+    console.warn = originalConsole.warn;
 }
 
 export = {
@@ -187,4 +214,6 @@ export = {
     getFilePathAndLineNumberFromCallStackFrame,
     setVerbosity,
     isVerbose,
+    spoofConsoleLogForTask,
+    restoreConsoleMethods,
 };
