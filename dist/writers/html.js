@@ -86,7 +86,7 @@ class HtmlWriter {
             lastUpdated: getDateString(new Date),
             auth: auth,
             tryItOut: this.config.tryItOut || { enabled: true },
-            links: links.concat(['<a href="http://github.com/knuckleswtf/scribe">Documentation powered by Scribe ✍</a>']),
+            links: links.concat(['<a href="http://github.com/knuckleswtf/scribe-js">Documentation powered by Scribe ✍</a>']),
         };
     }
 }

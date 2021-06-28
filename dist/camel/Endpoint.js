@@ -69,7 +69,9 @@ class Endpoint {
     cleanUpUrl() {
         this.uri = Object.values(this.urlParameters)
             .reduce((uri, p) => {
-            return p.placeholder ? uri.replace(p.match, p.placeholder) : uri;
+            let match = p.match ? p.match : new RegExp(`:${p.name}(\\(.*\\))?(?=\\/|$)`);
+            let placeholder = p.placeholder ? p.placeholder : (p.required ? `:${p.name}` : `:${p.name}?`);
+            return uri.replace(match, placeholder);
         }, this.uri);
     }
     get endpointId() {
