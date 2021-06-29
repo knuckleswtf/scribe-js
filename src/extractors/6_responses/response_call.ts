@@ -4,7 +4,7 @@ import fs = require("fs");
 import path = require("path");
 import qs = require("querystring");
 import url = require("url");
-const { spawn } = require("child_process");
+const { spawn } = require("cross-spawn");
 const { isPortTaken } = require('../../utils/response_calls');
 import OutputEndpointData = require("../../camel/OutputEndpointData");
 import TestingFile = require("../../utils/TestingFile");
@@ -54,6 +54,7 @@ async function makeSureAppIsRunning(responseCallRules: scribe.ResponseCallRules)
                 setTimeout(resolve, 2000);
             });
         } catch (e) {
+            tools.info(`Couldn't start your app, so response calls may not work; if it's already running, you can ignore this message.`);
             // do nothing; app is probably running already
         }
     }

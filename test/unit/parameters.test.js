@@ -1,4 +1,4 @@
-const {getParameterExample, removeEmptyOptionalParametersAndTransformToKeyExample} = require('../../dist/utils/parameters');
+const {getParameterExample, cleanParams} = require('../../dist/utils/parameters');
 
 test('getParameterExample() generates correct examples by type', async () => {
     let example;
@@ -22,8 +22,7 @@ test('getParameterExample() generates correct examples by type', async () => {
     expect(Object.keys(example).length).toEqual(0);
 
     example = getParameterExample("file");
-    expect(typeof example === 'string').toBeTruthy();
-    expect(example.length).toBeGreaterThan(0);
+    expect(example.___filePath).toBeTruthy();
 });
 
 test('getParameterExample() generates correct examples for arrays', async () => {
@@ -59,61 +58,61 @@ test('getParameterExample() generates correct examples by regex', async () => {
     });
 });
 
-test('removeEmptyOptionalParametersAndTransformToKeyExample() removes only empty optional parameters', async () => {
+test('cleanParams() removes only empty optional parameters', async () => {
     let parameters = {
         param1: {
             name: 'param1',
             description: 'A param',
             required: true,
-            value: 12.7,
+            example: 12.7,
             type: 'number',
         },
         param2: {
             name: 'param2',
             description: '',
             required: false,
-            value: {d: 12.7},
+            example: {d: 12.7},
             type: 'string',
         },
         param3: {
             name: 'param3',
             description: '',
             required: false,
-            value: null,
+            example: null,
             type: 'string',
         },
     };
 
-    let results = removeEmptyOptionalParametersAndTransformToKeyExample(parameters);
+    let results = cleanParams(parameters);
     expect(results).toEqual({param1: 12.7, param2: {d: 12.7}});
 });
 
-test('removeEmptyOptionalParametersAndTransformToKeyExample() properly sets object keys', async () => {
+test('cleanParams() properly sets object keys', async () => {
     let parameters = {
         param1: {
             name: 'param1',
             description: 'An object param',
             required: false,
-            value: [{}, {}],
+            example: [{}, {}],
             type: 'object[]',
         },
         'param1[].a': {
             name: 'param1[].a',
             description: '',
             required: false,
-            value: 'haha',
+            example: 'haha',
             type: 'string',
         },
         'param1[].b': {
             name: 'param1[].b',
             description: '',
             required: true,
-            value: 14,
+            example: 14,
             type: 'integer',
         },
     };
 
-    let results = removeEmptyOptionalParametersAndTransformToKeyExample(parameters);
+    let results = cleanParams(parameters);
     const expected = {
         param1: [
             {

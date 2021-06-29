@@ -53,7 +53,7 @@ test('parses docblock tags as expected', async () => {
             type: 'number',
             required: false,
             description: "The id.",
-            value: null
+            example: null
         }
     });
     expect(parsedDocBlock.queryParam).toEqual({
@@ -62,7 +62,7 @@ test('parses docblock tags as expected', async () => {
             type: 'string',
             required: false,
             description: "The page",
-            value: null
+            example: null
         }
     });
     expect(parsedDocBlock.bodyParam).toEqual({
@@ -71,56 +71,56 @@ test('parses docblock tags as expected', async () => {
             type: 'string',
             required: false,
             description: null,
-            value: null
+            example: null
         },
         requiredOnly: {
             name: 'requiredOnly',
             type: 'string',
             required: true,
             description: null,
-            value: null
+            example: null
         },
         descriptionOnly: {
             name: 'descriptionOnly',
             type: 'string',
             required: false,
             description: 'This is a description.',
-            value: null
+            example: null
         },
         exampleOnly: {
             name: 'exampleOnly',
             type: 'string',
             required: false,
             description: null,
-            value: '12',
+            example: '12',
         },
         requiredAndDescription: {
             name: 'requiredAndDescription',
             type: 'string',
             required: true,
             description: 'This is a description.',
-            value: null,
+            example: null,
         },
         requiredAndExample: {
             name: 'requiredAndExample',
             type: 'string',
             required: true,
             description: null,
-            value: '12',
+            example: '12',
         },
         descriptionAndExample: {
             name: 'descriptionAndExample',
             type: 'string',
             required: false,
             description: 'This is a description.',
-            value: '12',
+            example: '12',
         },
         requiredAndDescriptionAndExample: {
             name: 'requiredAndDescriptionAndExample',
             type: 'string',
             required: true,
             description: 'This is a description.',
-            value: '12',
+            example: '12',
         },
     });
 
@@ -148,7 +148,7 @@ test('can retrieve the docblock for an endpoint based on its declaration file an
                     type: 'string',
                     required: false,
                     description: "The id. This description\n spans multiple lines.",
-                    value: null
+                    example: null
                 }
             },
             queryParam: {
@@ -157,7 +157,7 @@ test('can retrieve the docblock for an endpoint based on its declaration file an
                     type: 'string',
                     required: false,
                     description: 'The page',
-                    value: null
+                    example: null
                 }
             },
             bodyParam: {
@@ -166,14 +166,14 @@ test('can retrieve the docblock for an endpoint based on its declaration file an
                     type: 'string',
                     required: false,
                     description: 'The type',
-                    value: null
+                    example: null
                 },
                 otherType: {
                     name: 'otherType',
                     type: 'string',
                     required: false,
                     description: 'The other type',
-                    value: null
+                    example: null
                 }
             },
             response: [],

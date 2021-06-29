@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const qs = require("querystring");
 const url = require("url");
-const { spawn } = require("child_process");
+const { spawn } = require("cross-spawn");
 const { isPortTaken } = require('../../utils/response_calls');
 const OutputEndpointData = require("../../camel/OutputEndpointData");
 const TestingFile = require("../../utils/TestingFile");
@@ -43,6 +43,7 @@ async function makeSureAppIsRunning(responseCallRules) {
             });
         }
         catch (e) {
+            tools.info(`Couldn't start your app, so response calls may not work; if it's already running, you can ignore this message.`);
             // do nothing; app is probably running already
         }
     }

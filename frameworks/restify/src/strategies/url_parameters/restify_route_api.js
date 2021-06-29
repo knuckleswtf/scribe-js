@@ -1,7 +1,7 @@
 const {getParameterExample} = require("@knuckleswtf/scribe/dist/utils/parameters");
+const tools = require("@knuckleswtf/scribe/dist/tools");
 const trim = require('lodash.trim');
 const keyBy = require('lodash.keyby');
-const debug = require('debug')('lib:scribe:restify:urlparams');
 
 function run(endpoint, config) {
     let uri = endpoint.uri;
@@ -11,7 +11,7 @@ function run(endpoint, config) {
     }
 
     const urlParameters = matches.map((match) => {
-        debug(`Processing Restify URL parameter ` + match);
+        tools.debug(`Processing Restify URL parameter ` + match);
         let parameter = trim(match, ':');
 
         const isOptional = parameter.endsWith('?');

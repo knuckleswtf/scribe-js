@@ -32,10 +32,11 @@
     "@knuckleswtf/scribe": "1.8.1",
     "commander": "^5.1.0",
     "hard-rejection": "^2.1.0",
-    "lodash.findlastindex": "^4.6.0"
-  },
-  "devDependencies": {
-    "restify": "^8.5.1"
+    "inquirer": "^7.3.3",
+    "lodash.trim": "^4.5.1",
+    "lodash.keyby": "^4.5.1",
+    "require-in-the-middle": "^5.1.0",
+    "shimmer": "^1.2.1"
   },
   "engines": {
     "node": ">=12.4.0"

@@ -1,11 +1,11 @@
 const { getParameterExample } = require("@knuckleswtf/scribe/dist/utils/parameters");
+const tools = require("@knuckleswtf/scribe/dist/tools");
 const keyBy = require('lodash.keyby');
-const debug = require('debug')('lib:scribe:adonis:urlparams');
 
 function run(endpoint, config) {
     const parameters = endpoint.originalRoute._keys;
     const urlParameters = parameters.map(p => {
-        debug(`Processing Adonis URL parameter ` + JSON.stringify(p));
+        tools.debug(`Processing Adonis URL parameter ` + JSON.stringify(p));
         let type = 'string';
         let usePattern = p.pattern;
 

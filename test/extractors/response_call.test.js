@@ -113,10 +113,13 @@ test('response_call strategy makes correct HTTP request to server', async () => 
 
     let responses = await strategy.run(endpoint, config, routeGroup.apply);
     expect(responses).toHaveLength(1);
-    expect(responses[0]).toEqual({
+    expect(responses[0]).toMatchObject({
         status: 200,
+        headers: {
+            "content-length": "149"
+        },
         content: JSON.stringify({
-            method: endpoint.methods[0],
+            method: endpoint.httpMethods[0],
             headers: sortObjectKeys(Object.assign({}, defaultHeaders, endpoint.headers)),
             query: endpoint.cleanQueryParameters,
             body: '',
@@ -142,10 +145,13 @@ test('response_call strategy makes correct HTTP request to server', async () => 
 
     responses = await strategy.run(endpoint, config, routeGroup.apply);
     expect(responses).toHaveLength(1);
-    expect(responses[0]).toEqual({
+    expect(responses[0]).toMatchObject({
         status: 200,
+        headers: {
+            "content-length": "162"
+        },
         content: JSON.stringify({
-            method: endpoint.methods[0],
+            method: endpoint.httpMethods[0],
             headers: sortObjectKeys(Object.assign(
                 {},
                 defaultHeaders,
@@ -188,9 +194,10 @@ test('response_call strategy handles file upload', async (done) => {
     };
     const config = {routes: [routeGroup]};
 
+    let contentLength;
     const uploadServer = require('http')
         .createServer((req, res) => {
-            const busboy = new Busboy({ headers: req.headers });
+            const busboy = new Busboy({headers: req.headers});
             const body = {};
             busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
                 body[fieldname] = '';
@@ -205,20 +212,21 @@ test('response_call strategy handles file upload', async (done) => {
                 const query = require('url').parse('http://localhost' + req.url, true).query;
                 const headers = sortObjectKeys(req.headers); // Sort headers so we can assert consistently
                 delete headers['content-type']; // The content boundary differs, so not testable
-                const response = {
+                const response = JSON.stringify({
                     method: req.method,
                     headers,
                     query,
                     body,
-                };
-                res.end(JSON.stringify(response));
+                });
+                contentLength = response.length;
+                res.end(response);
             });
             req.pipe(busboy);
         })
         .on('error', (err) => {
             done(err);
         })
-        .listen(8101, "127.0.0.1",  async() => {
+        .listen(8101, "127.0.0.1", async () => {
             let responses = await strategy.run(endpoint, config, routeGroup.apply);
 
             const defaultHeaders = {
@@ -227,10 +235,13 @@ test('response_call strategy handles file upload', async (done) => {
                 connection: "close"
             };
             expect(responses).toHaveLength(1);
-            expect(responses[0]).toEqual({
+            expect(responses[0]).toMatchObject({
                 status: 200,
+                headers: {
+                    "content-length": `${contentLength}`,
+                },
                 content: JSON.stringify({
-                    method: endpoint.methods[0],
+                    method: endpoint.httpMethods[0],
                     headers: sortObjectKeys(Object.assign({}, defaultHeaders, endpoint.headers, {'transfer-encoding': 'chunked'})),
                     query: endpoint.cleanQueryParameters,
                     body: {testThis: "Just putting something here", another: "13"},

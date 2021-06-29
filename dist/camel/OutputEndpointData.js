@@ -40,8 +40,8 @@ class OutputEndpointData {
     static fromExtractedEndpointObject(endpoint) {
         return new OutputEndpointData(endpoint);
     }
-    static getUrlWithBoundParameters(uri, cleanUrlParameters) {
-        return Object.entries(cleanUrlParameters)
+    static getUrlWithBoundParameters(uri, cleanUrlParameters = {}) {
+        return Object.entries(cleanUrlParameters || {})
             .reduce((uri, [name, example]) => {
             return uri.replace(`:${name}`, example);
         }, uri);
