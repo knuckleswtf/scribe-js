@@ -42,26 +42,9 @@ class OutputEndpointData {
         this.cleanUrlParameters = p.cleanParams(this.urlParameters);
         this.boundUri = OutputEndpointData.getUrlWithBoundParameters(this.uri, this.cleanUrlParameters);
 
-        let [files, regularParameters] = collect(this.cleanBodyParameters)
-            .partition(param => {
-                return '___filePath' in param || (Array.isArray(param) && '___filePath' in param[0]);
-            });
-        this.cleanBodyParameters = regularParameters.all();
-        this.fileParameters = files.all();
-        // Replace file objects with strings for easy use in output templates
-        this.fileParameters = Object.fromEntries(
-            Object.entries(this.fileParameters).map(function fileObjectToString([key, value]) {
-                if ('___filePath' in value) {
-                    return [key, value.___filePath];
-                }
-
-                if (Array.isArray(value)) {
-                    return [key, value.map(v => fileObjectToString(['', v])[1])];
-                }
-
-                return [key, value];
-            })
-        );
+        let [files, regularParameters] = OutputEndpointData.getFileParameters(this.cleanBodyParameters);
+        this.cleanBodyParameters = regularParameters;
+        this.fileParameters = files;
     }
 
     static fromExtractedEndpointObject(endpoint: Endpoint) {
@@ -154,6 +137,35 @@ class OutputEndpointData {
 
     hasFiles() {
         return Object.keys(this.fileParameters || {}).length > 0;
+    }
+
+    static getFileParameters(parameters: Record<string, any>): [Record<string, any>, Record<string, any>] {
+        const files = {};
+        const regularParameters = {};
+
+        for (let name in parameters) {
+            let example = parameters[name];
+
+            if (example.___filePath) {
+                files[name] = example.___filePath;
+            } else if (Array.isArray(example) || typeof example === 'object') {
+                let [subFiles, subRegulars] = OutputEndpointData.getFileParameters(example);
+                for (let subName in subFiles) {
+                    const subExample = subFiles[subName];
+                    if (!files[name]) files[name] = {};
+                    files[name][subName] = subExample;
+                }
+                for (let subName in subRegulars) {
+                    const subExample = subRegulars[subName];
+                    if (!regularParameters[name]) regularParameters[name] = {};
+                    regularParameters[name][subName] = subExample;
+                }
+            } else {
+                regularParameters[name] = example;
+            }
+        }
+
+        return [files, regularParameters];
     }
 }
 

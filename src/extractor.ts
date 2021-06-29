@@ -71,13 +71,9 @@ class Extractor {
                         await this.iterateOverStrategies('bodyParameters', strategies.bodyParameters, endpoint, rulesToApply);
                         endpoint.cleanBodyParameters = p.cleanParams(endpoint.bodyParameters);
 
-                        let [files, regularParameters] = collect(endpoint.cleanBodyParameters)
-                            .partition(param => {
-                                return param instanceof TestingFile
-                                    || (Array.isArray(param) && param[0] instanceof TestingFile);
-                            });
-                        endpoint.fileParameters = files.all();
-                        endpoint.cleanBodyParameters = regularParameters.all();
+                        let [files, regularParameters] = OutputEndpointData.getFileParameters(endpoint.cleanBodyParameters);
+                        endpoint.fileParameters = files;
+                        endpoint.cleanBodyParameters = regularParameters;
 
                         if (Object.keys(endpoint.cleanBodyParameters).length && !endpoint.headers['Content-Type']) {
                             // Set content type if the user forgot to set it

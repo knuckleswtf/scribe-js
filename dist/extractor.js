@@ -7,7 +7,6 @@ const camel = require("./camel/camel");
 const union = require('lodash.union');
 const collect = require('collect.js');
 const { Listr } = require('listr2');
-const TestingFile = require("./utils/TestingFile");
 class Extractor {
     constructor(config, router, serverStartCommand) {
         this.config = config;
@@ -39,13 +38,9 @@ class Extractor {
                         endpoint.cleanQueryParameters = p.cleanParams(endpoint.queryParameters);
                         await this.iterateOverStrategies('bodyParameters', strategies.bodyParameters, endpoint, rulesToApply);
                         endpoint.cleanBodyParameters = p.cleanParams(endpoint.bodyParameters);
-                        let [files, regularParameters] = collect(endpoint.cleanBodyParameters)
-                            .partition(param => {
-                            return param instanceof TestingFile
-                                || (Array.isArray(param) && param[0] instanceof TestingFile);
-                        });
-                        endpoint.fileParameters = files.all();
-                        endpoint.cleanBodyParameters = regularParameters.all();
+                        let [files, regularParameters] = OutputEndpointData.getFileParameters(endpoint.cleanBodyParameters);
+                        endpoint.fileParameters = files;
+                        endpoint.cleanBodyParameters = regularParameters;
                         if (Object.keys(endpoint.cleanBodyParameters).length && !endpoint.headers['Content-Type']) {
                             // Set content type if the user forgot to set it
                             endpoint.headers['Content-Type'] = 'application/json';

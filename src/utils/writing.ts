@@ -120,7 +120,7 @@ function getParameterNamesAndValuesForFormData(parameter: string, value: any) {
         let params = {};
         for (let [item, itemValue] of Object.entries(value)) {
 
-            if (Array.isArray(itemValue) || typeof value[0] === 'object') {
+            if (Array.isArray(itemValue) || typeof itemValue === 'object') {
                 const expanded = getParameterNamesAndValuesForFormData('', itemValue);
                 Object.entries(expanded).forEach(([fieldName, subItemValue]) => {
                     const paramName = `${parameter}[${item}]${fieldName}`;
