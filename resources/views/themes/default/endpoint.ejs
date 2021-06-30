@@ -6,14 +6,17 @@
 
 <%- utils.markdown(endpoint.metadata.description || '') %>
 
-<blockquote>Example request</blockquote>
+<span id="example-requests-<%- endpoint.endpointId %>">
+<blockquote>Example request:</blockquote>
 
 <% metadata.exampleLanguages.forEach(language => { %>
 
 <%- utils.markdown(include(`../../partials/example-requests/${language}`, {endpoint})) %>
 
 <% }); %>
+</span>
 
+<span id="example-responses-<%- endpoint.endpointId %>">
 <% if (endpoint.responses.length) { %>
 <% endpoint.responses.forEach(response => { %>
 <blockquote>Example response (<%= response.description || response.status %>):</blockquote>
@@ -44,14 +47,15 @@
 </pre>
 <% }); %>
 <% } %>
-<div id="execution-results-<%- endpoint.endpointId %>" hidden>
+</span>
+<span id="execution-results-<%- endpoint.endpointId %>" hidden>
     <blockquote>Received response<span id="execution-response-status-<%- endpoint.endpointId %>"></span>:</blockquote>
     <pre class="json"><code id="execution-response-content-<%- endpoint.endpointId %>"></code></pre>
-</div>
-<div id="execution-error-<%- endpoint.endpointId %>" hidden>
+</span>
+<span id="execution-error-<%- endpoint.endpointId %>" hidden>
     <blockquote>Request failed with error:</blockquote>
     <pre><code id="execution-error-message-<%- endpoint.endpointId %>"></code></pre>
-</div>
+</span>
 
 <form id="form-<%- endpoint.endpointId %>"
       data-method="<%- endpoint.httpMethods[0] %>"
@@ -61,7 +65,7 @@
       data-headers='<%= JSON.stringify(endpoint.headers) %>'
       onsubmit="event.preventDefault(); executeTryOut('<%- endpoint.endpointId %>', this);">
 <h3>
-    Request
+    Request&nbsp;
     <% if (metadata.tryItOut.enabled) { %>
     <button
             type="button"
