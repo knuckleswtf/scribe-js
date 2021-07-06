@@ -28,6 +28,7 @@ declare class OutputEndpointData {
      */
     nestArrayAndObjectFields(parameters?: scribe.ParameterBag): scribe.ParameterBag<scribe.Parameter>;
     hasFiles(): boolean;
+    isArrayBody(): boolean;
     static getFileParameters(parameters: Record<string, any>): [Record<string, any>, Record<string, any>];
 }
 export = OutputEndpointData;

@@ -14,6 +14,7 @@ declare type OutputGroup = {
 declare const _default: {
     camelDir: ".scribe/endpoints";
     cacheDir: ".scribe/endpoints.cache";
+    groupFileNames: {};
     writeEndpointsToDisk(groupedEndpoints: Group[]): Promise<void>;
     groupEndpoints(parsedEndpoints: Endpoint[], endpointGroupIndexes: Record<string, number>): Group[];
     writeExampleCustomEndpoint(): Promise<void>;

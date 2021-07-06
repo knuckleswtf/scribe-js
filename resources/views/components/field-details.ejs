@@ -8,7 +8,7 @@
             <input type="radio" name="<%- utils.getFullNameForField(name, type) %>"
                    value="<%- component === 'body' ? 'true' : 1 %>"
                    data-endpoint="<%- endpointId %>"
-                   data-component="<%- component %>" <%- required ? 'required' : '' %>
+                   data-component="<%- component %>"<%- required ? ' required' : '' %>
             >
             <code>true</code>
         </label>
@@ -16,7 +16,7 @@
             <input type="radio" name="<%- utils.getFullNameForField(name, type) %>"
                    value="<%- component === 'body' ? 'false' : 0 %>"
                    data-endpoint="<%- endpointId %>"
-                   data-component="<%- component %>" <%- required ? 'required' : '' %>
+                   data-component="<%- component %>"<%- required ? ' required' : '' %>
             >
             <code>false</code>
         </label>
@@ -24,7 +24,7 @@
         <input type="<%- utils.getInputTypeForField(type) %>"
                name="<%- utils.getFullNameForField(name, type) + `.0` %>"
                data-endpoint="<%- endpointId %>"
-               data-component="<%- component %>" <%- required ? required : '' %> hidden>
+               data-component="<%- component %>"<%- required ? ' required' : '' %> hidden>
         <input type="<%- utils.getInputTypeForField(type) %>"
                name="<%- utils.getFullNameForField(name, type) + `.1` %>"
                data-endpoint="<%- endpointId %>"
@@ -33,7 +33,7 @@
         <input type="<%- utils.getInputTypeForField(type) %>"
                name="<%- utils.getFullNameForField(name, type) %>"
                data-endpoint="<%- endpointId %>"
-               data-component="<%- component %>" <%- required ? required : '' %> hidden>
+               data-component="<%- component %>"<%- required ? ' required' : '' %> hidden>
     <% } %>
 <% } %>
 <br>
