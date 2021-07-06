@@ -26,25 +26,19 @@
     <summary>
         <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
     </summary>
-    <pre>
-        <code class="language-http"><% for (header in response.headers) { %>
-<%- header %>: <%- response.headers[header] %><% } %>
-        </code></pre>
+    <pre><code class="language-http"><% for (header in response.headers) { %>
+<%- header %>: <%- response.headers[header] %><% } %> </code></pre>
 </details> <% } %>
 
 <pre>
-<code class="language-json">
 <% if (response.content.trim().startsWith("<<binary>>")) { %>
-[Binary data] - <%= response.content.replace("<<binary>>", "") %>
-<% } else if (response.status == 204) { %>
-[Empty response]
-<% } else { %>
-<% let parsed = null; try { parsed = JSON.parse(response.content); } catch (e) { } %>
+<code>[Binary data] - <%= response.content.replace("<<binary>>", "") %></code>
+<% } else if (response.status === 204) { %>
+<code>[Empty response]</code>
+<% } else { %> <% let parsed = null; try { parsed = JSON.parse(response.content); } catch (e) { } %>
 <!-- If response is a JSON string, prettify it. Otherwise, just print it -->
-<%- parsed != null ? JSON.stringify(parsed, null, 4) : response.content %>
-<% } %>
-</code>
-</pre>
+<code class="language-json"><%- parsed != null ? JSON.stringify(parsed, null, 4) : response.content %></code>
+<% } %> </pre>
 <% }); %>
 <% } %>
 </span>
