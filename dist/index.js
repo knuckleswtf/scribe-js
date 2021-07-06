@@ -20,6 +20,8 @@ class Scribe {
         this.serverStartCommand = serverStartCommand;
         this.options = options;
         tools.setVerbosity(options.verbose);
+        // Reset this map (useful for tests)
+        camel.groupFileNames = {};
     }
     async generate() {
         if (this.router === 'express' && !this.serverStartCommand && !this.options.noExtraction) {

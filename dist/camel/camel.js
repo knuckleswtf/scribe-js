@@ -20,6 +20,7 @@ function loadEndpointsFromCamelFiles(folder, callback, storeGroupFilePaths = tru
 module.exports = {
     camelDir: ".scribe/endpoints",
     cacheDir: ".scribe/endpoints.cache",
+    groupFileNames,
     async writeEndpointsToDisk(groupedEndpoints) {
         if (fs.existsSync(this.camelDir)) {
             const oldFiles = fs.readdirSync(this.camelDir);

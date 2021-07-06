@@ -139,6 +139,11 @@ class OutputEndpointData {
         return Object.keys(this.fileParameters || {}).length > 0;
     }
 
+    isArrayBody() {
+        const keys = Object.keys(this.nestedBodyParameters || {});
+        return keys.length === 1 && keys[0] === "[]";
+    }
+
     static getFileParameters(parameters: Record<string, any>): [Record<string, any>, Record<string, any>] {
         const files = {};
         const regularParameters = {};

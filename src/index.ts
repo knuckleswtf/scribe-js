@@ -29,6 +29,8 @@ class Scribe {
         private options = defaultOptions
     ) {
         tools.setVerbosity(options.verbose);
+        // Reset this map (useful for tests)
+        camel.groupFileNames = {};
     }
 
     async generate() {

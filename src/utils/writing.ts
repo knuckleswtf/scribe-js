@@ -47,6 +47,8 @@ function getFullNameForField(name: string, type?: string) {
         name += '.0';
         type = type.substr(0, type.length - 2);
     }
+    // When the body is an array, the item names will be ".0.thing"
+    name = name.replace(/^\./, '');
     return name;
 }
 

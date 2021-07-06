@@ -28,6 +28,8 @@ export = {
 
     cacheDir: ".scribe/endpoints.cache" as const,
 
+    groupFileNames,
+
     async writeEndpointsToDisk(groupedEndpoints: Group[]) {
         if (fs.existsSync(this.camelDir)) {
             const oldFiles = fs.readdirSync(this.camelDir);
