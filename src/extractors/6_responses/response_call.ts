@@ -69,7 +69,6 @@ async function makeResponseCall(responseCallRules: scribe.ResponseCallRules, end
     const queryParameters = Object.assign({}, endpoint.cleanQueryParameters || {}, responseCallRules.queryParams || {});
     const fileParameters = Object.assign({}, endpoint.fileParameters || {}, responseCallRules.fileParams || {});
 
-
     await makeSureAppIsRunning(responseCallRules);
     tools.debug("Fetching response from " + endpoint.httpMethods[0] + " " + endpoint.uri);
 

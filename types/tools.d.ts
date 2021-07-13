@@ -24,6 +24,7 @@ declare function setVerbosity(state: boolean): void;
 declare function isVerbose(): boolean;
 declare function spoofConsoleLogForTask(task: any): void;
 declare function restoreConsoleMethods(): void;
+declare function checkConfigFile(config: string | object): any;
 declare const _default: {
     generateConfigFile: typeof generateConfigFile;
     searchFileLazily: typeof searchFileLazily;
@@ -42,5 +43,6 @@ declare const _default: {
     isVerbose: typeof isVerbose;
     spoofConsoleLogForTask: typeof spoofConsoleLogForTask;
     restoreConsoleMethods: typeof restoreConsoleMethods;
+    checkConfigFile: typeof checkConfigFile;
 };
 export = _default;

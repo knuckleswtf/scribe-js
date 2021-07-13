@@ -30,5 +30,6 @@ declare class OutputEndpointData {
     hasFiles(): boolean;
     isArrayBody(): boolean;
     static getFileParameters(parameters: Record<string, any>): [Record<string, any>, Record<string, any>];
+    private normalizeResponses;
 }
 export = OutputEndpointData;

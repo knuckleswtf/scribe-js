@@ -127,7 +127,7 @@ class Scribe {
         let groupedEndpoints = camel.groupEndpoints(parsedEndpoints, extractor.endpointGroupIndexes);
 
         await camel.writeEndpointsToDisk(groupedEndpoints);
-        await camel.writeExampleCustomEndpoint();
+        camel.writeExampleCustomEndpoint();
         return camel.prepareGroupedEndpointsForOutput(groupedEndpoints);
     }
 

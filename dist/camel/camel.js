@@ -25,7 +25,7 @@ module.exports = {
         if (fs.existsSync(this.camelDir)) {
             const oldFiles = fs.readdirSync(this.camelDir);
             oldFiles.forEach(f => {
-                if (f.startsWith('custom.')) {
+                if (!f.startsWith('custom.')) {
                     fs.unlinkSync(this.camelDir + `/${f}`);
                 }
             });
@@ -74,7 +74,7 @@ module.exports = {
             };
         });
     },
-    async writeExampleCustomEndpoint() {
+    writeExampleCustomEndpoint() {
         // We add an example to guide users in case they need to add a custom endpoint.
         if (!fs.existsSync(this.camelDir + '/custom.0.yaml')) {
             fs.copyFileSync(__dirname + '/../../resources/example_custom_endpoint.yaml', this.camelDir + '/custom.0.yaml');

@@ -168,6 +168,24 @@ function restoreConsoleMethods() {
     console.info = originalConsole.info;
     console.warn = originalConsole.warn;
 }
+function checkConfigFile(config) {
+    let configObject;
+    if (typeof config === 'string') {
+        let configFile = path.resolve(config);
+        if (!fs.existsSync(configFile)) {
+            return null;
+        }
+        configObject = require(configFile);
+    }
+    else if (typeof config === 'object' && config !== null) {
+        configObject = config;
+    }
+    else {
+        error('Invalid type of config file passed. Expected string or object, got: ' + require('util').inspect(config));
+        process.exit(1);
+    }
+    return configObject;
+}
 module.exports = {
     generateConfigFile,
     searchFileLazily,
@@ -186,5 +204,6 @@ module.exports = {
     isVerbose,
     spoofConsoleLogForTask,
     restoreConsoleMethods,
+    checkConfigFile,
 };
 //# sourceMappingURL=tools.js.map

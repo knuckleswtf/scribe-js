@@ -1,6 +1,5 @@
 'use strict';
 
-const fs = require("fs");
 const path = require("path");
 const trim = require('lodash.trim');
 
@@ -9,20 +8,20 @@ const tools = require("@knuckleswtf/scribe/dist/tools");
 module.exports = async ({config, app, server, force = false, extraction = true, verbose = false}) => {
     tools.setVerbosity(verbose);
 
-    const configFile = path.resolve(config);
-    const appFile = path.resolve(app);
-    const serverStartCommand = server ? `node ${path.resolve(server)}` : tools.findServerStartCommand();
-
-    if (!fs.existsSync(configFile)) {
-        tools.warn(`Config file ${configFile} does not exist. Initialising with a default config file...`);
+    // An object is also allowed, for easier testing
+    let configObject = tools.checkConfigFile(config);
+    if (!configObject) {
+        tools.warn(`Config file not found. Initialising with a default config file...`);
         console.log();
         await require('./init')();
         return;
     }
 
-    if (!extraction) {
-        const configObject = require(configFile);
+    const appFile = path.resolve(app);
+    const serverStartCommand = server ? `node ${path.resolve(server)}` : tools.findServerStartCommand();
 
+
+    if (!extraction) {
         const {generate} = require('@knuckleswtf/scribe');
         await generate(null, configObject, 'express', null, {
             noExtraction: true,
@@ -38,7 +37,6 @@ module.exports = async ({config, app, server, force = false, extraction = true, 
 
     require(appFile);
 
-    const configObject = require(configFile);
     configObject.strategies = configObject.strategies || {};
     configObject.strategies.urlParameters =
         // Important to prepend it so docblock strategies can override this

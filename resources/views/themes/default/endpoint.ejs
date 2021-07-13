@@ -1,3 +1,4 @@
+
 <h2 id="<%- utils.slugify(group.name) %>-<%- utils.slugify(endpoint.endpointId) %>"><%- endpoint.metadata.title || (endpoint.httpMethods[0] + " " + endpoint.uri) %></h2>
 
 <p>
@@ -31,7 +32,7 @@
 </details> <% } %>
 
 <pre>
-<% if (response.content.trim().startsWith("<<binary>>")) { %>
+<% if (typeof response.content === 'string' && response.content.trim().startsWith("<<binary>>")) { %>
 <code>[Binary data] - <%= response.content.replace("<<binary>>", "") %></code>
 <% } else if (response.status === 204) { %>
 <code>[Empty response]</code>

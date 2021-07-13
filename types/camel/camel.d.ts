@@ -17,7 +17,7 @@ declare const _default: {
     groupFileNames: {};
     writeEndpointsToDisk(groupedEndpoints: Group[]): Promise<void>;
     groupEndpoints(parsedEndpoints: Endpoint[], endpointGroupIndexes: Record<string, number>): Group[];
-    writeExampleCustomEndpoint(): Promise<void>;
+    writeExampleCustomEndpoint(): void;
     prepareGroupedEndpointsForOutput(groupedEndpoints: Group[]): OutputGroup[];
     loadEndpointsIntoGroups(folder: string): OutputGroup[];
     loadUserDefinedEndpoints(folder: string): Endpoint[];

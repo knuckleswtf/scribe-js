@@ -1,25 +1,21 @@
 'use strict';
 
-const fs = require("fs");
 const path = require("path");
 const tools = require("@knuckleswtf/scribe/dist/tools");
 
 module.exports = async ({config, server, force = false, extraction = true, verbose = false}) => {
     tools.setVerbosity(verbose);
 
-    const configFile = path.resolve(config);
-    const serverFile = path.resolve(server);
-
-    if (!fs.existsSync(configFile)) {
-        tools.warn(`Config file ${configFile} does not exist. Initialising with a default config file...`);
+    // An object is also allowed, for easier testing
+    let configObject = tools.checkConfigFile(config);
+    if (!configObject) {
+        tools.warn(`Config file not found. Initialising with a default config file...`);
         console.log();
         await require('./init')();
         return;
     }
 
     if (!extraction) {
-        const configObject = require(configFile);
-
         const {generate} = require('@knuckleswtf/scribe');
         await generate(null, configObject, 'restify', null, {
             noExtraction: true,
@@ -33,9 +29,9 @@ module.exports = async ({config, server, force = false, extraction = true, verbo
     const decorator = require("../../src/decorator");
     decorator();
 
+    const serverFile = path.resolve(server);
     require(serverFile);
 
-    const configObject = require(configFile);
     configObject.strategies = configObject.strategies || {};
     configObject.strategies.urlParameters =
         // Important to prepend it so docblock strategies can override this

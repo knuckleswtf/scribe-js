@@ -26,7 +26,7 @@ class OutputEndpointData {
         this.urlParameters = endpoint.urlParameters;
         this.queryParameters = endpoint.queryParameters;
         this.bodyParameters = endpoint.bodyParameters;
-        this.responses = endpoint.responses;
+        this.responses = this.normalizeResponses(endpoint.responses);
         this.responseFields = endpoint.responseFields;
         this.nestedBodyParameters = this.nestArrayAndObjectFields(this.bodyParameters);
         this.cleanBodyParameters = p.cleanParams(this.bodyParameters);
@@ -148,6 +148,15 @@ class OutputEndpointData {
             }
         }
         return [files, regularParameters];
+    }
+    normalizeResponses(responses) {
+        return responses.map(r => {
+            // When coming from Camel files, users may specify a JSON object as response content
+            if (typeof r.content === "object" && r.content != null) {
+                r.content = JSON.stringify(r.content);
+            }
+            return r;
+        });
     }
 }
 module.exports = OutputEndpointData;

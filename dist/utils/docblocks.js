@@ -82,8 +82,9 @@ function parseDocBlockString(docBlock) {
         [title = null, description = null] = parsed.text.split("\n", 2);
     }
     const result = Object.assign({}, defaultTagValues, parsed.tags);
-    result.title = title ? title.trim().replace(/^\/\*\*\s*/, '') : null;
-    result.description = description ? description.trim().replace(/\/$/, '') : null; // Sometimes the last slash of the docblock is included
+    // Remove /** and */
+    result.title = title ? title.trim().replace(/^\/\*{0,2}\s*/, '').replace(/\*{0,2}\/$/, '') : null;
+    result.description = description ? description.trim().replace(/\*{0,2}\/$/, '') : null; // Sometimes the last slash of the docblock is included
     result.urlParam = transformFieldListToObject(result.urlParam);
     result.queryParam = transformFieldListToObject(result.queryParam);
     result.bodyParam = transformFieldListToObject(result.bodyParam);

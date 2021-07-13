@@ -101,7 +101,7 @@ class Scribe {
         let parsedEndpoints = await extractor.extract(routes, cachedEndpoints, latestEndpointsData, groups);
         let groupedEndpoints = camel.groupEndpoints(parsedEndpoints, extractor.endpointGroupIndexes);
         await camel.writeEndpointsToDisk(groupedEndpoints);
-        await camel.writeExampleCustomEndpoint();
+        camel.writeExampleCustomEndpoint();
         return camel.prepareGroupedEndpointsForOutput(groupedEndpoints);
     }
     async extractAndWriteApiDetailsToDisk(preserveUserChanges) {
