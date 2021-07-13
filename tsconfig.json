@@ -8,8 +8,10 @@
     "outDir": "dist",
     "rootDir": "src",
     "declarationDir": "types",
+    "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
-    "lib": ["es2020"]
+    "lib": ["es2020"],
+    "removeComments": false
   },
   "exclude": [
     "node_modules",

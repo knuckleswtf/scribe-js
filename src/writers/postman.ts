@@ -9,7 +9,7 @@ import {
     Url,
     UrlDefinition
 } from "postman-collection";
-import {URL} from "url";
+const URL = require("url").URL;
 import uuid = require('uuid');
 import striptags = require('striptags');
 import OutputEndpointData from "../camel/OutputEndpointData";

@@ -12,37 +12,39 @@ function run(endpoint, config) {
 
     const urlParameters = matches.map((match) => {
         tools.debug(`Processing Express URL parameter ` + match);
-        let parameter = trim(match, ':');
+        let parameterName = trim(match, ':');
 
-        const parameterRegexPattern = parameter.match(/\((.+)\)/);
+        const parameterRegexPattern = name.match(/\((.+)\)/);
         if (parameterRegexPattern) {
-            parameter = parameter.replace(parameterRegexPattern[0], '');
+            parameterName = parameterName.replace(parameterRegexPattern[0], '');
         }
 
-        const isOptional = parameter.endsWith('?');
-        isOptional && (parameter = trim(parameter, '?'));
+        const isOptional = parameterName.endsWith('?');
+        isOptional && (parameterName = trim(name, '?'));
+
+        let {name, description} = getNameAndDescription(uri, match, parameterName);
 
         if (!parameterRegexPattern) {
             // Simple parameter, no regex
             return {
-                name: parameter,
+                name,
                 example: isOptional ? null : getParameterExample(),
                 required: !isOptional,
                 type: 'string',
-                description: '',
+                description,
                 match,
             };
         }
+        let {example, type} = getTypeAndExample(parameterRegexPattern);
 
-        const example = getParameterExample('string', parameterRegexPattern[1]);
         return {
-            name: parameter,
+            name: name,
             example: isOptional ? null : example,
             required: !isOptional,
             description: '',
-            type: 'string',
+            type,
             match,
-            placeholder: `:${parameter}${isOptional ? '?' : ''}`
+            placeholder: `:${name}${isOptional ? '?' : ''}`
         }
     });
 
@@ -53,3 +55,33 @@ module.exports = {
     routers: ['express'],
     run
 };
+
+function getTypeAndExample(parameterRegexPattern) {
+    const example = getParameterExample('string', parameterRegexPattern[1]);
+    // If the parameter includes a regex, like /thing/:id(\d+),
+    // we can try to use that regex to figure out its type
+    let type;
+    if (String(parseInt(example)) === example) {
+        type = 'integer';
+    } else if (String(parseFloat(example)) === example) {
+        type = 'number';
+    } else {
+        type = 'string';
+    }
+    return {example, type};
+}
+
+function getNameAndDescription(uri, match, parameterName) {
+    const example = getParameterExample('string', parameterRegexPattern[1]);
+    // If the parameter name is id, like /thing/:id or /things/:thing_id
+    // we can try to infer a description
+    let type;
+    if (String(parseInt(example)) === example) {
+        type = 'integer';
+    } else if (String(parseFloat(example)) === example) {
+        type = 'number';
+    } else {
+        type = 'string';
+    }
+    return {name, description};
+}

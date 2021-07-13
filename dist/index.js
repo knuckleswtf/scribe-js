@@ -25,8 +25,9 @@ class Scribe {
     }
     async generate() {
         if (this.router === 'express' && !this.serverStartCommand && !this.options.noExtraction) {
-            tools.warn("We couldn't find a way to run your API. This means response calls won't work.");
-            tools.warn("You can specify a server file with the `-s` flag.");
+            tools.warn("You have response calls turned on, but we couldn't find a way to start your server.\n"
+                + "You can either start your server manually, or specify its file path with the `--server` flag, \n"
+                + "for example, `--server index.js`.");
         }
         let groupedEndpoints = [];
         if (this.options.force) {

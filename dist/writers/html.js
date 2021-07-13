@@ -39,7 +39,7 @@ class HtmlWriter {
         if (fs.existsSync(destinationFolder + "/js")) {
             fs.rmdirSync(destinationFolder + '/js', { recursive: true });
         }
-        await copyDirectory(`${assetsFolder}/images/`, `${destinationFolder}/images`);
+        await require('../utils/writing').copyDirectory(`${assetsFolder}/images/`, `${destinationFolder}/images`);
         const assets = {
             [`${assetsFolder}/css/theme-${theme}.style.css`]: [`${destinationFolder}/css/`, `theme-${theme}.style.css`],
             [`${assetsFolder}/css/theme-${theme}.print.css`]: [`${destinationFolder}/css/`, `theme-${theme}.print.css`],
@@ -97,11 +97,6 @@ function getDateString(date) {
 function getVersionedAsset(assetPath) {
     const index = assetPath.lastIndexOf(".");
     return assetPath.slice(0, index) + `-${process.env.SCRIBE_VERSION}` + assetPath.slice(index);
-}
-function copyDirectory(sourceDir, destDir) {
-    const ncp = require('ncp').ncp;
-    const ncp2 = require('util').promisify(ncp);
-    return ncp2(sourceDir, destDir);
 }
 module.exports = HtmlWriter;
 //# sourceMappingURL=html.js.map

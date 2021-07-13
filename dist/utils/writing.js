@@ -176,7 +176,13 @@ function printQueryParamsAsKeyValue(cleanQueryParameters, opts = {}) {
     let closing = options.braces[1] ? " ".repeat(options.closingBraceIndentation) + options.braces[1] : '';
     return output + closing;
 }
+function copyDirectory(sourceDir, destDir) {
+    const ncp = require('ncp').ncp;
+    const promisifiedNcp = require('util').promisify(ncp);
+    return promisifiedNcp(sourceDir, destDir);
+}
 module.exports = {
     renderEjsTemplate,
+    copyDirectory,
 };
 //# sourceMappingURL=writing.js.map

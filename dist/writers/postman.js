@@ -1,10 +1,10 @@
 "use strict";
-const url_1 = require("url");
+const URL = require("url").URL;
 const uuid = require("uuid");
 const striptags = require("striptags");
 const POSTMAN_SCHEMA_VERSION = '2.1.0';
 module.exports = (config) => {
-    const parsedUrl = new url_1.URL(config.baseUrl);
+    const parsedUrl = new URL(config.baseUrl);
     function makePostmanCollection(groupedEndpoints) {
         const collection = {
             variable: [

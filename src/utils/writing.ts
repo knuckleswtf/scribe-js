@@ -190,6 +190,14 @@ function printQueryParamsAsKeyValue(cleanQueryParameters, opts = {}): string {
     return output + closing;
 }
 
+function copyDirectory(sourceDir: string, destDir: string): Promise<any> {
+    const ncp = require('ncp').ncp;
+    const promisifiedNcp = require('util').promisify(ncp);
+
+    return promisifiedNcp(sourceDir, destDir);
+}
+
 export = {
     renderEjsTemplate,
+    copyDirectory,
 };
