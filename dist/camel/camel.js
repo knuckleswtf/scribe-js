@@ -50,7 +50,9 @@ module.exports = {
                 fileName = groupFileNames[group.name];
             }
             else {
-                fileName = `${fileNameIndex}.yaml`;
+                // Format numbers as two digits so they are sorted properly when retrieving later
+                // (ie "10.yaml" comes after "9.yaml", not after "1.yaml")
+                fileName = String(fileNameIndex).padStart(2, '0') + ".yaml";
                 fileNameIndex++;
             }
             fs.writeFileSync(`${this.camelDir}/${fileName}`, content);
