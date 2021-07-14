@@ -99,33 +99,36 @@ describe("Route extraction", () => {
         const restifyServerPath = path.resolve(__dirname, '../fixtures/restify.routes.js');
         await generate({config: mockConfig(), server: restifyServerPath});
 
-        const actualRoutes = stub.getCall(0).args[0];
-        console.log(actualRoutes);
-        expect(stub.calledOnceWith([
+        const expectedRoutes = [
             {
-                uri: '/get-string',
+                uri: 'get-string',
                 httpMethods: ['GET'],
                 handler: handlers[0],
                 declaredAt: [restifyServerPath, 8],
             },
             {
-                uri: '/post-object',
+                uri: 'post-object',
                 httpMethods: ['POST'],
                 handler: handlers[1],
                 declaredAt: [restifyServerPath, 10],
             },
             {
-                uri: '/api/action1',
+                uri: 'api/action1',
                 httpMethods: ['GET'],
                 handler: handlers[0],
                 declaredAt: [restifyServerPath, 17],
             },
             {
-                uri: '/api/action2',
+                uri: 'api/action2',
                 httpMethods: ['GET'],
                 handler: handlers[1],
                 declaredAt: [restifyServerPath, 23],
             },
-        ])).toEqual(true);
+        ];
+        const actualRoutes = stub.getCall(0).args[0];
+        expect(actualRoutes).toHaveSize(expectedRoutes.length);
+        expectedRoutes.forEach(
+            r => expect(actualRoutes).toContain(jasmine.objectContaining(r))
+        );
     });
 });

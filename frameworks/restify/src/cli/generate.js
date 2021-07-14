@@ -41,7 +41,7 @@ module.exports = async ({config, server, force = false, extraction = true, verbo
 
     const routes = decorator.allRoutes;
     const {generate} = require('@knuckleswtf/scribe');
-    await generate(routes, configObject, 'restify', null, {force, verbose});
+    await generate(routes, configObject, 'restify', null, {force, verbose, noExtraction: false});
 
     // Make sure to end process, in case server is still running
     setTimeout(() => process.exit(0), 1300);

@@ -8,6 +8,7 @@ const { copyDirectory } = require('../../dist/utils/writing');
 const { mockConfig } = require('../utils');
 
 const {generate} = require('../../dist');
+const restifyGenerate = require('../../frameworks/restify/src/cli/generate');
 
 describe('Generation', () => {
     afterEach(function () {
@@ -19,7 +20,6 @@ describe('Generation', () => {
 // it('warns_of_nonexistent_response_files', async () => {
 // it('can_parse_utf8_response', async () => {
 // it('respects_endpoints_and_group_sort_order', async () => {
-// it('will_auto_set_content_type_to_multipart_if_file_params_are_present', async () => {
 // response calls
 
     it('can_append_custom_http_headers', async () => {
@@ -30,41 +30,60 @@ describe('Generation', () => {
             },
             'routes.0.apply.responseCalls.methods': [],
         });
-        const endpoints = [
-            {
-                uri: '/get-string',
-                httpMethods: ['GET'],
-                handler: () => null,
-                declaredAt: [restifyServerPath, 8],
-            },
-        ];
-        await generate(endpoints, config, 'restify', null);
+        await restifyGenerate({config, server: restifyServerPath});
 
         const endpointDetails = scribeFile( 'endpoints/00.yaml').endpoints[0];
         expect(endpointDetails.headers["Authorization"]).toEqual("customAuthToken");
         expect(endpointDetails.headers["Custom-Header"]).toEqual("NotSoCustom");
     });
+/*
+    it('will_auto_set_content_type_to_multipart_if_file_params_are_present', async () => {        /!**
+     * @bodyParam param string required
+     *!/
+    RouteFacade::post('no-file', fn() => null);
+        /!**
+         * @bodyParam a_file file required
+         *!/
+        RouteFacade::post('top-level-file', fn() => null);
+        /!**
+         * @bodyParam data object
+         * @bodyParam data.thing string
+         * @bodyParam data.a_file file
+         *!/
+        RouteFacade::post('nested-file', fn() => null);
+
+        const config = mockConfig({
+            'routes.0.apply.responseCalls.methods': [],
+        });
+        const endpoints = [
+            {
+                uri: '/get-string',
+                httpMethods: ['GET'],
+                handler: () => null,
+                declaredAt: [__filename, 8],
+            },
+        ];
+        await generate(endpoints, config, 'restify', null);
+
+        const group = scribeFile( 'endpoints/00.yaml').endpoints[0];
+        expect(group.endpoints[0].uri).toEqual('no-file');
+        expect(group.endpoints[0].headers['content-type']).toEqual('application/json');
+        expect(group.endpoints[1].uri).toEqual('top-level-file');
+        expect(group.endpoints[1].headers['content-type']).toEqual('multipart/form-data');
+        expect(group.endpoints[2].uri).toEqual('nested-file');
+        expect(group.endpoints[2].headers['content-type']).toEqual('multipart/form-data');
+    });*/
 
     it('merges_user_defined_endpoints', async () => {
         if (!fs.existsSync('.scribe/endpoints'))
             fs.mkdirSync('.scribe/endpoints', {recursive: true});
         fs.copyFileSync(__dirname + '/../fixtures/custom.0.yaml', '.scribe/endpoints/custom.0.yaml');
 
-        const endpoints = [
-            {
-                uri: 'api/action1',
-                httpMethods: ['GET'],
-                handler: () => null,
-                declaredAt: [restifyServerPath, 17],
-            },
-            {
-                uri: 'api/action2',
-                httpMethods: ['GET'],
-                handler: () => null,
-                declaredAt: [restifyServerPath, 23],
-            },
-        ];
-        await generate(endpoints, mockConfig({'routes.0.apply.responseCalls.methods': []}), 'restify', null);
+        const config = mockConfig({
+            'routes.0.include': ['api/*'],
+            'routes.0.apply.responseCalls.methods': [],
+        });
+        await restifyGenerate({config, server: restifyServerPath});
 
         const $ = cheerio.load(fs.readFileSync('public/docs/index.html'));
         const headings = $('h1').get();
@@ -88,7 +107,7 @@ describe('Generation', () => {
         let output = "";
         const originalWrite = process.stdout.write.bind(process.stdout);
         process.stdout.write = (text) => {output += text};
-        await generate([], mockConfig(), 'restify', null, {noExtraction: true});
+        await restifyGenerate({config: mockConfig(), extraction: false});
 
         process.stdout.write = originalWrite;
         expect(output).not.toContain("Processing route");

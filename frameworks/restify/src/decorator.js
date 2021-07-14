@@ -37,7 +37,7 @@ function decorateRestifyRouter() {
                 decorator.allRoutes.push({
                     httpMethods: [args[0].method],
                     handler: args[1][args[1].length - 1],
-                    uri: args[0].path,
+                    uri: args[0].path.replace(/^\/|\/$/, ''), // trim slashes
                     declaredAt: [filePath, lineNumber],
                 });
 

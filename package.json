@@ -13,6 +13,7 @@
     "publish:adonis": "cd ./frameworks/adonis && npm publish --access public",
     "publish:express": "cd ./frameworks/express && npm publish --access public",
     "publish:restify": "cd ./frameworks/restify && npm publish --access public",
+    "setup": "lerna bootstrap --no-ci",
     "tsc": "tsc"
   },
   "repository": {
