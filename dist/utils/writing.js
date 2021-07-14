@@ -179,6 +179,10 @@ function printQueryParamsAsKeyValue(cleanQueryParameters, opts = {}) {
 function copyDirectory(sourceDir, destDir) {
     const ncp = require('ncp').ncp;
     const promisifiedNcp = require('util').promisify(ncp);
+    const fs = require('fs');
+    if (!fs.existsSync(destDir)) {
+        fs.mkdirSync(destDir, { recursive: true });
+    }
     return promisifiedNcp(sourceDir, destDir);
 }
 module.exports = {

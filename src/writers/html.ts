@@ -61,7 +61,7 @@ class HtmlWriter {
         Object.entries(assets).forEach(([path, [destination, fileName]]) => {
             if (fs.existsSync(path)) {
                 if (!fs.existsSync(destination)) {
-                    fs.mkdirSync(destination);
+                    fs.mkdirSync(destination, {recursive: true});
                 }
                 fs.copyFileSync(path, destination + fileName);
             }
