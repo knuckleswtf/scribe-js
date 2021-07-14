@@ -20,11 +20,10 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.nodejs }}
-          cache: 'npm'
 
 
       - name: Install dependencies
-        run: npm run setup
+        run: npm i
 
       - name: Execute tests
         run: npm test

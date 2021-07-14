@@ -11,7 +11,7 @@ matrix:
     - node_js: "14"
     - node_js: "16"
 
-install: npm run setup
+install: npm i
 
 script:
 - npm run test
