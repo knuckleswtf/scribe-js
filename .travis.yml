@@ -7,9 +7,9 @@ cache:
 matrix:
   fast_finish: true
   include:
-    - node_js: "12.x"
-    - node_js: "14.x"
-    - node_js: "16.x"
+    - node_js: "12"
+    - node_js: "14"
+    - node_js: "16"
 
 install: npm run setup
 
