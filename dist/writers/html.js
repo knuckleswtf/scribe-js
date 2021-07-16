@@ -2,7 +2,6 @@
 const fs = require("fs");
 const path = require("path");
 const writing = require("../utils/writing");
-"path";
 const showdown = require('showdown');
 class HtmlWriter {
     constructor(config) {
@@ -34,10 +33,10 @@ class HtmlWriter {
         const assetsFolder = path.join(__dirname, '/../../resources');
         // Prune older versioned assets
         if (fs.existsSync(destinationFolder + "/css")) {
-            fs.rmdirSync(destinationFolder + '/css', { recursive: true });
+            (fs.rmSync || fs.rmdirSync)(destinationFolder + '/css', { recursive: true });
         }
         if (fs.existsSync(destinationFolder + "/js")) {
-            fs.rmdirSync(destinationFolder + '/js', { recursive: true });
+            (fs.rmSync || fs.rmdirSync)(destinationFolder + '/js', { recursive: true });
         }
         await require('../utils/writing').copyDirectory(`${assetsFolder}/images/`, `${destinationFolder}/images`);
         const assets = {
@@ -64,10 +63,10 @@ class HtmlWriter {
         var _a, _b, _c;
         const links = [];
         if ((_a = this.config.postman.enabled) !== null && _a !== void 0 ? _a : true) {
-            links.push('<a href="../docs/collection.json">View Postman collection</a>');
+            links.push('<a href="collection.json">View Postman collection</a>');
         }
         if ((_b = this.config.openapi.enabled) !== null && _b !== void 0 ? _b : false) {
-            links.push('<a href="../docs/openapi.yaml">View OpenAPI spec</a>');
+            links.push('<a href="openapi.yaml">View OpenAPI spec</a>');
         }
         const auth = Object.assign({}, this.config.auth);
         if (auth.in === 'bearer' || auth.in === 'basic') {
