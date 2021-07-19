@@ -9,12 +9,10 @@ import camel = require("./camel/camel");
 import RouteGroupApply = scribe.RouteGroupApply;
 
 const union = require('lodash.union');
-const collect = require('collect.js');
 const {Listr} = require('listr2');
 
 import {scribe} from "../typedefs/core";
 import {ListrTask} from "listr2";
-import TestingFile = require("./utils/TestingFile");
 
 class Extractor {
     static encounteredErrors = false;
@@ -113,6 +111,7 @@ class Extractor {
         const tasks = new Listr(taskList, {
             concurrent: true,
             exitOnError: false,
+            rendererSilent: process.env.SCRIBE_TEST === "1",
             rendererOptions: {formatOutput: 'wrap', removeEmptyLines: false}
         });
         await tasks.run();

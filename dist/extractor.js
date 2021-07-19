@@ -5,7 +5,6 @@ const Endpoint = require("./camel/Endpoint");
 const OutputEndpointData = require("./camel/OutputEndpointData");
 const camel = require("./camel/camel");
 const union = require('lodash.union');
-const collect = require('collect.js');
 const { Listr } = require('listr2');
 class Extractor {
     constructor(config, router, serverStartCommand) {
@@ -76,6 +75,7 @@ class Extractor {
         const tasks = new Listr(taskList, {
             concurrent: true,
             exitOnError: false,
+            rendererSilent: process.env.SCRIBE_TEST === "1",
             rendererOptions: { formatOutput: 'wrap', removeEmptyLines: false }
         });
         await tasks.run();

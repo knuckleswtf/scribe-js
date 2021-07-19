@@ -37,7 +37,10 @@ class Writer {
                 skip: !this.config.openapi.enabled,
             }
         ];
-        const tasks = new Listr(taskList, { concurrent: false });
+        const tasks = new Listr(taskList, {
+            concurrent: false,
+            rendererSilent: process.env.SCRIBE_TEST === "1",
+        });
         await tasks.run();
         tools.restoreConsoleMethods();
     }

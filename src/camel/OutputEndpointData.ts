@@ -5,8 +5,6 @@ import Endpoint from "./Endpoint";
 
 const set = require("../tools").set;
 import p = require("../utils/parameters");
-import TestingFile = require("../utils/TestingFile");
-const collect = require("collect.js");
 
 class OutputEndpointData {
     uri = '';

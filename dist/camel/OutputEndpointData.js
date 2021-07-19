@@ -1,7 +1,6 @@
 'use strict';
 const set = require("../tools").set;
 const p = require("../utils/parameters");
-const collect = require("collect.js");
 class OutputEndpointData {
     constructor(endpoint) {
         this.uri = '';
