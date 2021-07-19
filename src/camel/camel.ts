@@ -4,7 +4,7 @@ import Endpoint from "./Endpoint";
 import OutputEndpointData = require("./OutputEndpointData");
 import groupBy = require('lodash.groupby');
 import sortBy = require('lodash.sortby');
-import * as fs from "fs";
+import fs = require('fs');
 
 const yaml = require('js-yaml');
 
@@ -43,7 +43,8 @@ export = {
         }
 
         if (fs.existsSync(this.cacheDir)) {
-            fs.rmdirSync(this.cacheDir, {recursive: true});
+            // TODO change to only fs.rmSync when we drop support for Node.js < 14.x
+            (fs.rmSync || fs.rmdirSync)(this.cacheDir, {recursive: true});
         }
         fs.mkdirSync(this.cacheDir, {recursive: true});
 

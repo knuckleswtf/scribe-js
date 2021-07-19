@@ -7,6 +7,7 @@ function mockConfig(options = {}) {
     // Skip these ones for faster tests
     config.postman.enabled = false;
     config.openapi.enabled = false;
+    config.routes[0].apply.responseCalls.methods = [];
     for (let key in options) {
         set(config, key, options[key]);
     }

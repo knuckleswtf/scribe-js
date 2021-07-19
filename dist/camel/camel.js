@@ -34,7 +34,8 @@ module.exports = {
             fs.mkdirSync(this.camelDir, { recursive: true });
         }
         if (fs.existsSync(this.cacheDir)) {
-            fs.rmdirSync(this.cacheDir, { recursive: true });
+            // TODO change to only fs.rmSync when we drop support for Node.js < 14.x
+            (fs.rmSync || fs.rmdirSync)(this.cacheDir, { recursive: true });
         }
         fs.mkdirSync(this.cacheDir, { recursive: true });
         let fileNameIndex = 0;

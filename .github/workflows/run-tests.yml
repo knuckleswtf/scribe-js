@@ -25,7 +25,10 @@ jobs:
       - name: Install dependencies
         run: npm i
 
-      - name: Execute tests
+      - name: Unit tests
+        run: npm run test:unit
+
+      - name: Feature tests
         env:
           NODE_OPTIONS: "--max-old-space-size=8192"
-        run: npm test
+        run: npm run test:feature

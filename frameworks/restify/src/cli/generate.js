@@ -40,9 +40,13 @@ module.exports = async ({config, server, force = false, extraction = true, verbo
         );
 
     const routes = decorator.allRoutes;
+    // Reset (useful for tests)
+    decorator.allRoutes = [];
     const {generate} = require('@knuckleswtf/scribe');
     await generate(routes, configObject, 'restify', null, {force, verbose, noExtraction: false});
 
-    // Make sure to end process, in case server is still running
-    setTimeout(() => process.exit(0), 1300);
+    // Make sure to end process (except when testing), in case server is still running
+    if (process.env.SCRIBE_TEST !== '1') {
+        setTimeout(() => process.exit(0), 1300);
+    }
 }

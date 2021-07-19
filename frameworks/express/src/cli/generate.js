@@ -64,5 +64,8 @@ function getRoutesFromOurDecorator(decorator) {
         return r;
     })
 
+    // Reset (useful for tests)
+    decorator.subRouters = new Map;
+
     return allRoutes;
 }

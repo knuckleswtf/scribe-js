@@ -1,30 +1,36 @@
-const path = require("path");
+'use strict';
 
 process.env.SCRIBE_GENERATE = "1";
+process.env.SCRIBE_TEST = '1';
 
+const path = require("path");
 const scribe = require('../../dist/index');
-const handlers = require('../fixtures/handlers');
 const { mockConfig } = require('../utils');
-const sinon = require('sinon');
 
 describe("Route extraction", () => {
-    const sandbox = sinon.createSandbox();
-    let stub;
-
     beforeEach(function () {
-        stub = sandbox.stub(scribe, 'generate');
-    });
+        const decache = require('decache');
+        decache('require-in-the-middle');
 
-    afterEach(function () {
-        sandbox.restore();
+        decache(path.resolve(__dirname, '../../frameworks/restify/src/decorator'));
+        decache('restify');
+        decache('restify/lib/router');
+        decache(path.resolve(__dirname, '../fixtures/restify.routes.js'));
+
+        decache('express');
+        decache(path.resolve(__dirname, '../../frameworks/express/src/decorator'));
+        decache(path.resolve(__dirname, '../fixtures/express.routes.js'));
+
+        spyOn(scribe, 'generate');
     });
 
     it('can extract Express routes', async () => {
-        const generate = require('../../frameworks/express/src/cli/generate');
+        const expressGenerate = require('../../frameworks/express/src/cli/generate');
         const expressAppPath = path.resolve(__dirname, '../fixtures/express.routes.js');
-        await generate({config: mockConfig(), app: expressAppPath});
+        const handlers = require('../fixtures/handlers');
+        await expressGenerate({config: mockConfig(), app: expressAppPath});
 
-        expect(stub.calledOnce).toEqual(true);
+        expect(scribe.generate).toHaveBeenCalledTimes(1);
         const expectedRoutes = [
             {
                 uri: '/main-app',
@@ -87,7 +93,7 @@ describe("Route extraction", () => {
                 declaredAt: [expressAppPath, 29],
             },
         ];
-        const actualRoutes = stub.getCall(0).args[0];
+        const actualRoutes = scribe.generate.calls.argsFor(0)[0];
         expect(actualRoutes).toHaveSize(expectedRoutes.length);
         expectedRoutes.forEach(
             r => expect(actualRoutes).toContain(jasmine.objectContaining(r))
@@ -95,10 +101,12 @@ describe("Route extraction", () => {
     });
 
     it('can extract Restify routes', async () => {
-        const generate = require('../../frameworks/restify/src/cli/generate');
         const restifyServerPath = path.resolve(__dirname, '../fixtures/restify.routes.js');
-        await generate({config: mockConfig(), server: restifyServerPath});
+        const handlers = require('../fixtures/handlers');
+        const restifyGenerate = require('../../frameworks/restify/src/cli/generate');
+        await restifyGenerate({config: mockConfig(), server: restifyServerPath});
 
+        expect(scribe.generate).toHaveBeenCalledTimes(1);
         const expectedRoutes = [
             {
                 uri: 'get-string',
@@ -125,10 +133,10 @@ describe("Route extraction", () => {
                 declaredAt: [restifyServerPath, 23],
             },
         ];
-        const actualRoutes = stub.getCall(0).args[0];
+        const actualRoutes = scribe.generate.calls.argsFor(0)[0];
         expect(actualRoutes).toHaveSize(expectedRoutes.length);
         expectedRoutes.forEach(
-            r => expect(actualRoutes).toContain(jasmine.objectContaining(r))
+            (r, i) => expect(actualRoutes[i]).toEqual(jasmine.objectContaining(r))
         );
     });
 });
