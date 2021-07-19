@@ -48,7 +48,9 @@ class GenerateDocumentation extends Command {
                 noExtraction: true,
                 verbose: options.verbose
             });
-            setTimeout(() => process.exit(0), 1300);
+            if (process.env.SCRIBE_TEST !== '1') {
+                setTimeout(() => process.exit(0), 2200);
+            }
             return;
         }
 
@@ -69,7 +71,9 @@ class GenerateDocumentation extends Command {
         });
 
         // Make sure to end process, in case server is still running
-        setTimeout(() => process.exit(0), 1300);
+        if (process.env.SCRIBE_TEST !== '1') {
+            setTimeout(() => process.exit(0), 4200);
+        }
     }
 
     async getEndpoints(tools) {
