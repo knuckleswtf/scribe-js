@@ -47,6 +47,6 @@ module.exports = async ({config, server, force = false, extraction = true, verbo
 
     // Make sure to end process (except when testing), in case server is still running
     if (process.env.SCRIBE_TEST !== '1') {
-        setTimeout(() => process.exit(0), 4200);
+        process.exit(0);
     }
 }

@@ -73,20 +73,13 @@ class Extractor {
             };
         });
         const tasks = new Listr(taskList, {
-            concurrent: true,
+            concurrent: false,
             exitOnError: false,
             rendererSilent: process.env.SCRIBE_TEST === "1",
             rendererOptions: { formatOutput: 'wrap', removeEmptyLines: false }
         });
         await tasks.run();
         tools.restoreConsoleMethods();
-        setTimeout(() => {
-            const appProcess = require("./extractors/6_responses/response_call").appProcess;
-            if (appProcess) {
-                tools.info("Stopping app server...");
-                appProcess.kill();
-            }
-        }, 3000);
         return parsedEndpoints;
     }
     async iterateOverStrategies(stage, strategies, endpoint, rulesToApply) {

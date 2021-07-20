@@ -50,9 +50,8 @@ module.exports = async ({config, app, server, force = false, extraction = true, 
     await generate(endpoints, configObject, 'express', serverStartCommand, {force, verbose});
 
     // Make sure to end process, in case server is still running
-    // Wrapping in a timeout because it seems sometimes ncp fails to copy over all assets in time
     if (process.env.SCRIBE_TEST !== '1') {
-        setTimeout(() => process.exit(0), 4200);
+        process.exit(0);
     }
 }
 

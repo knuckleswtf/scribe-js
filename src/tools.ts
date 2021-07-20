@@ -78,6 +78,9 @@ function icon(type: keyof typeof icons) {
 }
 
 function info(input) {
+    if (typeof input === 'object') {
+        input = require('util').inspect(input);
+    }
     console.log(icon('info') + ' ' + kleur.cyan(input))
 }
 

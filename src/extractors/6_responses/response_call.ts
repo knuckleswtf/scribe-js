@@ -4,18 +4,20 @@ import fs = require("fs");
 import path = require("path");
 import qs = require("querystring");
 import url = require("url");
-const { spawn } = require("cross-spawn");
-const { isPortTaken } = require('../../utils/response_calls');
 import OutputEndpointData = require("../../camel/OutputEndpointData");
 import TestingFile = require("../../utils/TestingFile");
+
+const { spawn } = require("cross-spawn");
+const { isPortTaken } = require('../../utils/response_calls');
+
 const tools = require('./../../tools');
 const { prettyPrintResponseIfJson } = require("../../utils/parameters");
 
 let appProcess;
 
-async function run(endpoint: Endpoint, config: scribe.Config, routeGroupApply: scribe.RouteGroupApply): Promise<scribe.Response[]> {
+function run(endpoint: Endpoint, config: scribe.Config, routeGroupApply: scribe.RouteGroupApply): Promise<scribe.Response[]> {
     if (!shouldMakeResponseCall(config, endpoint, routeGroupApply)) {
-        return [];
+        return Promise.resolve([]);
     }
     return makeResponseCall(routeGroupApply.responseCalls, endpoint);
 }
@@ -43,18 +45,18 @@ function getUrl(endpoint: Endpoint, queryParameters: Record<string, any>) {
 
 async function makeSureAppIsRunning(responseCallRules: scribe.ResponseCallRules) {
     // Using a single global app process here to avoid premature kills
-    const taken = await isPortTaken(url.parse(responseCallRules.baseUrl).port);
-    if (!taken) {
+    if (!appProcess && !await isPortTaken(url.parse(responseCallRules.baseUrl).port)) {
         try {
             tools.info(`Starting your app (\`${responseCallRules.serverStartCommand}\`) for response calls...`);
             const [command, ...args] = responseCallRules.serverStartCommand.split(" ");
+
             appProcess = spawn(command, args, {stdio: 'ignore', cwd: process.cwd()});
-            await new Promise(resolve => {
+            return new Promise(resolve => {
                 // Delay for 2s to give the app time to start
                 setTimeout(resolve, 2000);
             });
         } catch (e) {
-            tools.info(`Couldn't start your app, so response calls may not work; if it's already running, you can ignore this message.`);
+            tools.warn(`Couldn't start your app, so response calls may not work; if it's already running, you can ignore this message.`);
             // do nothing; app is probably running already
         }
     }

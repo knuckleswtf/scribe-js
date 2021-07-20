@@ -14,7 +14,7 @@ function run(endpoint, config) {
         tools.debug(`Processing Express URL parameter ` + match);
         let parameterName = trim(match, ':');
 
-        const parameterRegexPattern = name.match(/\((.+)\)/);
+        const parameterRegexPattern = match.match(/\((.+)\)/);
         if (parameterRegexPattern) {
             parameterName = parameterName.replace(parameterRegexPattern[0], '');
         }
@@ -22,29 +22,27 @@ function run(endpoint, config) {
         const isOptional = parameterName.endsWith('?');
         isOptional && (parameterName = trim(name, '?'));
 
-        let {name, description} = getNameAndDescription(uri, match, parameterName);
-
         if (!parameterRegexPattern) {
             // Simple parameter, no regex
             return {
-                name,
+                name: parameterName,
                 example: isOptional ? null : getParameterExample(),
                 required: !isOptional,
                 type: 'string',
-                description,
+                description: getDescription(uri, match, parameterName),
                 match,
             };
         }
         let {example, type} = getTypeAndExample(parameterRegexPattern);
 
         return {
-            name: name,
+            name: parameterName,
             example: isOptional ? null : example,
             required: !isOptional,
-            description: '',
+            description: getDescription(uri, match, parameterName),
             type,
             match,
-            placeholder: `:${name}${isOptional ? '?' : ''}`
+            placeholder: `:${parameterName}${isOptional ? '?' : ''}`
         }
     });
 
@@ -71,17 +69,20 @@ function getTypeAndExample(parameterRegexPattern) {
     return {example, type};
 }
 
-function getNameAndDescription(uri, match, parameterName) {
-    const example = getParameterExample('string', parameterRegexPattern[1]);
-    // If the parameter name is id, like /thing/:id or /things/:thing_id
+function getDescription(uri, match, parameterName) {
+    // If the parameter name is an id-type, like /thing/:id or /things/:thing_id
     // we can try to infer a description
-    let type;
-    if (String(parseInt(example)) === example) {
-        type = 'integer';
-    } else if (String(parseFloat(example)) === example) {
-        type = 'number';
-    } else {
-        type = 'string';
+    let patternMatch;
+    if ((patternMatch = parameterName.match(/^(.+)_id$/))) {
+        const thing = patternMatch[1];
+        return `The ID of the ${thing}.`;
     }
-    return {name, description};
+
+    if (parameterName === 'id' && (patternMatch = uri.match(new RegExp("(/|^)(.+)/:id")))) {
+        const pluralize = require('pluralize');
+        const thing = pluralize.singular(patternMatch[2]);
+        return `The ID of the ${thing}.`;
+    }
+
+    return '';
 }

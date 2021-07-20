@@ -52,6 +52,7 @@
     "lodash.union": "^4.6.0",
     "matcher": "^3.0.0",
     "ncp": "^2.0.0",
+    "pluralize": "^8.0.0",
     "randexp": "^0.5.3",
     "showdown": "^1.9.1",
     "slugify": "^1.4.0",
@@ -71,6 +72,7 @@
     "jasmine-console-reporter": "^3.1.0",
     "jest": "^26.1.0",
     "lerna": "^3.22.1",
+    "node-ray": "^1.16.0",
     "openapi3-ts": "^1.4.0",
     "restify": "^8.5.1",
     "typescript": "^4.3"

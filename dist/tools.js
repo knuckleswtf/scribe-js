@@ -67,6 +67,9 @@ function icon(type) {
     return icons[type];
 }
 function info(input) {
+    if (typeof input === 'object') {
+        input = require('util').inspect(input);
+    }
     console.log(icon('info') + ' ' + kleur.cyan(input));
 }
 function warn(input) {

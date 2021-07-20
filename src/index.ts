@@ -87,7 +87,7 @@ class Scribe {
         for (let routeGroup of this.config.routes) {
             for (let e of this.endpoints) {
                 if (routeGroup.exclude.length) {
-                    const shouldExclude = matcher.isMatch(e.uri, routeGroup.exclude);
+                    const shouldExclude = routeGroup.exclude.find(pattern => matcher.isMatch(e.uri, pattern));
                     if (shouldExclude) continue;
                 }
 

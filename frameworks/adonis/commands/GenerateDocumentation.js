@@ -49,7 +49,7 @@ class GenerateDocumentation extends Command {
                 verbose: options.verbose
             });
             if (process.env.SCRIBE_TEST !== '1') {
-                setTimeout(() => process.exit(0), 2200);
+                process.exit(0);
             }
             return;
         }
@@ -72,7 +72,7 @@ class GenerateDocumentation extends Command {
 
         // Make sure to end process, in case server is still running
         if (process.env.SCRIBE_TEST !== '1') {
-            setTimeout(() => process.exit(0), 4200);
+            process.exit(0);
         }
     }
 
