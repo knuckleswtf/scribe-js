@@ -4,7 +4,7 @@
   "description": "Generate API documentation for humans from your Node.js codebase.",
   "main": "dist/index.js",
   "scripts": {
-    "test:unit": "jest",
+    "test:unit": "jest --env=node --runInBand",
     "test:feature": "jasmine --config=test/feature/jasmine.json --reporter=jasmine-console-reporter",
     "test": "npm run test:unit && npm run test:feature",
     "version:all": "lerna version --no-push --force-publish=* --exact",
@@ -70,7 +70,7 @@
     "express": "^4.17.1",
     "jasmine": "^3.7.0",
     "jasmine-console-reporter": "^3.1.0",
-    "jest": "^26.1.0",
+    "jest": "^27.0.6",
     "lerna": "^3.22.1",
     "node-ray": "^1.16.0",
     "openapi3-ts": "^1.4.0",

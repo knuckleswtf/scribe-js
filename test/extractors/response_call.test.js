@@ -37,7 +37,7 @@ beforeAll((done) => {
         });
 });
 
-afterAll(async (done) => {
+afterAll( (done) => {
     testServer.close(done);
 });
 
@@ -166,7 +166,7 @@ test('response_call strategy makes correct HTTP request to server', async () => 
 });
 
 
-test('response_call strategy handles file upload', async (done) => {
+test('response_call strategy handles file upload', (done) => {
     let endpoint = {
         uri: '/test1/upload',
         boundUri: '/test1/upload',
