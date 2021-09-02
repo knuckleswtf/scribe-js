@@ -177,11 +177,12 @@ function printQueryParamsAsKeyValue(cleanQueryParameters, opts = {}): string {
             }
         } else {
             // Primitives
+            const formattedValue = typeof value === "boolean" ? (value ? 1 : 0) : value;
             output += " ".repeat(options.spacesIndentation);
             output += options.startLinesWith
                 + options.quote + parameter + options.quote
                 + options.delimiter + " "
-                + options.quote + value + options.quote
+                + options.quote + formattedValue + options.quote
                 + options.endLinesWith + "\n";
         }
     }
