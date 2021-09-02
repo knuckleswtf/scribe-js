@@ -177,7 +177,11 @@ async function executeTryOut(endpointId, form) {
 
     const query = {};
     const queryParameters = form.querySelectorAll('input[data-component=query]');
-    queryParameters.forEach(el => _.set(query, el.name, el.value));
+    queryParameters.forEach(el => {
+        if (el.type !== 'radio' || (el.type === 'radio' && el.checked)) {
+            _.set(query, el.name, el.value);
+        }
+    });
 
     let path = form.dataset.path;
     const urlParameters = form.querySelectorAll('input[data-component=url]');
