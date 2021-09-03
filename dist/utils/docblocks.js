@@ -155,26 +155,24 @@ function parseResponseTagContent(tagContent) {
     tagContent = tagContent.replace("\n/", '');
     const parsed = parseIntoContentAndAttributes(tagContent, ["status", "scenario"]);
     let [, status = null, content = null] = /^(\d{3})?\s*(\S[\s\S]*)?$/.exec(parsed.content);
-    if (!status) {
-        status = parsed.attributes.status;
-    }
-    if (!status) {
-        status = 200;
-    }
     return {
-        status: Number(status),
-        description: parsed.attributes.scenario ? `${status}, ${parsed.attributes.scenario}` : `${status}`,
+        status: Number(status || parsed.attributes.status || 200),
+        scenario: parsed.attributes.scenario,
         content: prettyPrintResponseIfJson(content),
     };
 }
 function parseResponseFileTagContent(tagContent) {
     // Get rid of any rogue trailing slashes (from the end of the docblocK)
     tagContent = tagContent.replace("\n/", '');
-    // Example content:  '404 responses/model.not.found.json {"type": "User"}'
-    let [, status = 200, filePath = null, extraJson = null] = /^(\d{3})?\s*(.*?)({.*})?$/.exec(tagContent);
+    // Example content:
+    // - '404 responses/model.not.found.json {"type": "User"}'
+    // - '404 scenario="Not found" responses/model.not.found.json
+    let [, status = null, mainContent = null, extraJson = null] = /^(\d{3})?\s*(.*?)({.*})?$/.exec(tagContent);
+    const parsed = parseIntoContentAndAttributes(mainContent, ["status", "scenario"]);
     return {
-        status,
-        filePath: filePath.trim(),
+        status: Number(status || parsed.attributes.status || 200),
+        filePath: parsed.content.trim(),
+        scenario: parsed.attributes.scenario,
         extraJson: extraJson ? extraJson.trim() : null,
     };
 }

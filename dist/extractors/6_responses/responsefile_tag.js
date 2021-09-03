@@ -1,16 +1,13 @@
 "use strict";
 const fs = require("fs");
 const path = require("path");
-const tools = require("../../tools");
 const { prettyPrintResponseIfJson } = require("../../utils/parameters");
 async function run(endpoint, config) {
-    const responseFileTags = endpoint.docblock.responseFile || [];
     const responses = [];
-    for (let t of responseFileTags) {
+    for (let t of endpoint.docblock.responseFile || []) {
         let resolvedFilePath = path.resolve(t.filePath);
         if (!fs.existsSync(resolvedFilePath)) {
-            tools.warn(`@responseFile ${resolvedFilePath} does not exist`);
-            continue;
+            throw new Error(`@responseFile ${resolvedFilePath} does not exist`);
         }
         let content = fs.readFileSync(resolvedFilePath, "utf8");
         if (t.extraJson) {
@@ -20,7 +17,7 @@ async function run(endpoint, config) {
         responses.push({
             content: prettyPrintResponseIfJson(content),
             status: Number(t.status),
-            description: '',
+            description: t.scenario ? `${t.status}, ${t.scenario}` : `${t.status}`,
         });
     }
     return responses;

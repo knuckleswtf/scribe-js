@@ -6,7 +6,7 @@ test('responsefile_tag strategy correctly extracts response from file', async ()
 
     const docBlockString = `
 /**
- * @responseFile test/fixtures/responsefile.json
+ * @responseFile test/fixtures/responsefile.json scenario="Success"
  */`;
     const docblock = await parseDocBlockString(docBlockString);
     let endpoint = {
@@ -19,7 +19,7 @@ test('responsefile_tag strategy correctly extracts response from file', async ()
     expect(responses[0]).toEqual({
         status: 200,
         content: JSON.stringify(JSON.parse(content), null, 4),
-        description: '',
+        description: '200, Success',
     });
 });
 
@@ -28,7 +28,8 @@ test('responsefile_tag strategy works with multiple files and statuses and can o
     const docBlockString = `
 /**
  * @responseFile 201 test/fixtures/responsefile.json
- * @responseFile 400 test/fixtures/responsefile.json {"error": "not found"}
+ * @responseFile status=401 scenario=Oops test/fixtures/responsefile.json
+ * @responseFile 400 scenario="Bad request" test/fixtures/responsefile.json {"error": "not found"}
  */`;
     const docblock = await parseDocBlockString(docBlockString);
     let endpoint = {
@@ -36,19 +37,25 @@ test('responsefile_tag strategy works with multiple files and statuses and can o
     };
 
     let responses = await strategy.run(endpoint);
-    expect(responses).toHaveLength(2);
+    expect(responses).toHaveLength(3);
     const content = fs.readFileSync(__dirname + '/../fixtures/responsefile.json', 'utf8');
+    const fileResponse = JSON.stringify(JSON.parse(content), null, 4);
     expect(responses[0]).toEqual({
         status: 201,
-        content: JSON.stringify(JSON.parse(content), null, 4),
-        description: '',
+        content: fileResponse,
+        description: '201',
+    });
+    expect(responses[1]).toEqual({
+        status: 401,
+        content: fileResponse,
+        description: '401, Oops',
     });
     const parsedContent = JSON.parse(content);
     parsedContent.error = "not found";
     const mergedContent = JSON.stringify(parsedContent, null, 4);
-    expect(responses[1]).toEqual({
+    expect(responses[2]).toEqual({
         status: 400,
         content: mergedContent,
-        description: '',
+        description: '400, Bad request',
     });
 });
