@@ -1,8 +1,13 @@
 <% for (let name in parameters) { %>
     <% let parameter = parameters[name]; %>
     <% if (name === '[]') { %>
+        <%
+            let description = `The request body is an array (<code>${parameter.type}</code>)`;
+            const lcfirst = text => text[0].toLowerCase() + text.substring(1);
+            description += parameter.description ? `, representing ${lcfirst(parameter.description)}.` : '.';
+        %>
         <p>
-            Body: <code><%- parameter.type %></code> <%- utils.markdown(parameter.description || '') %>
+            <%- utils.markdown(description) %>
         </p>
         <% for (let subfieldName in parameter.__fields) { %>
                 <% let subfield = parameter.__fields[subfieldName]; %>
