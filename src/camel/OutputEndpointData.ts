@@ -38,7 +38,7 @@ class OutputEndpointData {
         this.cleanBodyParameters = p.cleanParams(this.bodyParameters);
         this.cleanQueryParameters = p.cleanParams(this.queryParameters);
         this.cleanUrlParameters = p.cleanParams(this.urlParameters);
-        this.boundUri = OutputEndpointData.getUrlWithBoundParameters(this.uri, this.cleanUrlParameters);
+        this.boundUri = OutputEndpointData.getUrlWithBoundParameters(this.uri, this.urlParameters);
 
         let [files, regularParameters] = OutputEndpointData.getFileParameters(this.cleanBodyParameters);
         this.cleanBodyParameters = regularParameters;
@@ -49,10 +49,10 @@ class OutputEndpointData {
         return new OutputEndpointData(endpoint);
     }
 
-    static getUrlWithBoundParameters(uri: string, cleanUrlParameters: Record<string,any> = {}) {
-        return Object.entries(cleanUrlParameters || {})
-            .reduce((uri, [name, example]) => {
-                return uri.replace(`:${name}`, example);
+    static getUrlWithBoundParameters(uri: string, urlParameters: scribe.UrlParameters) {
+        return Object.entries(urlParameters || {})
+            .reduce((uri, [name, details]) => {
+                return uri.replace(new RegExp(`:${name}\\??`), details.example || '');
             }, uri);
     }
 

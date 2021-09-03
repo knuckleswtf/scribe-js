@@ -18,7 +18,7 @@ declare class OutputEndpointData {
     fileParameters: Record<string, any>;
     constructor(endpoint: Endpoint);
     static fromExtractedEndpointObject(endpoint: Endpoint): OutputEndpointData;
-    static getUrlWithBoundParameters(uri: string, cleanUrlParameters?: Record<string, any>): string;
+    static getUrlWithBoundParameters(uri: string, urlParameters: scribe.UrlParameters): string;
     get endpointId(): string;
     /**
      * Transform body parameters such that object fields have a `fields` property containing a list of all subfields

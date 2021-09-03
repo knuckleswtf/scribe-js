@@ -26,7 +26,7 @@ function shouldMakeResponseCall(config, endpoint, routeGroupApply) {
         allowedMethods.includes(endpoint.httpMethods[0].toUpperCase());
 }
 function getUrl(endpoint, queryParameters) {
-    const boundUri = OutputEndpointData.getUrlWithBoundParameters(endpoint.uri, endpoint.cleanUrlParameters);
+    const boundUri = OutputEndpointData.getUrlWithBoundParameters(endpoint.uri, endpoint.urlParameters);
     return boundUri + (Object.keys(queryParameters).length ? `?` + qs.stringify(queryParameters) : '');
 }
 async function makeSureAppIsRunning(responseCallRules) {

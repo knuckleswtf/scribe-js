@@ -20,7 +20,7 @@ function run(endpoint, config) {
         }
 
         const isOptional = parameterName.endsWith('?');
-        isOptional && (parameterName = trim(name, '?'));
+        isOptional && (parameterName = trim(parameterName, '?'));
 
         if (!parameterRegexPattern) {
             // Simple parameter, no regex

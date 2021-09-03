@@ -39,7 +39,7 @@ function shouldMakeResponseCall(config: scribe.Config, endpoint: Endpoint, route
 }
 
 function getUrl(endpoint: Endpoint, queryParameters: Record<string, any>) {
-    const boundUri = OutputEndpointData.getUrlWithBoundParameters(endpoint.uri, endpoint.cleanUrlParameters);
+    const boundUri = OutputEndpointData.getUrlWithBoundParameters(endpoint.uri, endpoint.urlParameters);
     return boundUri + (Object.keys(queryParameters).length ? `?` + qs.stringify(queryParameters) : '');
 }
 
