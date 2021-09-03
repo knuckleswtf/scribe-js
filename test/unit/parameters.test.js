@@ -1,4 +1,4 @@
-const {getParameterExample, cleanParams} = require('../../dist/utils/parameters');
+const {getParameterExample, cleanParams, inferParameterDescription} = require('../../dist/utils/parameters');
 
 test('getParameterExample() generates correct examples by type', async () => {
     let example;
@@ -132,4 +132,14 @@ test('cleanParams() properly sets object keys', async () => {
         delete expected.param1[1].a;
         expect(results).toEqual(expected);
     }
+});
+
+test.each([
+    {paramName: 'id', url: '/animals/:id', expected: 'The ID of the animal.'},
+    {paramName: 'animal_id', url: '/:animal_id', expected: 'The ID of the animal.'},
+    {paramName: 'domesticAnimalId', url: '/:domesticAnimalId', expected: 'The ID of the domestic animal.'},
+    {paramName: 'ID', url: '/big_people/:ID', expected: 'The ID of the big person.'},
+])('inferParameterDescription() infers descriptions smartly', async ({url, paramName, expected}) => {
+    let description = inferParameterDescription(url, paramName);
+    expect(description).toEqual(expected);
 });

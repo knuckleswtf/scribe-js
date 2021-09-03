@@ -1,4 +1,4 @@
-const {getParameterExample} = require("@knuckleswtf/scribe/dist/utils/parameters");
+const {getParameterExample, inferParameterDescription} = require("@knuckleswtf/scribe/dist/utils/parameters");
 const tools = require("@knuckleswtf/scribe/dist/tools");
 const trim = require('lodash.trim');
 const keyBy = require('lodash.keyby');
@@ -22,7 +22,7 @@ function run(endpoint, config) {
             example: isOptional ? null : getParameterExample(),
             required: !isOptional,
             type: 'string',
-            description: '',
+            description: inferParameterDescription(uri, parameter),
             match,
         };
     });

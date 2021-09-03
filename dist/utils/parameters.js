@@ -215,6 +215,36 @@ function prettyPrintResponseIfJson(content) {
     }
     return content;
 }
+function inferParameterDescription(uri, parameterName) {
+    // If the parameter name is an id-type, like /thing(s)/:id or /:thing_id or /:thingId
+    // we can try to infer a description
+    let patternMatch;
+    if ((patternMatch = parameterName.match(/^(.+)(_id|_ID|Id)$/))) {
+        const thing = wordify(patternMatch[1]);
+        return `The ID of the ${thing}.`;
+    }
+    if (parameterName.toLowerCase() === 'id' && (patternMatch = uri.match(new RegExp("(/|^)(.+)/:(id|ID)")))) {
+        // First, we convert the pattern into a word
+        const word = wordify(patternMatch[2]);
+        const pluralize = require('pluralize');
+        const singular = pluralize.singular(word);
+        const plural = pluralize(singular);
+        if (plural === word) {
+            return `The ID of the ${singular}.`;
+        }
+    }
+    return '';
+}
+/**
+ * Convert "sideProject", "side_projects", or "side-projects" to "side project"
+ * @param {string} slug
+ * @returns {string}
+ */
+function wordify(slug) {
+    return slug.replace(/[_\-]/g, ' ')
+        .split(/(?=[A-Z])/).join(' ')
+        .toLowerCase();
+}
 module.exports = {
     getBaseType,
     getParameterExample,
@@ -224,5 +254,6 @@ module.exports = {
     isArrayType,
     getBaseTypeFromArrayType,
     prettyPrintResponseIfJson,
+    inferParameterDescription,
 };
 //# sourceMappingURL=parameters.js.map

@@ -1,4 +1,4 @@
-const { getParameterExample } = require("@knuckleswtf/scribe/dist/utils/parameters");
+const { getParameterExample, inferParameterDescription } = require("@knuckleswtf/scribe/dist/utils/parameters");
 const tools = require("@knuckleswtf/scribe/dist/tools");
 const trim = require('lodash.trim');
 const keyBy = require('lodash.keyby');
@@ -29,7 +29,7 @@ function run(endpoint, config) {
                 example: isOptional ? null : getParameterExample(),
                 required: !isOptional,
                 type: 'string',
-                description: getDescription(uri, match, parameterName),
+                description: inferParameterDescription(uri, parameterName),
                 match,
             };
         }
@@ -39,7 +39,7 @@ function run(endpoint, config) {
             name: parameterName,
             example: isOptional ? null : example,
             required: !isOptional,
-            description: getDescription(uri, match, parameterName),
+            description: inferParameterDescription(uri, parameterName),
             type,
             match,
             placeholder: `:${parameterName}${isOptional ? '?' : ''}`
@@ -67,22 +67,4 @@ function getTypeAndExample(parameterRegexPattern) {
         type = 'string';
     }
     return {example, type};
-}
-
-function getDescription(uri, match, parameterName) {
-    // If the parameter name is an id-type, like /thing/:id or /things/:thing_id
-    // we can try to infer a description
-    let patternMatch;
-    if ((patternMatch = parameterName.match(/^(.+)_id$/))) {
-        const thing = patternMatch[1];
-        return `The ID of the ${thing}.`;
-    }
-
-    if (parameterName === 'id' && (patternMatch = uri.match(new RegExp("(/|^)(.+)/:id")))) {
-        const pluralize = require('pluralize');
-        const thing = pluralize.singular(patternMatch[2]);
-        return `The ID of the ${thing}.`;
-    }
-
-    return '';
 }
