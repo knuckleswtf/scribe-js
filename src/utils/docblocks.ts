@@ -93,7 +93,8 @@ function parseDocBlockString(docBlock: string): DocBlock {
         // If the user left a blank line between title and description, we'll get an array
         [title = null, ...description] = parsed.text;
         if (description.length) {
-            description = description.join('\n');
+            // We have to join with TWO newlines, so we preserve blank lines between items.
+            description = description.join('\n\n');
         }
     } else if (typeof parsed.text == 'string') {
         // Otherwise, we'll get a single string
@@ -105,7 +106,7 @@ function parseDocBlockString(docBlock: string): DocBlock {
     // Remove /** and */
     result.title = title ? title.trim().replace(/^\/\*{0,2}\s*/, '').replace(/\*{0,2}\/$/, '') : null;
     result.description = description ? description.trim().replace(/\*{0,2}\/$/, '') : null; // Sometimes the last slash of the docblock is included
-
+    
     result.urlParam = transformFieldListToObject(result.urlParam);
     result.queryParam = transformFieldListToObject(result.queryParam);
     result.bodyParam = transformFieldListToObject(result.bodyParam);

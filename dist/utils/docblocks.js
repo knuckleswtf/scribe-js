@@ -74,7 +74,8 @@ function parseDocBlockString(docBlock) {
         // If the user left a blank line between title and description, we'll get an array
         [title = null, ...description] = parsed.text;
         if (description.length) {
-            description = description.join('\n');
+            // We have to join with TWO newlines, so we preserve blank lines between items.
+            description = description.join('\n\n');
         }
     }
     else if (typeof parsed.text == 'string') {
