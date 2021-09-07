@@ -38,11 +38,11 @@ module.exports = async ({config, app, server, force = false, extraction = true, 
     require(appFile);
 
     configObject.strategies = configObject.strategies || {};
-    configObject.strategies.urlParameters =
+    configObject.strategies.urlParameters = [
         // Important to prepend it so docblock strategies can override this
-        [path.join(__dirname, '../strategies/url_parameters/express_route_api')].concat(
-            configObject.strategies.urlParameters || []
-        );
+        path.join(__dirname, '../strategies/url_parameters/express_route_api'),
+        ...configObject.strategies.urlParameters || []
+    ];
 
     const endpoints = getRoutesFromOurDecorator(decorator);
 

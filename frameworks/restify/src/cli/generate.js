@@ -33,11 +33,11 @@ module.exports = async ({config, server, force = false, extraction = true, verbo
     require(serverFile);
 
     configObject.strategies = configObject.strategies || {};
-    configObject.strategies.urlParameters =
+    configObject.strategies.urlParameters = [
         // Important to prepend it so docblock strategies can override this
-        [path.join(__dirname, '../strategies/url_parameters/restify_route_api')].concat(
-            configObject.strategies.urlParameters || []
-        );
+        path.join(__dirname, '../strategies/url_parameters/restify_route_api'),
+        ...configObject.strategies.urlParameters || []
+    ];
 
     const routes = decorator.allRoutes;
     // Reset (useful for tests)

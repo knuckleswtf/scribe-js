@@ -58,11 +58,11 @@ class GenerateDocumentation extends Command {
 
         const config = require(configFilePath);
         config.strategies = config.strategies || {};
-        config.strategies.urlParameters =
+        config.strategies.urlParameters = [
             // Important to prepend it so docblock strategies can override this
-            [path.join(__dirname, '../strategies/url_parameters/adonis_route_api')].concat(
-                config.strategies.urlParameters || []
-            );
+            path.join(__dirname, '../strategies/url_parameters/adonis_route_api'),
+            ...config.strategies.urlParameters || []
+        ];
 
         const { generate } = require('@knuckleswtf/scribe');
         await generate(endpoints, config, 'adonis', `node ${path.resolve('server.js')}`, {
