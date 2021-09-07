@@ -28,7 +28,7 @@ This will ask you a few questions and create a `.scribe.config.js` file in your 
 Now let's do a test run. Run the command to generate your docs.
 
 ```bash
- node ace scribe:generate
+node ace scribe:generate
 ```
 
 Visit your newly generated docs. Find the `docs/index.html` file in your `public/` folder and open it in your browser. 
