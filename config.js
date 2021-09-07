@@ -3,6 +3,11 @@ module.exports = {
     theme: 'default',
 
     /*
+     * The docs, Postman collection and OpenAPI spec will be generated to this folder.
+     */
+    outputPath: 'public/docs',
+
+    /*
      * The base URL displayed in the docs.
      */
     baseUrl: "http://yourApi.dev",
@@ -19,11 +24,6 @@ module.exports = {
      * Set this to false to not use a logo.
      */
     logo: false,
-
-    /*
-     * HTML documentation, assets and Postman collection will be generated to this folder.
-     */
-    outputPath: 'public/docs',
 
     tryItOut: {
         /**
@@ -108,7 +108,7 @@ module.exports = {
                  */
                 responseCalls: {
                     /*
-                     * The base URL to use when making response calls. This should be the URL (+ port) you run on localhost.
+                     * The base URL Scribe will make requests to. This should be the URL (+ port) you run on localhost.
                      */
                     baseUrl: "http://localhost:3000",
                     /*
@@ -165,8 +165,8 @@ module.exports = {
      * Supported options are: bash, javascript
      */
     exampleLanguages: [
+        'bash',
         'javascript',
-        'bash'
     ],
 
     /*
@@ -181,7 +181,6 @@ module.exports = {
 
 <aside>As you scroll, you'll see code examples for working with the API in different programming languages in the dark area to the right (or as part of the content on mobile).
 You can switch the language used with the tabs at the top right (or from the nav menu at the top left on mobile).</aside>`,
-
 
     /*
      * If you would like the package to generate the same example values for parameters on each run,

@@ -6,8 +6,8 @@ const fs = require('fs');
 const path = require("path");
 const restifyServerPath = path.resolve(__dirname, '../fixtures/restify.routes.js');
 const cheerio = require('cheerio');
-const { copyDirectory } = require('../../dist/utils/writing');
-const { mockConfig } = require('../utils');
+const {copyDirectory} = require('../../dist/utils/writing');
+const {mockConfig} = require('../utils');
 
 const restifyGenerate = require('../../frameworks/restify/src/cli/generate');
 
@@ -26,11 +26,11 @@ describe('Generation', () => {
         (fs.rmSync || fs.rmdirSync)(process.cwd() + '/public/docs', {recursive: true});
     });
 
-// it('can_skip_methods_and_classes_with_hidefromapidocumentation_tag', async () => {
-// it('warns_of_nonexistent_response_files', async () => {
-// it('can_parse_utf8_response', async () => {
-// it('respects_endpoints_and_group_sort_order', async () => {
-// response calls
+    it('can_skip_methods_and_classes_with_hidefromapidocs_tag');
+    it('warns_of_nonexistent_response_files');
+    it('can_parse_utf8_response');
+    it('respects_endpoints_and_group_sort_order');
+    it('response calls');
 
     it('can_append_custom_http_headers', async () => {
         const config = mockConfig({
@@ -41,7 +41,7 @@ describe('Generation', () => {
         });
         await restifyGenerate({config, server: restifyServerPath});
 
-        const endpointDetails = scribeFile( 'endpoints/00.yaml').endpoints[0];
+        const endpointDetails = scribeFile('endpoints/00.yaml').endpoints[0];
         expect(endpointDetails.headers["Authorization"]).toEqual("customAuthToken");
         expect(endpointDetails.headers["Custom-Header"]).toEqual("NotSoCustom");
     });
@@ -49,7 +49,7 @@ describe('Generation', () => {
     it('will_auto_set_content_type_to_multipart_if_file_params_are_present', async () => {
         await restifyGenerate({config: mockConfig(), server: path.resolve(__dirname, '../fixtures/restify.js')});
 
-        const group = scribeFile( 'endpoints/00.yaml');
+        const group = scribeFile('endpoints/00.yaml');
         expect(group.endpoints[0].uri).toEqual('files/no-file');
         expect(group.endpoints[0].headers['Content-Type']).toEqual('application/json');
         expect(group.endpoints[1].uri).toEqual('files/top-level-file');
@@ -89,7 +89,9 @@ describe('Generation', () => {
 
         let output = "";
         const originalWrite = process.stdout.write.bind(process.stdout);
-        process.stdout.write = (text) => {output += text};
+        process.stdout.write = (text) => {
+            output += text
+        };
         await restifyGenerate({config: mockConfig(), extraction: false});
 
         process.stdout.write = originalWrite;
