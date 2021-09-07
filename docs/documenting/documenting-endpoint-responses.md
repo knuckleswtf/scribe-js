@@ -1,4 +1,9 @@
 # Documenting responses from an endpoint
+
+```eval_rst
+.. attention:: These docs are for Scribe for JS v1, which is no longer maintained. See `scribe.knuckles.wtf/nodejs <http://scribe.knuckles.wtf/nodejs>`_ for Scribe for JS v2.
+```
+
 It's helpful if your API's consumers can see what a response should be like before writing any code. There are multiple strategies to provide example responses for your endpoint:
 - describing the response using the `@response` tag
 - specifying a file containing the response using the `@responseFile` tag

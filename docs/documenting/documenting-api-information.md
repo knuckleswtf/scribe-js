@@ -1,5 +1,9 @@
 # Adding general information about your API
 
+```eval_rst
+.. attention:: These docs are for Scribe for JS v1, which is no longer maintained. See `scribe.knuckles.wtf/nodejs <http://scribe.knuckles.wtf/nodejs>`_ for Scribe for JS v2.
+```
+
 ## Authentication information
 You can add authentication information for your API using the `auth` section in `.scribe.config.js`. 
 
