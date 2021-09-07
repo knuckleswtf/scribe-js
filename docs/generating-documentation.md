@@ -3,23 +3,15 @@
 To generate your API documentation, use the `scribe generate` command.
 
 ```sh
- ./node_modules/.bin/scribe generate -a <your-app-file> -s <your-server-file>
+npx scribe generate -a <your-app-file> -s <your-server-file>
 ```
 - **Your "app file"** is the file where you create your Express app and attach routes. Usually an `index.js` or `app.js`.
-  - Make sure to export the `app` object from the app file.
-    ```js
-    module.exports = app;
-    ```
-  - Add this line in your app file. Make sure it's placed before your routes are registered:
-    ```js
-    require('@knuckleswtf/scribe')(app)
-    ```
 - **Your server file** is the file where you actually start your server (usually by calling `app.listen()`). Sometimes it's the same as your app file, sometimes is's a different file (like `bin/www`).
 
 
 Running this command will:
 - extract information about your API and endpoints from your app file
-- start your app using `node your-server-fie` (if you supplied one with ` -s <your-server-file>`) in order to extract possible responses
+- start your app using `node <your-server-file>` (if you supplied one with ` -s <your-server-file>`) in order to extract possible responses
 - generate documentation about your endpoints as a series of Markdown files
 - pass these Markdown files to [Pastel](https://github.com/knuckleswtf/pastel-js), which wraps the Markdown files in a HTML, CSS and JavaScript template. 
 
