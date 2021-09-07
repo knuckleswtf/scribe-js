@@ -1,5 +1,9 @@
 # Specifying metadata about an endpoint
 
+```eval_rst
+.. attention:: These docs are for Scribe for JS v1, which is no longer maintained. See `scribe.knuckles.wtf/nodejs <http://scribe.knuckles.wtf/nodejs>`_ for Scribe for JS v2.
+```
+
 ## Endpoint title and description
 To set an endpoint's title and description, just write in a docblock at the route declaration. The first paragraph will be used as the title, the rest as the description. Custom formatting (such as `<aside>` tags) is also supported (see the [Pastel docs](http://github.com/knuckleswtf/pastel-js)).
 

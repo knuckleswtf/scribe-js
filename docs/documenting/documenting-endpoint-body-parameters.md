@@ -1,9 +1,12 @@
 # Documenting body and file parameters for an endpoint
-Scribe can get information about your endpoint's body parameters in two ways:
-- the fully-manual way (using the `@bodyParam` annotation in JSDoc)
-- the mostly-automatic way [coming soon]
 
-## The manual way: Specifying body parameters with @bodyParam
+```eval_rst
+.. attention:: These docs are for Scribe for JS v1, which is no longer maintained. See `scribe.knuckles.wtf/nodejs <http://scribe.knuckles.wtf/nodejs>`_ for Scribe for JS v2.
+```
+
+Scribe can get information about your endpoint's body parameters from the `@bodyParam` annotation in JSDoc.
+
+## Specifying body parameters with @bodyParam
 To describe body parameters for your endpoint, use the `@bodyParam` annotation **when declaring the route**.
 
 The `@bodyParam` annotation takes the type of the parameter, its name, an optional "required" label, and then its description. Valid types:

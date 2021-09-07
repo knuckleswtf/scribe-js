@@ -1,5 +1,9 @@
 # Documenting query and URL parameters for an endpoint
 
+```eval_rst
+.. attention:: These docs are for Scribe for JS v1, which is no longer maintained. See `scribe.knuckles.wtf/nodejs <http://scribe.knuckles.wtf/nodejs>`_ for Scribe for JS v2.
+```
+
 ## Specifying query parameters
 To describe query parameters for your endpoint, use the `@queryParam` annotation on the method handling it.
 

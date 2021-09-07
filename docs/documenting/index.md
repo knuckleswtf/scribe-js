@@ -1,4 +1,9 @@
 # Documenting your API
+
+```eval_rst
+.. attention:: These docs are for Scribe for JS v1, which is no longer maintained. See `scribe.knuckles.wtf/nodejs <http://scribe.knuckles.wtf/nodejs>`_ for Scribe for JS v2.
+```
+
 Scribe tries to infer information about your API from your code, but you can enrich this information in the config and by using annotations (tags in doc block comments).
 
 
