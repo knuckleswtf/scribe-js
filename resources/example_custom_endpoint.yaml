@@ -4,7 +4,7 @@
 
 #- httpMethods:
 #    - POST
-#  uri: api/doSomething/{param}
+#  uri: api/doSomething/:param
 #  metadata:
 #    groupName: The group the endpoint belongs to. Can be a new group or an existing group.
 #    groupDescription: A description for the group. You don't need to set this for every endpoint; once is enough.
